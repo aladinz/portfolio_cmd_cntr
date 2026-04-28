@@ -1,0 +1,182 @@
+{
+  "portfolio_id": "conservative_growth_resilient_50_50_2026",
+  "portfolio_name": "Personal Taxable Brokerage Account – Conservative Growth / Resilient 50‑50 ETF Portfolio",
+  "owner": "Personal Taxable Brokerage Account",
+  "platform": "Fidelity",
+  "portfolio_type": "Conservative Growth / Resilient 50‑50",
+  "created_date": "2026",
+  "version": "1.0",
+
+  "core_philosophy": {
+    "purpose": "Maintain a simple, resilient, and tax‑efficient investment structure balancing long‑term growth with capital preservation.",
+    "principles": [
+      "Simplicity over complexity",
+      "Tax efficiency for a taxable brokerage account",
+      "Low turnover and minimal decision‑making",
+      "Clear rules for rebalancing and maintenance",
+      "Avoid individual stock risk inside the core portfolio",
+      "Focus on broad diversification and stability"
+    ],
+    "avoidances": [
+      "Predicting markets",
+      "Predicting interest rates",
+      "Predicting politics",
+      "Predicting economic cycles"
+    ],
+    "philosophy_summary": "Relies on durable asset classes that historically perform well over long time horizons."
+  },
+
+  "structure": {
+    "target_allocation": {
+      "SGOV": 0.50,
+      "SCHD": 0.10,
+      "VTI": 0.30,
+      "VXUS": 0.10
+    },
+    "design_notes": [
+      "50% capital stability via short‑term US Treasuries",
+      "50% global equities for long‑term growth",
+      "Prioritizes resilience and low volatility"
+    ]
+  },
+
+  "etf_roles": {
+    "SGOV": {
+      "role": "Stability and capital protection",
+      "purpose": [
+        "Acts as the defensive anchor of the portfolio",
+        "Minimal interest‑rate risk due to very short duration",
+        "High liquidity",
+        "Treasury income often state‑tax exempt"
+      ]
+    },
+    "SCHD": {
+      "role": "Quality dividend exposure",
+      "purpose": [
+        "Exposure to profitable, stable US companies",
+        "Dividend growth focus",
+        "Lower volatility relative to broad growth stocks"
+      ]
+    },
+    "VTI": {
+      "role": "Core US growth engine",
+      "purpose": [
+        "Broad exposure to the entire US stock market",
+        "Very low cost",
+        "Highly tax‑efficient ETF structure"
+      ]
+    },
+    "VXUS": {
+      "role": "Global diversification",
+      "purpose": [
+        "Exposure to developed and emerging markets outside the US",
+        "Reduces dependence on the US market alone"
+      ]
+    }
+  },
+
+  "initial_construction_2025": {
+    "total_capital": 140000,
+    "allocations": {
+      "SGOV": 70000,
+      "SCHD": 14000,
+      "VTI": 42000,
+      "VXUS": 14000
+    }
+  },
+
+  "executed_transactions": {
+    "SGOV": {
+      "shares": 696,
+      "approx_entry_price": 100.52
+    },
+    "SCHD": {
+      "shares": 517,
+      "approx_entry_price": 27.05
+    },
+    "VTI": {
+      "shares": 128,
+      "approx_entry_price": 328
+    },
+    "VXUS": {
+      "shares": 188,
+      "approx_entry_price": 74.39
+    },
+    "cleanup_actions": [
+      "Sold VRT (Vertiv Holdings) to maintain ETF‑only strategy"
+    ]
+  },
+
+  "current_snapshot_2026": {
+    "holdings": {
+      "SGOV": 696,
+      "SCHD": 517,
+      "VTI": 128,
+      "VXUS": 188
+    },
+    "approx_allocation": {
+      "SGOV": "49–50%",
+      "SCHD": "10%",
+      "VTI": "30%",
+      "VXUS": "10%"
+    },
+    "notes": [
+      "Portfolio value fluctuates with market prices but remains close to intended allocation structure."
+    ]
+  },
+
+  "rebalancing_policy": {
+    "review_frequency_months": "6–12",
+    "rebalance_trigger": "If any asset class drifts outside ±5% of target allocation",
+    "example": "SGOV target = 50%; rebalance only if SGOV < 45% or > 55%",
+    "philosophy": "Minimize unnecessary trading and taxes"
+  },
+
+  "risk_management": {
+    "acknowledged_risks": [
+      "Equity market drawdowns",
+      "Interest rate changes",
+      "Inflation over long time periods"
+    ],
+    "risk_controls": [
+      "50% allocation to short‑term Treasuries",
+      "Global diversification across thousands of companies",
+      "Avoidance of concentrated stock positions",
+      "Avoidance of complex financial products"
+    ],
+    "behavioral_design": "Portfolio is designed to remain psychologically manageable during market volatility."
+  },
+
+  "individual_stock_rule": {
+    "rule": "Core ETF portfolio must remain free of individual stock positions.",
+    "sandbox_policy": "Any individual stock investments must be held in a separate sandbox account."
+  },
+
+  "maintenance_plan": {
+    "tasks": [
+      "Review allocation every 6–12 months",
+      "Rebalance only if allocation bands are breached",
+      "Ignore market headlines and short‑term volatility",
+      "Maintain tax efficiency by avoiding unnecessary sales"
+    ],
+    "tactical_trading": "Not required"
+  },
+
+  "long_term_objective": {
+    "goals": [
+      "Consistent capital growth",
+      "Stability during market turbulence",
+      "Minimal complexity",
+      "Behavioral discipline"
+    ],
+    "summary": "A portfolio that is boring, resilient, and sustainable."
+  },
+
+  "intentional_overlap": [
+    "SCHD",
+    "VXUS",
+    "SGOV",
+    "VTI",
+    "XLV"
+  ]
+}

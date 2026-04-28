@@ -1,0 +1,164 @@
+{
+  "portfolio_id": "rollover_ira_balanced_growth_2026",
+  "portfolio_name": "Rollover IRA Portfolio",
+  "account_type": "Rollover IRA",
+  "tax_status": "Tax-Deferred",
+  "strategy_type": "Balanced Growth with Inflation Awareness",
+  "time_horizon_years": "3–10",
+  "last_updated": "March 2026",
+
+  "objectives": {
+    "primary": "Long-term capital appreciation with controlled volatility.",
+    "secondary": [
+      "Inflation resilience",
+      "Diversified regime exposure",
+      "Simplicity and discipline",
+      "ETF-only structure",
+      "Low maintenance portfolio management"
+    ],
+    "philosophy_summary": "Portfolio prioritizes consistent compounding and structural durability over tactical market timing."
+  },
+
+  "design_philosophy": {
+    "core_objectives": [
+      "Participate strongly in equity bull markets",
+      "Lose materially less during recessions or bear markets",
+      "Maintain stability during inflation regimes",
+      "Avoid concentration in any single economic theme",
+      "Maintain a simple, disciplined, low-maintenance structure"
+    ],
+    "emphasis": "Asset allocation over security selection",
+    "avoidances": [
+      "Individual stock risk",
+      "Macro forecasting",
+      "Short-term market timing"
+    ],
+    "implementation": "Diversified ETFs expressing long-term structural exposures"
+  },
+
+  "final_allocation": {
+    "VTI": 0.28,
+    "SCHD": 0.12,
+    "XLK": 0.10,
+    "VXUS": 0.09,
+    "XLV": 0.09,
+    "BNDW": 0.12,
+    "VTIP": 0.12,
+    "PDBC": 0.08
+  },
+
+  "asset_class_breakdown": {
+    "equities": 0.68,
+    "nominal_bonds": 0.12,
+    "inflation_protected_bonds": 0.12,
+    "commodities": 0.08
+  },
+
+  "role_of_components": {
+    "VTI": [
+      "Core U.S. growth engine",
+      "Broad exposure to U.S. equity market",
+      "Primary compounding driver"
+    ],
+    "SCHD": [
+      "Quality dividend factor exposure",
+      "Profitable, stable companies with consistent cash flows"
+    ],
+    "XLK": [
+      "Technology sector tilt",
+      "Captures structural growth in innovation"
+    ],
+    "VXUS": [
+      "International diversification",
+      "Reduces U.S.-only exposure"
+    ],
+    "XLV": [
+      "Defensive sector exposure",
+      "Healthcare resilience during downturns"
+    ],
+    "BNDW": [
+      "Nominal bond protection",
+      "Diversifies and offsets equity losses during crashes"
+    ],
+    "VTIP": [
+      "Inflation protection",
+      "Short-duration TIPS with low interest-rate risk"
+    ],
+    "PDBC": [
+      "Commodity exposure",
+      "Hedge against inflation and supply shocks"
+    ]
+  },
+
+  "regime_resilience_design": {
+    "equity_bull_market": [
+      "Growth driven by VTI, XLK, SCHD, VXUS"
+    ],
+    "inflation_shock": [
+      "VTIP and PDBC provide protection"
+    ],
+    "deflationary_recession": [
+      "BNDW offsets equity losses"
+    ],
+    "mixed_or_sideways": [
+      "Diversification stabilizes portfolio behavior"
+    ],
+    "summary": "No single macro outcome dominates the portfolio."
+  },
+
+  "expected_characteristics": {
+    "expected_real_return": "3.0% – 3.3%",
+    "expected_nominal_return": "5.5% – 6.5%",
+    "volatility_level": "Moderate",
+    "inflation_sensitivity": "Moderate-Low",
+    "expected_drawdown_major_bear": "-22% to -28%"
+  },
+
+  "portfolio_management_rules": {
+    "rules": [
+      "No individual stocks",
+      "ETF-only structure",
+      "No tactical market timing",
+      "No macro speculation trades",
+      "Maintain disciplined asset allocation"
+    ],
+    "decision_alignment": "All decisions must align with long-term allocation structure"
+  },
+
+  "rebalancing_policy": {
+    "review_frequency": "Twice per year",
+    "review_months": ["February", "August"],
+    "rebalance_trigger": "±5 percentage points from target allocation",
+    "example": "VTI target = 28%; rebalance if above 33% or below 23%",
+    "philosophy": "If no threshold is breached, no action is taken"
+  },
+
+  "behavioral_commitment": {
+    "prohibited_behaviors": [
+      "Trading based on headlines",
+      "Tactical macro bets",
+      "Attempting to time market corrections",
+      "Reacting emotionally to short-term volatility"
+    ],
+    "principle": "Consistency of process is prioritized over prediction accuracy"
+  },
+
+  "core_principle": {
+    "summary": "Growth-first, engineered for survival.",
+    "goals": [
+      "Participate strongly in bull markets",
+      "Lose less during recessions",
+      "Remain stable in inflation environments",
+      "Avoid single-theme fragility"
+    ],
+    "long_term_view": "Consistency and discipline compound more effectively than prediction."
+  },
+
+  "intentional_overlap": [
+    "SCHD",
+    "VXUS",
+    "SGOV",
+    "VTI",
+    "XLV"
+  ]
+}

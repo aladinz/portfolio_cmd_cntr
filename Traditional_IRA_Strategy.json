@@ -1,0 +1,147 @@
+{
+  "portfolio_id": "traditional_ira_defensive_resilient_2026",
+  "portfolio_name": "Traditional IRA – Defensive Resilient Portfolio",
+  "owner": "Traditional IRA",
+  "last_updated": "March 2026",
+
+  "core_philosophy": {
+    "primary_objective": "Preserve capital, provide stable income, and protect purchasing power during uncertain economic and geopolitical environments.",
+    "secondary_objective": "Maintain psychological durability — 'Sleep Well at Night' portfolio.",
+    "operating_principles": [
+      "Rules-based deployment (no emotional lump-sum reactions)",
+      "SGOV used as staging and liquidity vehicle",
+      "Short-duration, high-quality bonds preferred over credit risk",
+      "Gold used as structural diversifier, not speculation",
+      "No tactical trading",
+      "RMD funded from SGOV only",
+      "Rebalancing only when materially off target",
+      "Process over optimization"
+    ],
+    "philosophy_summary": "Portfolio designed for resilience, not maximum return."
+  },
+
+  "target_allocation": {
+    "VGSH": 0.35,
+    "VTIP": 0.15,
+    "SCHD": 0.15,
+    "USMV": 0.10,
+    "GLDM": 0.15,
+    "SGOV": 0.10
+  },
+
+  "allocation_bands": "±3–5% tolerance before considering rebalance",
+
+  "current_holdings": {
+    "GLDM": 925,
+    "SCHD": 3030,
+    "USMV": 649,
+    "VGSH": 3736,
+    "VTIP": 1898,
+    "SGOV": 1091.926,
+    "portfolio_value": 680000,
+    "structural_breakdown": {
+      "defensive_fixed_income": 0.62,
+      "defensive_equities": 0.23,
+      "gold": 0.14
+    }
+  },
+
+  "phase_execution_history": {
+    "phase_1": [
+      "Liquidated prior holdings",
+      "Parked capital in SGOV"
+    ],
+    "phase_2": [
+      "Deployed initial allocation proportionally",
+      "Established core structure"
+    ],
+    "phase_3": [
+      "CD matured (~$204,000)",
+      "100% moved into SGOV",
+      "Deployed $140,000 proportionally toward target allocation",
+      "Maintained elevated SGOV buffer (~16%)"
+    ],
+    "phase_4": [
+      "GLDM allocation completed fully (no tactical timing)",
+      "Deployment completed with discipline despite geopolitical stress"
+    ]
+  },
+
+  "rmd_policy": {
+    "annual_rmd": "20,000–22,000",
+    "timing": "First week of December",
+    "funding_rule": [
+      "Sell required dollar amount from SGOV only",
+      "Do not sell bonds, equities, or gold for RMD",
+      "No rebalancing triggered by RMD event"
+    ],
+    "liquidity_strategy": "Maintain 2–3 years of RMD coverage implicitly inside SGOV"
+  },
+
+  "gold_policy": {
+    "role": [
+      "Crisis hedge",
+      "Currency debasement hedge",
+      "Geopolitical shock absorber",
+      "Low-correlation asset"
+    ],
+    "not": [
+      "A momentum trade",
+      "An inflation timing tool",
+      "An income generator"
+    ],
+    "target_weight": 0.15,
+    "discipline": "Do not trim based on recent performance alone"
+  },
+
+  "deployment_rules_future_capital": [
+    "100% goes to SGOV first",
+    "Confirm total portfolio value",
+    "Maintain SGOV buffer",
+    "Deploy gradually using proportional shortfall method",
+    "No new funds added without deliberate redesign"
+  ],
+
+  "rebalancing_policy": {
+    "review_frequency": "Quarterly or semi-annually",
+    "rebalance_if": [
+      "Any major sleeve deviates >5% from target",
+      "Structural change in risk tolerance",
+      "Major life event"
+    ],
+    "avoid_rebalancing_due_to": [
+      "Headlines",
+      "War events",
+      "Elections",
+      "Short-term market moves"
+    ]
+  },
+
+  "behavioral_commitment": {
+    "designed_to": [
+      "Reduce stress during volatility",
+      "Avoid forced selling",
+      "Prevent reactive decision-making",
+      "Maintain liquidity during crisis"
+    ],
+    "principle": "The edge is discipline, not prediction.",
+    "if_markets_fall": "Do nothing.",
+    "if_gold_spikes": "Do nothing.",
+    "if_headlines_escalate": "Do nothing.",
+    "instruction": "Follow the written process."
+  },
+
+  "next_major_action": {
+    "november": "Sell ~$22,000 from SGOV for RMD",
+    "other_changes": "No other portfolio changes required",
+    "next_review": "End of quarter or annually unless structural deviation occurs"
+  },
+
+  "intentional_overlap": [
+    "SCHD",
+    "VXUS",
+    "SGOV",
+    "VTI",
+    "XLV"
+  ]
+}

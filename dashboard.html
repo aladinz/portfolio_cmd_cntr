@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Command Center - Professional Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #9aa4b2;
+      --accent: #58a6ff;
+      --gold: #f1c40f;
+      --red: #ff6b6b;
+      --green: #2ecc71;
+      --orange: #f5a524;
+      --shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: Inter, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      background: radial-gradient(circle at top right, #111a26 0%, var(--bg) 48%), var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      height: 100vh;
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--border);
+      background: linear-gradient(180deg, #121821 0%, #10161f 100%);
+      padding: 18px 14px;
+      overflow-y: auto;
+    }
+
+    .brand {
+      padding: 10px 10px 18px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      color: var(--accent);
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .nav-group-title {
+      color: #7d8796;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 10px;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 10px 10px 12px;
+      border-radius: 10px;
+      color: #c8d2de;
+      text-decoration: none;
+      border: 1px solid transparent;
+      border-left: 3px solid transparent;
+      transition: background 0.22s ease, border-color 0.22s ease, color 0.2s ease, transform 0.18s ease, box-shadow 0.22s ease;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .nav-link:hover {
+      background: rgba(88, 166, 255, 0.09);
+      border-left-color: rgba(88, 166, 255, 0.35);
+      color: #dbe9f8;
+      transform: translateX(2px);
+    }
+
+    .nav-link.active {
+      background: rgba(88, 166, 255, 0.17);
+      border-color: rgba(88, 166, 255, 0.38);
+      border-left-color: var(--accent);
+      color: #f0f6ff;
+      font-weight: 600;
+      transform: translateX(4px);
+      box-shadow: inset 0 0 0 1px rgba(88, 166, 255, 0.1), 0 2px 10px rgba(88, 166, 255, 0.13);
+    }
+
+    .main {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+    }
+
+    .topbar-line {
+      height: 3px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), #7bb9ff 35%, #9fd0ff 60%, transparent);
+      margin-bottom: 10px;
+    }
+
+    .topbar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .topbar h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 9px;
+      cursor: pointer;
+    }
+
+    .content {
+      overflow: auto;
+      padding: 28px 32px;
+      scroll-behavior: smooth;
+    }
+
+    .section {
+      margin-bottom: 36px;
+      scroll-margin-top: 88px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-head h3 {
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid-overview {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .metric {
+      background: linear-gradient(160deg, #161b22 0%, #18202c 100%);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .metric-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .metric-value { color: var(--accent); font-size: 28px; font-weight: 800; margin-top: 5px; }
+
+    .note-card {
+      border: 1px solid rgba(88, 166, 255, 0.35);
+      background: linear-gradient(160deg, rgba(88, 166, 255, 0.09), rgba(88, 166, 255, 0.03));
+      border-radius: 14px;
+      padding: 14px;
+      color: #ced8e5;
+    }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .portfolio-card {
+      background: linear-gradient(170deg, var(--card), #1a2230);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .portfolio-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(88, 166, 255, 0.6);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .card-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .tag {
+      align-self: flex-start;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-weight: 700;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+
+    .tag-growth { background: rgba(88, 166, 255, 0.15); color: #8ec5ff; border-color: rgba(88, 166, 255, 0.55); }
+    .tag-income { background: rgba(46, 204, 113, 0.13); color: #8cf0ba; border-color: rgba(46, 204, 113, 0.55); }
+    .tag-defensive { background: rgba(241, 196, 15, 0.13); color: #ffd95f; border-color: rgba(241, 196, 15, 0.6); }
+    .tag-balanced { background: rgba(245, 165, 36, 0.12); color: #ffc06b; border-color: rgba(245, 165, 36, 0.55); }
+
+    .card-divider { border-top: 1px solid var(--border); margin: 14px 0; }
+
+    .donut-wrap {
+      position: relative;
+      height: 188px;
+      border-radius: 12px;
+      border: 1px solid #263140;
+      background: #121925;
+      display: grid;
+      place-items: center;
+    }
+
+    .donut-wrap canvas { max-width: 100%; max-height: 168px; }
+
+    .canvas-tooltip,
+    .heat-tooltip,
+    .why-tooltip {
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+      background: #111a24;
+      color: #dbe7f4;
+      border: 1px solid #365172;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      line-height: 1.4;
+      max-width: 280px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+      display: none;
+    }
+
+    .list-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #cbe2ff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 9px;
+    }
+
+    .small-list {
+      list-style: none;
+      display: grid;
+      gap: 5px;
+      color: #ced6df;
+      font-size: 12px;
+      margin-left: 2px;
+    }
+
+    .alloc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .alloc-table th,
+    .alloc-table td {
+      border-bottom: 1px solid #2a3443;
+      padding: 6px;
+      text-align: left;
+    }
+
+    .alloc-table th { color: #8ebff8; font-weight: 700; }
+
+    .risk-pill {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 9px;
+      border: 1px solid;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .risk-high { color: #ff9b9b; border-color: rgba(255, 107, 107, 0.6); background: rgba(255, 107, 107, 0.11); }
+    .risk-med { color: #ffd47b; border-color: rgba(245, 165, 36, 0.6); background: rgba(245, 165, 36, 0.11); }
+    .risk-low { color: #8ef2bf; border-color: rgba(46, 204, 113, 0.6); background: rgba(46, 204, 113, 0.11); }
+
+    .heat-wrapper {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      overflow: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .heat-table {
+      border-collapse: collapse;
+      min-width: 980px;
+      font-size: 12px;
+      width: 100%;
+    }
+
+    .heat-table th,
+    .heat-table td {
+      border: 1px solid #2a3443;
+      padding: 6px 8px;
+      text-align: center;
+    }
+
+    .heat-table th {
+      position: sticky;
+      top: 0;
+      background: #1a2431;
+      color: #9fcaf9;
+      z-index: 1;
+      font-weight: 700;
+    }
+
+    .heat-table .row-head {
+      text-align: left;
+      font-weight: 700;
+      color: #dae6f3;
+      background: #192230;
+      min-width: 170px;
+    }
+
+    .cons-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 14px;
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .chart-title {
+      color: #8ebff8;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .chart-card canvas {
+      width: 100%;
+      height: 240px;
+      max-height: 240px;
+      display: block;
+      background: #111924;
+      border-radius: 10px;
+      border: 1px solid #273445;
+    }
+
+    .summary-panel {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .sum-item {
+      border: 1px solid #2b3645;
+      border-radius: 10px;
+      background: #111a25;
+      padding: 10px;
+    }
+
+    .sum-item b { color: #94c4f9; font-size: 13px; }
+    .sum-item span { display: block; margin-top: 4px; font-size: 18px; font-weight: 800; }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .risk-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 640px;
+    }
+
+    .risk-table th,
+    .risk-table td {
+      border-bottom: 1px solid #2b3645;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .risk-table th { background: #1b2738; color: #9ac7fa; font-weight: 700; }
+
+    .alerts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .alert-card {
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .alert-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      border-radius: 12px 0 0 12px;
+    }
+
+    .sev-high::before { background: var(--red); }
+    .sev-med::before { background: var(--orange); }
+    .sev-low::before { background: var(--green); }
+
+    .alert-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .sev-chip {
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 999px;
+      border: 1px solid;
+      padding: 2px 8px;
+    }
+
+    .sev-chip.high { color: #ffb0b0; border-color: rgba(255, 107, 107, 0.65); }
+    .sev-chip.medium { color: #ffd89a; border-color: rgba(245, 165, 36, 0.65); }
+    .sev-chip.low { color: #a0f3c6; border-color: rgba(46, 204, 113, 0.65); }
+
+    .why-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #9ec9f8;
+      border-bottom: 1px dashed rgba(158, 201, 248, 0.6);
+      width: fit-content;
+      cursor: help;
+    }
+
+    .behavior-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .accordion-item + .accordion-item { border-top: 1px solid #273242; }
+
+    .accordion-btn {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .accordion-btn:hover { background: rgba(88, 166, 255, 0.08); }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      padding: 0 14px;
+      color: #ccd6e3;
+    }
+
+    .accordion-content ul {
+      list-style: disc;
+      margin: 8px 0 14px 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .appendix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .appendix-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 12px;
+    }
+
+    .ticker-cloud {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    /* ---- Chart legends ---- */
+    .donut-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px 10px;
+      padding: 8px 6px 4px;
+      justify-content: center;
+    }
+
+    .donut-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--muted);
+      cursor: default;
+      transition: color 0.15s ease;
+    }
+
+    .donut-legend-item:hover { color: var(--text); }
+
+    .legend-swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .bar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      margin-top: 10px;
+      padding: 0 2px;
+    }
+
+    .bar-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .bar-legend-swatch {
+      width: 12px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .ticker-pill {
+      border: 1px solid #2f3d4f;
+      border-radius: 10px;
+      padding: 6px 8px;
+      text-align: center;
+      font-weight: 700;
+      color: #cfe1f4;
+      background: #111a24;
+      font-size: 12px;
+    }
+
+    .intentional { border-color: rgba(88, 166, 255, 0.55); color: #8ec5ff; }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 9px;
+      color: #c5d3e3;
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    @media (max-width: 1200px) {
+      .portfolio-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .alerts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-overview { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cons-grid, .risk-grid, .appendix-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 90;
+        transform: translateX(-100%);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .mobile-toggle { display: inline-flex; }
+      .topbar { z-index: 100; }
+      .content { padding: 16px; }
+      .alerts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .grid-overview { grid-template-columns: 1fr; }
+      .topbar h2 { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <h1>Portfolio Command Center</h1>
+        <p>Family-friendly, disciplined, app-style dashboard</p>
+      </div>
+
+      <div class="nav-group-title">Navigation</div>
+      <a class="nav-link active" href="#overview" data-nav="overview">Overview</a>
+      <a class="nav-link" href="#portfolios" data-nav="portfolios">Portfolios</a>
+      <a class="nav-link" href="#overlap" data-nav="overlap">Overlap Map</a>
+      <a class="nav-link" href="#consolidated" data-nav="consolidated">Consolidated Allocation</a>
+      <a class="nav-link" href="#risk" data-nav="risk">Risk Layer</a>
+      <a class="nav-link" href="#behavioral" data-nav="behavioral">Behavioral Rules</a>
+      <a class="nav-link" href="#appendix" data-nav="appendix">Appendix</a>
+
+      <div class="nav-group-title">System Metrics</div>
+      <div class="metric" style="margin-bottom:8px;">
+        <div class="metric-label">Intentional Overlap Tickers</div>
+        <div class="metric-value" id="intentionalCount">5</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Total Unique Holdings</div>
+        <div class="metric-value" id="holdingCount">0</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-line"></div>
+        <div class="topbar-row">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">Menu</button>
+            <h2>Professional Portfolio Dashboard</h2>
+          </div>
+          <div class="topbar-meta">
+            <span>Last Updated:</span>
+            <strong id="lastUpdated">-</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="content" id="contentRoot">
+        <section class="section" id="overview">
+          <div class="section-head">
+            <div>
+              <h3>Overview</h3>
+              <p>High-level picture of the complete portfolio system</p>
+            </div>
+          </div>
+          <div class="grid-overview" id="overviewMetrics"></div>
+          <div class="note-card">
+            This system is intentionally built around discipline and survivability. Shared core holdings such as SCHD, VXUS, SGOV, VTI, and XLV are strategic overlap, not accidental duplication.
+          </div>
+        </section>
+
+        <section class="section" id="portfolios">
+          <div class="section-head">
+            <div>
+              <h3>Portfolios</h3>
+              <p>Card-by-card details with allocation visualizations and behavioral framing</p>
+            </div>
+          </div>
+          <div class="portfolio-grid" id="portfolioGrid"></div>
+        </section>
+
+        <section class="section" id="overlap">
+          <div class="section-head">
+            <div>
+              <h3>Overlap Map</h3>
+              <p>Heatmap matrix by portfolio and ticker with intentional vs unintentional overlap</p>
+            </div>
+          </div>
+          <div class="heat-wrapper">
+            <div class="legend">
+              <span><span class="dot" style="background:#58a6ff"></span>Intentional overlap</span>
+              <span><span class="dot" style="background:#f5a524"></span>Unintentional overlap</span>
+            </div>
+            <table class="heat-table" id="overlapTable"></table>
+          </div>
+        </section>
+
+        <section class="section" id="consolidated">
+          <div class="section-head">
+            <div>
+              <h3>Consolidated Allocation</h3>
+              <p>Total system exposure by ticker and asset class</p>
+            </div>
+          </div>
+          <div class="cons-grid">
+            <div class="chart-card">
+              <div class="chart-title">Total Allocation Donut</div>
+              <canvas id="consolidatedDonut" width="560" height="260"></canvas>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Asset Class Bars</div>
+              <canvas id="assetClassBars" width="560" height="260"></canvas>
+              <div class="bar-legend" id="assetClassBarsLegend"></div>
+              <div class="summary-panel" id="summaryPanel"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="risk">
+          <div class="section-head">
+            <div>
+              <h3>Risk Layer</h3>
+              <p>Equity profile and expected behavior during volatility</p>
+            </div>
+          </div>
+          <div class="risk-grid">
+            <div class="chart-card">
+              <div class="chart-title">Equity Exposure by Portfolio</div>
+              <canvas id="equityBars" width="560" height="260"></canvas>
+              <div class="bar-legend" id="equityBarsLegend"></div>
+            </div>
+            <div class="table-card">
+              <table class="risk-table">
+                <thead>
+                  <tr>
+                    <th>Portfolio</th>
+                    <th>Equity %</th>
+                    <th>Fixed Income %</th>
+                    <th>Risk Profile</th>
+                    <th>Rebalance Rule</th>
+                  </tr>
+                </thead>
+                <tbody id="riskTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="actionability">
+          <div class="section-head">
+            <div>
+              <h3>Actionability Layer</h3>
+              <p>Practical alerts with severity and context</p>
+            </div>
+          </div>
+          <div class="alerts-grid" id="alertsGrid"></div>
+        </section>
+
+        <section class="section" id="behavioral">
+          <div class="section-head">
+            <div>
+              <h3>Behavioral Rules</h3>
+              <p>Collapsible commitments to reduce reactive decision-making</p>
+            </div>
+          </div>
+          <div class="behavior-card" id="behavioralAccordion"></div>
+        </section>
+
+        <section class="section" id="appendix">
+          <div class="section-head">
+            <div>
+              <h3>Appendix</h3>
+              <p>Reference tables and complete ticker inventory</p>
+            </div>
+          </div>
+          <div class="appendix-grid">
+            <div class="appendix-card">
+              <div class="chart-title">Portfolio Reference</div>
+              <table class="risk-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Account</th>
+                    <th>Tax</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody id="appendixTable"></tbody>
+              </table>
+            </div>
+            <div class="appendix-card">
+              <div class="chart-title">Complete Ticker List</div>
+              <div class="ticker-cloud" id="tickerCloud"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="canvas-tooltip" id="canvasTooltip"></div>
+  <div class="heat-tooltip" id="heatTooltip"></div>
+  <div class="why-tooltip" id="whyTooltip"></div>
+
+  <script>
+    // -------------------- MASTER DATA (normalized from source JSON files) --------------------
+    const masterData = {
+      globalIntentionalOverlap: ["SCHD", "VXUS", "SGOV", "VTI", "XLV"],
+      portfolios: [
+        {
+          portfolio_id: "income_strategy_test_sleeve",
+          portfolio_name: "Income Strategy - Test Sleeve",
+          account_type: "Income Experiment",
+          tax_status: "Taxable",
+          strategy_tag: "Income",
+          capital: 7500,
+          equity_pct: 0.80,
+          risk_profile: "Moderate",
+          core_philosophy: [
+            "Behavioral discipline over maximum yield",
+            "Risk management over performance chasing",
+            "Simplicity over optimization",
+            "Stay invested through volatility"
+          ],
+          final_allocation: { JEPI: 0.60, SCHD: 0.20, BIL: 0.20 },
+          rebalancing_policy: "Annual review, rebalance if drift exceeds 5%",
+          behavioral_commitment: [
+            "Income does not eliminate risk",
+            "Avoid emotional exits",
+            "No market timing"
+          ],
+          long_term_objectives: ["Stable income", "Durable behavior", "Tolerable drawdowns"]
+        },
+        {
+          portfolio_id: "conservative_growth_resilient_50_50_2026",
+          portfolio_name: "Taxable Brokerage - Conservative Growth 50/50",
+          account_type: "Taxable Brokerage",
+          tax_status: "Taxable",
+          strategy_tag: "Balanced",
+          capital: 140000,
+          equity_pct: 0.40,
+          risk_profile: "Conservative-Moderate",
+          core_philosophy: [
+            "Tax efficiency and low turnover",
+            "Simplicity over complexity",
+            "Clear rebalancing rules",
+            "No predictive macro trading"
+          ],
+          final_allocation: { SGOV: 0.50, SCHD: 0.10, VTI: 0.30, VXUS: 0.10 },
+          rebalancing_policy: "Review every 6-12 months, act only beyond +-5%",
+          behavioral_commitment: [
+            "Ignore headlines",
+            "Minimize unnecessary sales",
+            "Use written rules"
+          ],
+          long_term_objectives: ["Consistent growth", "Lower stress", "Stable structure"]
+        },
+        {
+          portfolio_id: "rollover_ira_balanced_growth_2026",
+          portfolio_name: "Rollover IRA Portfolio",
+          account_type: "Rollover IRA",
+          tax_status: "Tax-Deferred",
+          strategy_tag: "Balanced",
+          capital: 320000,
+          equity_pct: 0.68,
+          risk_profile: "Moderate",
+          core_philosophy: [
+            "Asset allocation over security selection",
+            "Inflation awareness built in",
+            "No tactical timing",
+            "ETF-only durability"
+          ],
+          final_allocation: { VTI: 0.28, SCHD: 0.12, XLK: 0.10, VXUS: 0.09, XLV: 0.09, BNDW: 0.12, VTIP: 0.12, PDBC: 0.08 },
+          rebalancing_policy: "Twice per year, threshold trigger +-5%",
+          behavioral_commitment: [
+            "No reaction to headlines",
+            "No macro bets",
+            "Process over prediction"
+          ],
+          long_term_objectives: ["Compounding", "Regime resilience", "Controlled drawdowns"]
+        },
+        {
+          portfolio_id: "roth_ira_growth_survival_2026",
+          portfolio_name: "Roth IRA Portfolio System",
+          account_type: "Roth IRA",
+          tax_status: "Tax-Free Growth",
+          strategy_tag: "Growth",
+          capital: 95000,
+          equity_pct: 0.90,
+          risk_profile: "High",
+          core_philosophy: [
+            "Growth-first, engineered for survival",
+            "Core-dominant design",
+            "Mechanical rebalancing",
+            "No narrative trades"
+          ],
+          final_allocation: { FZROX: 0.41, VXUS: 0.12, SCHD: 0.12, XLV: 0.12, SMH: 0.10, VRT: 0.03, VGIT: 0.07, GLDM: 0.05 },
+          rebalancing_policy: "Quarterly review, strict tolerance bands",
+          behavioral_commitment: [
+            "No emotional overrides",
+            "No structural changes for 12 months",
+            "No adding ETFs without thesis"
+          ],
+          long_term_objectives: ["Tax-free compounding", "High growth", "Durable discipline"]
+        },
+        {
+          portfolio_id: "traditional_ira_defensive_resilient_2026",
+          portfolio_name: "Traditional IRA - Defensive Resilient",
+          account_type: "Traditional IRA",
+          tax_status: "Tax-Deferred",
+          strategy_tag: "Defensive",
+          capital: 680000,
+          equity_pct: 0.25,
+          risk_profile: "Low-Moderate",
+          core_philosophy: [
+            "Resilience over maximum return",
+            "Sleep-well-at-night design",
+            "SGOV as liquidity buffer",
+            "Gold as structural hedge"
+          ],
+          final_allocation: { VGSH: 0.35, VTIP: 0.15, SCHD: 0.15, USMV: 0.10, GLDM: 0.15, SGOV: 0.10 },
+          rebalancing_policy: "Quarterly/Semi-annual review, rebalance only on material drift",
+          behavioral_commitment: [
+            "RMD funded from SGOV only",
+            "No tactical trading",
+            "Follow written process in stress"
+          ],
+          long_term_objectives: ["Capital preservation", "Stable income", "Inflation protection"]
+        }
+      ]
+    };
+
+    // -------------------- Shared constants --------------------
+    const chartPalette = ["#58a6ff", "#2ecc71", "#f1c40f", "#f5a524", "#7bb9ff", "#8ef2bf", "#ffd95f", "#ff9c7d", "#9d7eff", "#6dd3c8"];
+
+    // -------------------- Utility helpers --------------------
+    function formatMoney(value) {
+      return "$" + (value || 0).toLocaleString();
+    }
+
+    function uniqueTickers() {
+      const set = new Set();
+      masterData.portfolios.forEach((p) => Object.keys(p.final_allocation).forEach((t) => set.add(t)));
+      return Array.from(set).sort();
+    }
+
+    function tickerCounts() {
+      const counts = {};
+      masterData.portfolios.forEach((p) => {
+        Object.keys(p.final_allocation).forEach((t) => {
+          counts[t] = (counts[t] || 0) + 1;
+        });
+      });
+      return counts;
+    }
+
+    function getTagClass(tag) {
+      const normalized = (tag || "").toLowerCase();
+      if (normalized.includes("growth")) return "tag-growth";
+      if (normalized.includes("income")) return "tag-income";
+      if (normalized.includes("defensive")) return "tag-defensive";
+      return "tag-balanced";
+    }
+
+    function riskPillClass(equity) {
+      if (equity >= 0.75) return "risk-high";
+      if (equity >= 0.45) return "risk-med";
+      return "risk-low";
+    }
+
+    // -------------------- Overview rendering --------------------
+    function renderOverview() {
+      const totalCapital = masterData.portfolios.reduce((s, p) => s + (p.capital || 0), 0);
+      const weightedEquity = masterData.portfolios.reduce((s, p) => s + (p.capital || 0) * p.equity_pct, 0) / totalCapital;
+      const metrics = [
+        { label: "Total AUM", value: "$" + (totalCapital / 1000).toFixed(1) + "K" },
+        { label: "Weighted Equity", value: (weightedEquity * 100).toFixed(1) + "%" },
+        { label: "Portfolios", value: String(masterData.portfolios.length) },
+        { label: "Intentional Overlap", value: String(masterData.globalIntentionalOverlap.length) }
+      ];
+
+      document.getElementById("overviewMetrics").innerHTML = metrics.map((m) => (
+        `<div class="metric"><div class="metric-label">${m.label}</div><div class="metric-value">${m.value}</div></div>`
+      )).join("");
+
+      document.getElementById("holdingCount").textContent = String(uniqueTickers().length);
+      document.getElementById("intentionalCount").textContent = String(masterData.globalIntentionalOverlap.length);
+    }
+
+    // -------------------- Portfolio cards with donut charts --------------------
+    function renderPortfolioCards() {
+      const grid = document.getElementById("portfolioGrid");
+      grid.innerHTML = masterData.portfolios.map((p, idx) => {
+        const rows = Object.entries(p.final_allocation)
+          .map(([ticker, pct]) => `<tr><td>${ticker}</td><td>${(pct * 100).toFixed(1)}%</td></tr>`)
+          .join("");
+
+        const coreBullets = p.core_philosophy.slice(0, 5).map((item) => `<li>${item}</li>`).join("");
+        const behavioralBullets = p.behavioral_commitment.slice(0, 5).map((item) => `<li>${item}</li>`).join("");
+
+        return `
+          <article class="portfolio-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">${p.portfolio_name}</div>
+                <div class="card-sub">${p.account_type} | ${p.tax_status}</div>
+              </div>
+              <span class="tag ${getTagClass(p.strategy_tag)}">${p.strategy_tag}</span>
+            </div>
+
+            <div class="donut-wrap">
+              <canvas id="portfolioDonut_${idx}" width="260" height="168"></canvas>
+            </div>
+            <div class="donut-legend" id="donutLegend_${idx}"></div>
+
+            <div class="card-divider"></div>
+
+            <div class="list-title">${svgIcon("philosophy")} Core Philosophy</div>
+            <ul class="small-list">${coreBullets}</ul>
+
+            <div class="card-divider"></div>
+
+            <div class="list-title">${svgIcon("allocation")} Allocation Summary</div>
+            <table class="alloc-table"><thead><tr><th>Ticker</th><th>Weight</th></tr></thead><tbody>${rows}</tbody></table>
+
+            <div class="card-divider"></div>
+
+            <div class="list-title">${svgIcon("risk")} Risk Profile</div>
+            <span class="risk-pill ${riskPillClass(p.equity_pct)}">${p.risk_profile}</span>
+            <div class="small-list" style="margin-top:4px;">
+              <li>Equity: ${(p.equity_pct * 100).toFixed(0)}%</li>
+              <li>Capital: ${formatMoney(p.capital)}</li>
+            </div>
+
+            <div class="card-divider"></div>
+
+            <div class="list-title">${svgIcon("rebalance")} Rebalancing Rules</div>
+            <ul class="small-list"><li>${p.rebalancing_policy}</li></ul>
+
+            <div class="card-divider"></div>
+
+            <div class="list-title">${svgIcon("commitment")} Behavioral Commitments</div>
+            <ul class="small-list">${behavioralBullets}</ul>
+          </article>
+        `;
+      }).join("");
+
+      masterData.portfolios.forEach((p, idx) => drawDonutWithTooltip(`portfolioDonut_${idx}`, p.final_allocation));
+    }
+
+    function svgIcon(type) {
+      const iconCommon = 'width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8fc5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+      if (type === "philosophy") return `<svg ${iconCommon}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
+      if (type === "allocation") return `<svg ${iconCommon}><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="7"/><rect x="12" y="6" width="3" height="11"/><rect x="17" y="13" width="3" height="4"/></svg>`;
+      if (type === "risk") return `<svg ${iconCommon}><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+      if (type === "rebalance") return `<svg ${iconCommon}><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.13-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.13 3.36L1 14"/></svg>`;
+      return `<svg ${iconCommon}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    }
+
+    function drawDonutWithTooltip(canvasId, allocation) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const radius = 62;
+      const inner = 34;
+      const entries = Object.entries(allocation).sort((a, b) => b[1] - a[1]);
+      const total = entries.reduce((s, [, v]) => s + v, 0);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let angle = -Math.PI / 2;
+      const arcs = [];
+      entries.forEach(([ticker, pct], i) => {
+        const slice = (pct / total) * Math.PI * 2;
+        const end = angle + slice;
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, angle, end);
+        ctx.arc(cx, cy, inner, end, angle, true);
+        ctx.closePath();
+        ctx.fillStyle = chartPalette[i % chartPalette.length];
+        ctx.fill();
+
+        arcs.push({ start: angle, end, ticker, pct, color: chartPalette[i % chartPalette.length] });
+        angle = end;
+      });
+
+      ctx.fillStyle = "#9bb7d5";
+      ctx.font = "600 12px Inter";
+      ctx.textAlign = "center";
+      ctx.fillText("Allocation", cx, cy + 4);
+
+      const tooltip = document.getElementById("canvasTooltip");
+      canvas.onmousemove = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const dx = x - cx;
+        const dy = y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < inner || dist > radius) {
+          tooltip.style.display = "none";
+          return;
+        }
+        let a = Math.atan2(dy, dx);
+        if (a < -Math.PI / 2) a += Math.PI * 2;
+        const normalized = a;
+        const hit = arcs.find((arc) => normalized >= arc.start && normalized <= arc.end);
+        if (!hit) {
+          tooltip.style.display = "none";
+          return;
+        }
+        tooltip.innerHTML = `<strong>${hit.ticker}</strong>: ${(hit.pct * 100).toFixed(1)}%`;
+        tooltip.style.left = (e.clientX + 14) + "px";
+        tooltip.style.top = (e.clientY + 14) + "px";
+        tooltip.style.display = "block";
+      };
+      canvas.onmouseleave = () => { tooltip.style.display = "none"; };
+
+      // Inject HTML legend below the donut
+      const legendEl = document.getElementById(canvasId.replace("portfolioDonut", "donutLegend"));
+      if (legendEl) {
+        legendEl.innerHTML = entries.map(([ ticker, pct ], i) =>
+          `<span class="donut-legend-item"><span class="legend-swatch" style="background:${chartPalette[i % chartPalette.length]}"></span>${ticker} <span style="opacity:0.65">${(pct * 100).toFixed(0)}%</span></span>`
+        ).join("");
+      }
+    }
+
+    // -------------------- Overlap heatmap --------------------
+    function renderOverlapMap() {
+      const table = document.getElementById("overlapTable");
+      const tickers = uniqueTickers();
+      const counts = tickerCounts();
+      const intentional = new Set(masterData.globalIntentionalOverlap);
+
+      let html = `<thead><tr><th class="row-head">Portfolio</th>${tickers.map((t) => `<th>${t}</th>`).join("")}</tr></thead><tbody>`;
+
+      masterData.portfolios.forEach((p) => {
+        html += `<tr><td class="row-head">${p.portfolio_name}</td>`;
+        tickers.forEach((t) => {
+          const has = p.final_allocation[t] != null;
+          if (!has) {
+            html += "<td></td>";
+            return;
+          }
+          const c = counts[t] || 1;
+          const intensity = Math.min(0.16 + c * 0.14, 0.78);
+          const isIntentional = intentional.has(t);
+          const bg = isIntentional ? `rgba(88,166,255,${intensity})` : `rgba(245,165,36,${intensity})`;
+          const color = isIntentional ? "#d4e9ff" : "#ffe1b0";
+
+          const sharers = masterData.portfolios
+            .filter((x) => x.final_allocation[t] != null)
+            .map((x) => `${x.portfolio_name}: ${(x.final_allocation[t] * 100).toFixed(1)}%`)
+            .join(" | ");
+
+          html += `<td style="background:${bg}; color:${color}; font-weight:700; cursor:help;" class="heat-cell" data-tip="${escapeHtml(sharers)}">${(p.final_allocation[t] * 100).toFixed(0)}%</td>`;
+        });
+        html += "</tr>";
+      });
+
+      html += "</tbody>";
+      table.innerHTML = html;
+
+      const tooltip = document.getElementById("heatTooltip");
+      table.querySelectorAll(".heat-cell").forEach((cell) => {
+        cell.addEventListener("mousemove", (e) => {
+          tooltip.innerHTML = cell.dataset.tip;
+          tooltip.style.left = (e.clientX + 12) + "px";
+          tooltip.style.top = (e.clientY + 12) + "px";
+          tooltip.style.display = "block";
+        });
+        cell.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
+      });
+    }
+
+    // -------------------- Consolidated charts --------------------
+    function weightedTickerExposure() {
+      const totalCapital = masterData.portfolios.reduce((s, p) => s + (p.capital || 0), 0);
+      const exposure = {};
+      masterData.portfolios.forEach((p) => {
+        const cap = p.capital || 0;
+        Object.entries(p.final_allocation).forEach(([t, pct]) => {
+          exposure[t] = (exposure[t] || 0) + (cap * pct) / totalCapital;
+        });
+      });
+      return exposure;
+    }
+
+    function classifyAsset(ticker) {
+      const bonds = new Set(["SGOV", "BIL", "VGSH", "VTIP", "VGIT", "BNDW"]);
+      const gold = new Set(["GLDM"]);
+      const commodities = new Set(["PDBC"]);
+      const cash = new Set(["SGOV", "BIL"]);
+      if (gold.has(ticker)) return "gold";
+      if (commodities.has(ticker)) return "commodities";
+      if (cash.has(ticker)) return "cash";
+      if (bonds.has(ticker)) return "bonds";
+      return "equities";
+    }
+
+    function renderConsolidated() {
+      const exposure = weightedTickerExposure();
+      const donutCanvas = document.getElementById("consolidatedDonut");
+      const barsCanvas = document.getElementById("assetClassBars");
+
+      drawDonutChart(donutCanvas, exposure, 8);
+
+      const buckets = { equities: 0, bonds: 0, gold: 0, cash: 0, commodities: 0 };
+      Object.entries(exposure).forEach(([ticker, pct]) => {
+        buckets[classifyAsset(ticker)] += pct;
+      });
+
+      const barData = {
+        Equities: buckets.equities,
+        Bonds: buckets.bonds,
+        Gold: buckets.gold,
+        Cash: buckets.cash,
+        Commodities: buckets.commodities
+      };
+      drawBars(barsCanvas, barData);
+
+      const assetLegend = document.getElementById("assetClassBarsLegend");
+      if (assetLegend) {
+        assetLegend.innerHTML = Object.keys(barData).map((label, i) =>
+          `<span class="bar-legend-item"><span class="bar-legend-swatch" style="background:${chartPalette[i % chartPalette.length]}"></span>${label}</span>`
+        ).join("");
+      }
+
+      const panel = document.getElementById("summaryPanel");
+      panel.innerHTML = `
+        <div class="sum-item"><b>Total equity exposure</b><span>${(buckets.equities * 100).toFixed(1)}%</span></div>
+        <div class="sum-item"><b>Total fixed income</b><span>${(buckets.bonds * 100).toFixed(1)}%</span></div>
+        <div class="sum-item"><b>Total alternatives</b><span>${((buckets.gold + buckets.commodities) * 100).toFixed(1)}%</span></div>
+        <div class="sum-item"><b>Total gold</b><span>${(buckets.gold * 100).toFixed(1)}%</span></div>
+        <div class="sum-item"><b>Total cash</b><span>${(buckets.cash * 100).toFixed(1)}%</span></div>
+      `;
+    }
+
+    function drawDonutChart(canvas, obj, topN) {
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const sorted = Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, topN);
+      const total = sorted.reduce((s, [, v]) => s + v, 0);
+
+      const cx = 170;
+      const cy = 130;
+      const r = 88;
+      const inner = 50;
+      let angle = -Math.PI / 2;
+
+      sorted.forEach(([label, val], i) => {
+        const slice = (val / total) * Math.PI * 2;
+        const end = angle + slice;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, angle, end);
+        ctx.arc(cx, cy, inner, end, angle, true);
+        ctx.closePath();
+        ctx.fillStyle = chartPalette[i % chartPalette.length];
+        ctx.fill();
+        angle = end;
+      });
+
+      ctx.fillStyle = "#a7c5e8";
+      ctx.font = "700 13px Inter";
+      ctx.textAlign = "center";
+      ctx.fillText("Top Holdings", cx, cy + 5);
+
+      let y = 24;
+      sorted.forEach(([label, val], i) => {
+        ctx.fillStyle = chartPalette[i % chartPalette.length];
+        ctx.fillRect(340, y - 8, 10, 10);
+        ctx.fillStyle = "#d7e5f5";
+        ctx.font = "12px Inter";
+        ctx.textAlign = "left";
+        ctx.fillText(`${label} ${(val * 100).toFixed(1)}%`, 356, y + 1);
+        y += 22;
+      });
+    }
+
+    function drawBars(canvas, obj) {
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const labels = Object.keys(obj);
+      const values = Object.values(obj);
+      const max = Math.max(...values, 0.01);
+
+      const pad = { l: 54, r: 20, t: 24, b: 36 };
+      const w = canvas.width - pad.l - pad.r;
+      const h = canvas.height - pad.t - pad.b;
+      const bw = w / labels.length * 0.55;
+
+      ctx.strokeStyle = "#304055";
+      ctx.beginPath();
+      ctx.moveTo(pad.l, pad.t);
+      ctx.lineTo(pad.l, pad.t + h);
+      ctx.lineTo(pad.l + w, pad.t + h);
+      ctx.stroke();
+
+      labels.forEach((label, i) => {
+        const val = values[i];
+        const barH = (val / max) * (h - 8);
+        const x = pad.l + i * (w / labels.length) + ((w / labels.length) - bw) / 2;
+        const y = pad.t + h - barH;
+
+        ctx.fillStyle = chartPalette[i % chartPalette.length];
+        ctx.fillRect(x, y, bw, barH);
+
+        ctx.fillStyle = "#d3e2f4";
+        ctx.font = "12px Inter";
+        ctx.textAlign = "center";
+        ctx.fillText(label, x + bw / 2, pad.t + h + 16);
+        ctx.fillText((val * 100).toFixed(1) + "%", x + bw / 2, y - 6);
+      });
+    }
+
+    // -------------------- Risk layer --------------------
+    function renderRiskLayer() {
+      const tbody = document.getElementById("riskTableBody");
+      tbody.innerHTML = masterData.portfolios.map((p) => {
+        const eq = p.equity_pct * 100;
+        const fi = 100 - eq;
+        return `<tr>
+          <td>${p.portfolio_name}</td>
+          <td>${eq.toFixed(1)}%</td>
+          <td>${fi.toFixed(1)}%</td>
+          <td>${p.risk_profile}</td>
+          <td>${p.rebalancing_policy}</td>
+        </tr>`;
+      }).join("");
+
+      const obj = {};
+      masterData.portfolios.forEach((p) => { obj[p.portfolio_name.substring(0, 16)] = p.equity_pct; });
+      drawBars(document.getElementById("equityBars"), obj);
+
+      const eqLegend = document.getElementById("equityBarsLegend");
+      if (eqLegend) {
+        eqLegend.innerHTML = Object.keys(obj).map((label, i) =>
+          `<span class="bar-legend-item"><span class="bar-legend-swatch" style="background:${chartPalette[i % chartPalette.length]}"></span>${label}</span>`
+        ).join("");
+      }
+    }
+
+    // -------------------- Actionability layer --------------------
+    function renderActionability() {
+      const alerts = [
+        {
+          title: "Allocation Drift Watch",
+          severity: "high",
+          description: "Check if any sleeve is outside its tolerance band and rebalance only when threshold is breached.",
+          why: "Unmanaged drift silently changes your risk profile and can break the purpose of each portfolio."
+        },
+        {
+          title: "RMD Liquidity Reminder",
+          severity: "high",
+          description: "Fund Traditional IRA RMD from SGOV only to avoid forced selling in other sleeves.",
+          why: "Protects long-term allocations and avoids unnecessary disruption to defensive structure."
+        },
+        {
+          title: "Behavioral Discipline Check",
+          severity: "medium",
+          description: "No reactionary changes based on news, elections, or daily market volatility.",
+          why: "Most long-term damage comes from emotional overrides, not the allocation model itself."
+        },
+        {
+          title: "Concentration Review",
+          severity: "medium",
+          description: "Review non-intentional overlaps highlighted in orange for hidden concentration risk.",
+          why: "Unexpected duplication can magnify drawdowns in the same macro scenario."
+        },
+        {
+          title: "Volatility Preparedness",
+          severity: "low",
+          description: "Accept temporary drawdowns as normal behavior for growth and balanced sleeves.",
+          why: "Prepared expectations reduce panic selling and support consistent execution."
+        },
+        {
+          title: "Quarterly Rule Audit",
+          severity: "low",
+          description: "Confirm each portfolio still follows its written policy and objective statements.",
+          why: "Simple routine audits keep decisions aligned with purpose and prevent drift in behavior."
+        }
+      ];
+
+      const grid = document.getElementById("alertsGrid");
+      grid.innerHTML = alerts.map((a) => {
+        const cls = a.severity === "high" ? "sev-high" : a.severity === "medium" ? "sev-med" : "sev-low";
+        const chip = a.severity === "high" ? "high" : a.severity === "medium" ? "medium" : "low";
+        return `<article class="alert-card ${cls}">
+          <div class="alert-row">
+            <strong>${a.title}</strong>
+            <span class="sev-chip ${chip}">${a.severity.toUpperCase()}</span>
+          </div>
+          <p style="color:#cfdae6; font-size:13px;">${a.description}</p>
+          <span class="why-btn" data-why="${escapeHtml(a.why)}">Why this matters</span>
+        </article>`;
+      }).join("");
+
+      const whyTooltip = document.getElementById("whyTooltip");
+      grid.querySelectorAll(".why-btn").forEach((el) => {
+        el.addEventListener("mousemove", (e) => {
+          whyTooltip.innerHTML = el.dataset.why;
+          whyTooltip.style.left = (e.clientX + 12) + "px";
+          whyTooltip.style.top = (e.clientY + 12) + "px";
+          whyTooltip.style.display = "block";
+        });
+        el.addEventListener("mouseleave", () => { whyTooltip.style.display = "none"; });
+      });
+    }
+
+    // -------------------- Behavioral accordion --------------------
+    function renderBehavioralAccordion() {
+      const philosophies = [];
+      const rules = [];
+      const commitments = [];
+      const objectives = [];
+
+      masterData.portfolios.forEach((p) => {
+        p.core_philosophy.forEach((x) => philosophies.push(`${p.portfolio_name}: ${x}`));
+        rules.push(`${p.portfolio_name}: ${p.rebalancing_policy}`);
+        p.behavioral_commitment.forEach((x) => commitments.push(`${p.portfolio_name}: ${x}`));
+        p.long_term_objectives.forEach((x) => objectives.push(`${p.portfolio_name}: ${x}`));
+      });
+
+      const sections = [
+        { title: "Philosophy", items: philosophies.slice(0, 12) },
+        { title: "Rules", items: rules.slice(0, 10) },
+        { title: "Commitments", items: commitments.slice(0, 12) },
+        { title: "Long-term Objectives", items: objectives.slice(0, 12) }
+      ];
+
+      const wrap = document.getElementById("behavioralAccordion");
+      wrap.innerHTML = sections.map((s, i) => `
+        <div class="accordion-item">
+          <button class="accordion-btn" data-acc="acc_${i}">
+            <span>${s.title}</span>
+            <span>+</span>
+          </button>
+          <div id="acc_${i}" class="accordion-content">
+            <ul>${s.items.map((x) => `<li>${x}</li>`).join("")}</ul>
+          </div>
+        </div>
+      `).join("");
+
+      wrap.querySelectorAll(".accordion-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.acc;
+          const panel = document.getElementById(id);
+          const open = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+          panel.style.maxHeight = open ? "0px" : panel.scrollHeight + "px";
+          btn.querySelector("span:last-child").textContent = open ? "+" : "-";
+        });
+      });
+    }
+
+    // -------------------- Appendix --------------------
+    function renderAppendix() {
+      const body = document.getElementById("appendixTable");
+      body.innerHTML = masterData.portfolios.map((p) => (
+        `<tr><td>${p.portfolio_name}</td><td>${p.account_type}</td><td>${p.tax_status}</td><td>${p.strategy_tag}</td></tr>`
+      )).join("");
+
+      const cloud = document.getElementById("tickerCloud");
+      const set = new Set(masterData.globalIntentionalOverlap);
+      cloud.innerHTML = uniqueTickers().map((t) => (
+        `<div class="ticker-pill ${set.has(t) ? "intentional" : ""}">${t}</div>`
+      )).join("");
+    }
+
+    // -------------------- Sidebar behavior --------------------
+    function setupNavigation() {
+      const links = Array.from(document.querySelectorAll(".nav-link"));
+      const sections = links.map((l) => document.getElementById(l.dataset.nav)).filter(Boolean);
+
+      links.forEach((link) => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const target = document.getElementById(link.dataset.nav);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+          document.getElementById("sidebar").classList.remove("open");
+        });
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            links.forEach((l) => l.classList.remove("active"));
+            const active = links.find((l) => l.dataset.nav === entry.target.id);
+            if (active) active.classList.add("active");
+          }
+        });
+      }, { root: document.getElementById("contentRoot"), threshold: 0.38 });
+
+      sections.forEach((s) => observer.observe(s));
+
+      document.getElementById("mobileToggle").addEventListener("click", () => {
+        document.getElementById("sidebar").classList.toggle("open");
+      });
+    }
+
+    // -------------------- shared helpers --------------------
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function stampHeaderTime() {
+      const now = new Date();
+      document.getElementById("lastUpdated").textContent = now.toLocaleString();
+    }
+
+    // -------------------- app initialization --------------------
+    function initDashboard() {
+      stampHeaderTime();
+      renderOverview();
+      renderPortfolioCards();
+      renderOverlapMap();
+      renderConsolidated();
+      renderRiskLayer();
+      renderActionability();
+      renderBehavioralAccordion();
+      renderAppendix();
+      setupNavigation();
+    }
+
+    document.addEventListener("DOMContentLoaded", initDashboard);
+  </script>
+</body>
+</html>
