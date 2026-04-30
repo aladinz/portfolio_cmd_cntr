@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drift-Detection Dashboard — PORTFOLIO_COMM</title>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d29;
+    --bg-card: #1e2133;
+    --bg-input: #252839;
+    --border: #2d3148;
+    --border-hover: #3d4168;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0b2;
+    --text-muted: #6b7194;
+    --accent: #4f8ff7;
+    --accent-hover: #6ba1ff;
+    --accent-dim: rgba(79,143,247,0.15);
+    --green: #2ecc71;
+    --green-bg: rgba(46,204,113,0.1);
+    --green-border: rgba(46,204,113,0.3);
+    --red: #e74c3c;
+    --red-bg: rgba(231,76,60,0.1);
+    --red-border: rgba(231,76,60,0.3);
+    --yellow: #f39c12;
+    --yellow-bg: rgba(243,156,18,0.1);
+    --yellow-border: rgba(243,156,18,0.3);
+    --gold: #d4a843;
+    --purple: #9b59b6;
+    --purple-bg: rgba(155,89,182,0.1);
+    --cyan: #00bcd4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary); color: var(--text-primary);
+    line-height: 1.6; min-height: 100vh;
+  }
+
+  /* ═══ HEADER ═══ */
+  .header {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, #12141f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: linear-gradient(135deg, #e74c3c, #f39c12, #2ecc71);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  .header-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+  .header-right { display: flex; align-items: center; gap: 14px; }
+  .engine-badge {
+    font-size: 11px; color: var(--gold); background: rgba(212,168,67,0.12);
+    padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(212,168,67,0.25);
+    font-weight: 500;
+  }
+  .timestamp { font-size: 12px; color: var(--text-muted); }
+
+  /* ═══ MAIN ═══ */
+  .main { max-width: 1440px; margin: 0 auto; padding: 24px 32px; }
+
+  /* ═══ TOP METRICS BAR ═══ */
+  .metrics-bar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px; margin-bottom: 28px;
+  }
+  .metric-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 20px; text-align: center;
+    position: relative; overflow: hidden; transition: border-color 0.2s;
+  }
+  .metric-card:hover { border-color: var(--border-hover); }
+  .metric-card .glow {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: 12px 12px 0 0;
+  }
+  .metric-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.9px;
+    color: var(--text-muted); margin-bottom: 6px; font-weight: 600;
+  }
+  .metric-value { font-size: 28px; font-weight: 700; }
+  .metric-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ═══ REVIEW COUNTDOWN ═══ */
+  .review-countdown {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 24px; margin-bottom: 28px;
+    display: flex; flex-wrap: wrap; gap: 28px; align-items: center;
+  }
+  .countdown-block { text-align: center; }
+  .countdown-number { font-size: 32px; font-weight: 700; color: var(--accent); }
+  .countdown-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+  .countdown-divider { width: 1px; height: 48px; background: var(--border); }
+  .countdown-info { flex: 1; min-width: 200px; }
+  .countdown-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .countdown-info p { font-size: 12px; color: var(--text-secondary); }
+
+  /* ═══ PORTFOLIO OVERVIEW GRID ═══ */
+  .section-title {
+    font-size: 16px; font-weight: 600; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span { font-size: 20px; }
+
+  .overview-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px; margin-bottom: 32px;
+  }
+  .overview-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; cursor: pointer;
+    transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .overview-card:hover { border-color: var(--accent); transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .overview-card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .overview-card .health-glow {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .oc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .oc-name { font-size: 15px; font-weight: 600; }
+  .oc-type { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .health-ring {
+    width: 52px; height: 52px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .health-ring svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+  .health-ring .score { font-size: 14px; font-weight: 700; z-index: 1; }
+  .oc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .oc-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); }
+  .oc-stat-value { font-size: 13px; font-weight: 600; }
+
+  /* ═══ DETAIL PANEL ═══ */
+  .detail-panel {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; margin-bottom: 28px; overflow: hidden;
+    display: none;
+  }
+  .detail-panel.active { display: block; }
+  .detail-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  }
+  .detail-header-left h2 { font-size: 18px; font-weight: 600; }
+  .detail-header-left p { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .detail-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+  .dbadge {
+    font-size: 11px; padding: 4px 12px; border-radius: 20px; font-weight: 500;
+  }
+  .dbadge-deferred { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .dbadge-free { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .dbadge-taxable { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .dbadge-broker { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(79,143,247,0.3); }
+
+  /* Philosophy strip */
+  .philosophy-strip {
+    padding: 16px 24px; border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    background: rgba(79,143,247,0.03);
+  }
+  .ps-block h4 {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--accent); margin-bottom: 6px; font-weight: 600;
+  }
+  .ps-block p { font-size: 12px; color: var(--text-secondary); line-height: 1.65; }
+
+  /* ═══ DRIFT VISUALIZATION ═══ */
+  .drift-grid {
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .drift-row {
+    display: grid; grid-template-columns: 100px 60px 1fr 60px 60px 90px;
+    gap: 12px; align-items: center;
+    padding: 12px 16px; border-radius: 10px;
+    background: var(--bg-secondary); border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .drift-row:hover { border-color: var(--border-hover); }
+  .drift-row.alert-row { border-color: var(--yellow-border); background: rgba(243,156,18,0.04); }
+
+  .dr-ticker {
+    font-weight: 700; font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 14px; background: var(--bg-input); padding: 4px 10px;
+    border-radius: 6px; text-align: center;
+  }
+  .dr-target { font-size: 13px; color: var(--text-secondary); text-align: right; }
+
+  .drift-bar-container {
+    height: 32px; position: relative; border-radius: 6px;
+    background: var(--bg-input); overflow: visible;
+  }
+  .drift-bar-target {
+    position: absolute; top: 0; left: 0; height: 100%;
+    border-radius: 6px; opacity: 0.25;
+  }
+  .drift-bar-current {
+    position: absolute; top: 4px; left: 0; height: calc(100% - 8px);
+    border-radius: 4px; transition: width 0.4s ease;
+    min-width: 2px;
+  }
+  .drift-bar-marker {
+    position: absolute; top: -4px; bottom: -4px; width: 2px;
+    border-radius: 1px;
+  }
+
+  .dr-current-input {
+    background: var(--bg-input); border: 1px solid var(--border);
+    color: var(--text-primary); padding: 5px 8px; border-radius: 6px;
+    font-size: 13px; width: 56px; text-align: right;
+    font-family: inherit; outline: none; font-variant-numeric: tabular-nums;
+  }
+  .dr-current-input:focus { border-color: var(--accent); }
+
+  .dr-drift {
+    font-size: 13px; font-weight: 600; text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .dr-drift.positive { color: var(--green); }
+  .dr-drift.negative { color: var(--red); }
+  .dr-drift.zero { color: var(--text-muted); }
+
+  .dr-status {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 4px; padding: 4px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; text-align: center;
+  }
+  .status-ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .status-warn { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .status-crit { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+  .drift-legend {
+    padding: 0 24px 20px; display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* ═══ DRIFT COLUMN HEADERS ═══ */
+  .drift-col-headers {
+    display: grid; grid-template-columns: 100px 60px 1fr 60px 60px 90px;
+    gap: 12px; padding: 0 24px 8px; align-items: center;
+  }
+  .dch {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px;
+    color: var(--text-muted); font-weight: 600;
+  }
+  .dch.right { text-align: right; }
+  .dch.center { text-align: center; }
+
+  /* ═══ ALERT PANEL ═══ */
+  .alert-panel {
+    margin: 0 24px 24px; padding: 16px 20px;
+    border-radius: 10px; display: none;
+  }
+  .alert-panel.has-alerts {
+    display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;
+    background: var(--red-bg); border: 1px solid var(--red-border);
+  }
+  .alert-panel.all-clear {
+    display: flex; gap: 12px; align-items: center;
+    background: var(--green-bg); border: 1px solid var(--green-border);
+  }
+  .alert-icon { font-size: 20px; flex-shrink: 0; }
+  .alert-content h4 { font-size: 13px; font-weight: 600; }
+  .alert-content p { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .alert-list { list-style: none; margin-top: 8px; }
+  .alert-list li {
+    font-size: 12px; padding: 4px 0; display: flex; align-items: center; gap: 6px;
+    color: var(--text-secondary);
+  }
+  .alert-list li::before { content: "⚠"; font-size: 11px; }
+
+  /* ═══ NOTES ═══ */
+  .detail-notes {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+  }
+  .detail-notes h4 {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text-muted); margin-bottom: 10px; font-weight: 600;
+  }
+  .detail-notes ul { list-style: none; }
+  .detail-notes li {
+    font-size: 12px; color: var(--text-secondary); padding: 5px 0;
+    border-bottom: 1px solid rgba(45,49,72,0.3);
+    display: flex; gap: 8px;
+  }
+  .detail-notes li:last-child { border-bottom: none; }
+  .detail-notes li::before { content: "›"; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+  /* ═══ UPDATE BUTTON ═══ */
+  .update-bar {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 10px;
+  }
+  .btn {
+    padding: 9px 20px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 600; font-family: inherit;
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+  .btn-secondary { background: var(--bg-input); color: var(--text-secondary); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--border-hover); color: var(--text-primary); }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+
+  /* ═══ PRINT ═══ */
+  .print-bar { display: flex; justify-content: flex-end; margin-bottom: 16px; gap: 10px; }
+
+  @media print {
+    body { background: #fff; color: #1a1a1a; }
+    .header { background: #fff; border-color: #ddd; }
+    .metric-card, .overview-card, .detail-panel, .review-countdown,
+    .drift-row { background: #fff; border-color: #ddd; }
+    .drift-bar-container { background: #eee; }
+    .btn, .print-bar, .dr-current-input { display: none; }
+    .overview-card:hover { transform: none; box-shadow: none; }
+  }
+
+  @media (max-width: 768px) {
+    .header, .main { padding-left: 16px; padding-right: 16px; }
+    .philosophy-strip { grid-template-columns: 1fr; }
+    .drift-row { grid-template-columns: 80px 50px 1fr 50px 50px 80px; gap: 8px; padding: 10px 12px; }
+    .drift-col-headers { grid-template-columns: 80px 50px 1fr 50px 50px 80px; gap: 8px; }
+    .overview-grid { grid-template-columns: 1fr; }
+  }
+
+  .hidden { display: none; }
+
+  /* ═══ ANIMATIONS ═══ */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .detail-panel.active { animation: fadeIn 0.3s ease; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .pulse { animation: pulse 1.5s ease infinite; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-icon">📡</div>
+    <div>
+      <h1>Drift-Detection Dashboard <span class="header-sub">— PORTFOLIO_COMM Engine</span></h1>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="engine-badge">CANONICAL SCHEMA v1.0</span>
+    <span class="timestamp" id="currentTimestamp"></span>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+
+  <!-- Print -->
+  <div class="print-bar">
+    <button class="btn btn-secondary btn-sm" onclick="resetAllCurrents()">↺ Reset to Targets</button>
+    <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨 Print Report</button>
+  </div>
+
+  <!-- Top Metrics -->
+  <div class="metrics-bar" id="metricsBar"></div>
+
+  <!-- Review Countdown -->
+  <div class="review-countdown" id="reviewCountdown"></div>
+
+  <!-- Portfolio Overview -->
+  <div class="section-title"><span>🏦</span> Portfolio Command Center</div>
+  <div class="overview-grid" id="overviewGrid"></div>
+
+  <!-- Detail Panel (one at a time) -->
+  <div id="detailContainer"></div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// EMBEDDED PORTFOLIO DATA (canonical schema v1.0)
+// ═══════════════════════════════════════════════════
+const PORTFOLIOS = {
+  "rollover-ira": {
+    portfolio_id:"rollover-ira",portfolio_name:"Rollover IRA",account_type:"Rollover IRA",tax_status:"tax-deferred",broker:"Fidelity",
+    last_updated:"2026-04-30T10:10:00-05:00",version:"1.0",status:"active",
+    core_philosophy:"Growth-oriented diversified portfolio blending broad U.S. and international equity exposure with sector tilts in technology and healthcare, anchored by dividend income and inflation-protected bonds.",
+    behavioral_commitment:"Stay the course through market volatility. Rebalance on schedule, not on emotion. Avoid performance chasing and recency bias.",
+    intentional_overlap:{SCHD_and_VTI:"SCHD overlaps with VTI in large-cap U.S. dividend payers. This is intentional to tilt toward quality income without abandoning broad market exposure.",VXUS_international:"VXUS provides broad international diversification complementing the U.S.-heavy equity allocation."},
+    target_allocation:[
+      {ticker:"VTI",name:"Vanguard Total Stock Market ETF",target_pct:25,role:"U.S. total market core equity"},
+      {ticker:"XLK",name:"Technology Select Sector SPDR Fund",target_pct:20,role:"U.S. technology sector tilt"},
+      {ticker:"VXUS",name:"Vanguard Total International Stock ETF",target_pct:15,role:"International equity diversification"},
+      {ticker:"XLV",name:"Health Care Select Sector SPDR Fund",target_pct:10,role:"U.S. healthcare sector tilt"},
+      {ticker:"SCHD",name:"Schwab U.S. Dividend Equity ETF",target_pct:10,role:"High-quality U.S. dividend income"},
+      {ticker:"BNDW",name:"Vanguard Total World Bond ETF",target_pct:8,role:"Global fixed income stabilizer"},
+      {ticker:"VTIP",name:"Vanguard Short-Term Inflation-Protected Securities ETF",target_pct:7,role:"Inflation protection"},
+      {ticker:"PDBC",name:"Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF",target_pct:5,role:"Commodity diversification and inflation hedge"}
+    ],
+    current_holdings:[{ticker:"VTI",current_pct:25},{ticker:"XLK",current_pct:20},{ticker:"VXUS",current_pct:15},{ticker:"XLV",current_pct:10},{ticker:"SCHD",current_pct:10},{ticker:"BNDW",current_pct:8},{ticker:"VTIP",current_pct:7},{ticker:"PDBC",current_pct:5}],
+    rebalancing_policy:{method:"threshold-based with calendar review",threshold_pct:5,calendar_review:"semi-annual",rebalance_months:["June","December"],next_review:"2026-06-15"},
+    review_cycle:{frequency:"semi-annual",months:["June","December"],next_review:"2026-06-15"},
+    notes:["Tax-deferred account — no tax impact on internal rebalancing.","Technology and healthcare tilts reflect long-term secular growth conviction.","PDBC selected for K-1-free commodity exposure suitable for IRA.","BNDW provides global bond diversification beyond U.S. Treasuries."],
+    metadata:{created:"2026-04-30T10:10:00-05:00",schema_version:"1.0",engine_compatible:true}
+  },
+  "roth-ira": {
+    portfolio_id:"roth-ira",portfolio_name:"Roth IRA",account_type:"Roth IRA",tax_status:"tax-free",broker:"Fidelity",
+    last_updated:"2026-04-30T10:10:00-05:00",version:"1.0",status:"active",
+    core_philosophy:"Aggressive growth portfolio maximizing the tax-free compounding advantage of the Roth structure. Concentrated in semiconductors, AI infrastructure, and broad U.S. equity with selective international and income diversification.",
+    behavioral_commitment:"Let winners compound tax-free. Resist the urge to lock in gains prematurely. Rebalance on schedule and trust the long-term thesis.",
+    intentional_overlap:{SMH_and_FZROX:"SMH overlaps with the technology holdings within FZROX. This is intentional to overweight semiconductors as a high-conviction secular growth bet.",SCHD_and_FZROX:"SCHD overlaps with FZROX in large-cap U.S. dividend payers. Intentional tilt toward quality income within a growth-heavy allocation."},
+    target_allocation:[
+      {ticker:"SMH",name:"VanEck Semiconductor ETF",target_pct:25,role:"Semiconductor and AI hardware concentration"},
+      {ticker:"VRT",name:"Vertiv Holdings Co",target_pct:20,role:"AI infrastructure and data center power/cooling"},
+      {ticker:"FZROX",name:"Fidelity ZERO Total Market Index Fund",target_pct:20,role:"Zero-cost U.S. total market core equity"},
+      {ticker:"VXUS",name:"Vanguard Total International Stock ETF",target_pct:10,role:"International equity diversification"},
+      {ticker:"SCHD",name:"Schwab U.S. Dividend Equity ETF",target_pct:10,role:"High-quality U.S. dividend income"},
+      {ticker:"XLV",name:"Health Care Select Sector SPDR Fund",target_pct:5,role:"U.S. healthcare sector tilt"},
+      {ticker:"VGIT",name:"Vanguard Intermediate-Term Treasury ETF",target_pct:5,role:"Intermediate-term Treasury ballast"},
+      {ticker:"GLDM",name:"SPDR Gold MiniShares Trust",target_pct:5,role:"Gold hedge and portfolio diversifier"}
+    ],
+    current_holdings:[{ticker:"SMH",current_pct:25},{ticker:"VRT",current_pct:20},{ticker:"FZROX",current_pct:20},{ticker:"VXUS",current_pct:10},{ticker:"SCHD",current_pct:10},{ticker:"XLV",current_pct:5},{ticker:"VGIT",current_pct:5},{ticker:"GLDM",current_pct:5}],
+    rebalancing_policy:{method:"threshold-based with calendar review",threshold_pct:5,calendar_review:"semi-annual",rebalance_months:["June","December"],next_review:"2026-06-15"},
+    review_cycle:{frequency:"semi-annual",months:["June","December"],next_review:"2026-06-15"},
+    notes:["Tax-free growth — ideal for highest-growth, highest-turnover assets.","VRT is a single-stock position; monitor concentration risk at each review.","FZROX selected for zero expense ratio — Fidelity exclusive.","SMH provides concentrated semiconductor exposure as a high-conviction AI play.","GLDM chosen over GLD for lower expense ratio on smaller allocations."],
+    metadata:{created:"2026-04-30T10:10:00-05:00",schema_version:"1.0",engine_compatible:true}
+  },
+  "traditional-ira": {
+    portfolio_id:"traditional-ira",portfolio_name:"Traditional IRA",account_type:"Traditional IRA",tax_status:"tax-deferred",broker:"Fidelity",
+    last_updated:"2026-04-30T10:10:00-05:00",version:"1.0",status:"active",
+    core_philosophy:"Conservative capital preservation portfolio emphasizing low-volatility equity, dividend income, short-duration Treasuries, and inflation protection. Designed to minimize drawdowns while preserving purchasing power.",
+    behavioral_commitment:"Prioritize stability over chasing returns. This portfolio is the anchor — do not shift to growth during bull markets. Rebalance mechanically on schedule.",
+    intentional_overlap:{USMV_and_SCHD:"USMV and SCHD overlap in large-cap U.S. equities. Intentional to double-weight defensive, income-generating stocks within the equity sleeve.",SGOV_VGSH_VTIP:"Three short-duration fixed income instruments serve distinct roles: SGOV for cash-like safety, VGSH for slightly longer duration, and VTIP for inflation protection."},
+    target_allocation:[
+      {ticker:"USMV",name:"iShares MSCI USA Min Vol Factor ETF",target_pct:20,role:"Low-volatility U.S. equity core"},
+      {ticker:"SCHD",name:"Schwab U.S. Dividend Equity ETF",target_pct:20,role:"High-quality U.S. dividend income"},
+      {ticker:"SGOV",name:"iShares 0-3 Month Treasury Bond ETF",target_pct:20,role:"Ultra-short Treasury — cash equivalent safety"},
+      {ticker:"VGSH",name:"Vanguard Short-Term Treasury ETF",target_pct:15,role:"Short-term Treasury stability"},
+      {ticker:"VTIP",name:"Vanguard Short-Term Inflation-Protected Securities ETF",target_pct:15,role:"Inflation protection"},
+      {ticker:"GLDM",name:"SPDR Gold MiniShares Trust",target_pct:10,role:"Gold hedge and portfolio diversifier"}
+    ],
+    current_holdings:[{ticker:"USMV",current_pct:20},{ticker:"SCHD",current_pct:20},{ticker:"SGOV",current_pct:20},{ticker:"VGSH",current_pct:15},{ticker:"VTIP",current_pct:15},{ticker:"GLDM",current_pct:10}],
+    rebalancing_policy:{method:"threshold-based with calendar review",threshold_pct:5,calendar_review:"semi-annual",rebalance_months:["June","December"],next_review:"2026-06-15"},
+    review_cycle:{frequency:"semi-annual",months:["June","December"],next_review:"2026-06-15"},
+    notes:["Tax-deferred account — no tax impact on internal rebalancing.","50% fixed income / 40% equity / 10% gold allocation reflects conservative posture.","SGOV serves as the near-cash reserve within the portfolio.","VTIP and GLDM together provide dual-layer inflation protection.","USMV selected over broad market to reduce portfolio beta."],
+    metadata:{created:"2026-04-30T10:10:00-05:00",schema_version:"1.0",engine_compatible:true}
+  },
+  "income-portfolio": {
+    portfolio_id:"income-portfolio",portfolio_name:"Income Portfolio",account_type:"Taxable Brokerage",tax_status:"taxable",broker:"Fidelity",
+    last_updated:"2026-04-30T10:10:00-05:00",version:"1.0",status:"active",
+    core_philosophy:"Ultra-conservative income-generating portfolio anchored in short-term Treasuries with supplemental yield from covered-call equity income and dividend equities. Designed for capital preservation and reliable cash flow.",
+    behavioral_commitment:"This is the safety net — never compromise its conservative allocation for higher returns. Let SGOV do its job as the bedrock. Rebalance mechanically on schedule.",
+    intentional_overlap:{JEPI_and_SCHD:"JEPI and SCHD overlap in large-cap U.S. dividend equities. Intentional to blend active covered-call income generation with passive dividend quality."},
+    target_allocation:[
+      {ticker:"SGOV",name:"iShares 0-3 Month Treasury Bond ETF",target_pct:60,role:"Ultra-short Treasury — capital preservation and near-cash yield"},
+      {ticker:"JEPI",name:"JPMorgan Equity Premium Income ETF",target_pct:25,role:"Equity income via covered-call strategy"},
+      {ticker:"SCHD",name:"Schwab U.S. Dividend Equity ETF",target_pct:15,role:"High-quality U.S. dividend income"}
+    ],
+    current_holdings:[{ticker:"SGOV",current_pct:60},{ticker:"JEPI",current_pct:25},{ticker:"SCHD",current_pct:15}],
+    rebalancing_policy:{method:"threshold-based with calendar review",threshold_pct:5,calendar_review:"semi-annual",rebalance_months:["June","December"],next_review:"2026-06-15"},
+    review_cycle:{frequency:"semi-annual",months:["June","December"],next_review:"2026-06-15"},
+    notes:["Taxable account — be mindful of dividend and capital gains tax implications.","SGOV distributions taxed as ordinary income at federal level, exempt from state tax.","JEPI generates monthly income but distributions are a mix of ordinary income and return of capital.","SCHD dividends qualify for favorable qualified dividend tax treatment.","60% SGOV allocation reflects ultra-conservative income-first mandate."],
+    metadata:{created:"2026-04-30T10:10:00-05:00",schema_version:"1.0",engine_compatible:true}
+  },
+  "my-investments": {
+    portfolio_id:"my-investments",portfolio_name:"My Investments",account_type:"Taxable Brokerage",tax_status:"taxable",broker:"Fidelity",
+    last_updated:"2026-04-30T10:10:00-05:00",version:"1.0",status:"active",
+    core_philosophy:"Balanced core portfolio combining broad U.S. and international equity with dividend quality and Treasury safety. Designed as the primary taxable investment vehicle with a simple, low-maintenance structure.",
+    behavioral_commitment:"Simplicity is the edge. Four holdings, clear roles, minimal tinkering. Rebalance on schedule, reinvest dividends, and let compounding work.",
+    intentional_overlap:{SCHD_and_VTI:"SCHD overlaps with VTI in large-cap U.S. dividend payers. Intentional to overweight quality dividend income within the broad U.S. equity allocation.",VTI_and_VXUS:"Together VTI and VXUS approximate a global equity portfolio with a deliberate U.S. overweight."},
+    target_allocation:[
+      {ticker:"VTI",name:"Vanguard Total Stock Market ETF",target_pct:35,role:"U.S. total market core equity"},
+      {ticker:"SCHD",name:"Schwab U.S. Dividend Equity ETF",target_pct:25,role:"High-quality U.S. dividend income"},
+      {ticker:"VXUS",name:"Vanguard Total International Stock ETF",target_pct:20,role:"International equity diversification"},
+      {ticker:"SGOV",name:"iShares 0-3 Month Treasury Bond ETF",target_pct:20,role:"Ultra-short Treasury — capital preservation and liquidity"}
+    ],
+    current_holdings:[{ticker:"VTI",current_pct:35},{ticker:"SCHD",current_pct:25},{ticker:"VXUS",current_pct:20},{ticker:"SGOV",current_pct:20}],
+    rebalancing_policy:{method:"threshold-based with calendar review",threshold_pct:5,calendar_review:"semi-annual",rebalance_months:["June","December"],next_review:"2026-06-15"},
+    review_cycle:{frequency:"semi-annual",months:["June","December"],next_review:"2026-06-15"},
+    notes:["Taxable account — prioritize tax-efficient funds and harvest losses at review.","VTI and VXUS are highly tax-efficient broad market ETFs.","SCHD qualified dividends receive favorable tax treatment.","SGOV state-tax-exempt Treasury income; adjust allocation based on liquidity needs.","Four-fund simplicity is a feature, not a limitation."],
+    metadata:{created:"2026-04-30T10:10:00-05:00",schema_version:"1.0",engine_compatible:true}
+  }
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let currentValues = {}; // { portfolioId: { ticker: currentPct } }
+let activeDetail = null;
+
+// Initialize current values from embedded data
+for (const [id, pf] of Object.entries(PORTFOLIOS)) {
+  currentValues[id] = {};
+  for (const h of pf.current_holdings) {
+    currentValues[id][h.ticker] = h.current_pct;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// CALCULATIONS
+// ═══════════════════════════════════════════════════
+function calcDrift(portfolioId) {
+  const pf = PORTFOLIOS[portfolioId];
+  const cv = currentValues[portfolioId];
+  const threshold = pf.rebalancing_policy.threshold_pct;
+  const results = [];
+  let maxAbsDrift = 0;
+  let totalAbsDrift = 0;
+  let breaches = 0;
+
+  for (const alloc of pf.target_allocation) {
+    const current = cv[alloc.ticker] ?? alloc.target_pct;
+    const drift = current - alloc.target_pct;
+    const absDrift = Math.abs(drift);
+    if (absDrift > maxAbsDrift) maxAbsDrift = absDrift;
+    totalAbsDrift += absDrift;
+    if (absDrift >= threshold) breaches++;
+
+    let severity = 'ok';
+    if (absDrift >= threshold) severity = 'crit';
+    else if (absDrift >= threshold * 0.5) severity = 'warn';
+
+    results.push({
+      ticker: alloc.ticker, name: alloc.name, role: alloc.role,
+      target: alloc.target_pct, current, drift, absDrift, severity
+    });
+  }
+
+  const avgDrift = totalAbsDrift / results.length;
+  // Health score: 100 when all at target, decreases with drift
+  const healthScore = Math.max(0, Math.round(100 - (totalAbsDrift * 3)));
+
+  return { results, maxAbsDrift, avgDrift, totalAbsDrift, breaches, healthScore, threshold };
+}
+
+function getHealthColor(score) {
+  if (score >= 85) return var_green;
+  if (score >= 60) return var_yellow;
+  return var_red;
+}
+const var_green = '#2ecc71', var_yellow = '#f39c12', var_red = '#e74c3c', var_accent = '#4f8ff7';
+
+function taxBadgeClass(status) {
+  if (status === 'tax-deferred') return 'dbadge-deferred';
+  if (status === 'tax-free') return 'dbadge-free';
+  return 'dbadge-taxable';
+}
+
+// ═══════════════════════════════════════════════════
+// REVIEW COUNTDOWN
+// ═══════════════════════════════════════════════════
+function renderCountdown() {
+  const nextReview = new Date('2026-06-15T00:00:00');
+  const now = new Date();
+  const diffMs = nextReview - now;
+  const totalDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+  const weeks = Math.floor(totalDays / 7);
+  const days = totalDays % 7;
+
+  let urgencyColor = var_accent;
+  let urgencyLabel = 'On Track';
+  if (totalDays <= 7) { urgencyColor = var_red; urgencyLabel = 'Imminent'; }
+  else if (totalDays <= 30) { urgencyColor = var_yellow; urgencyLabel = 'Approaching'; }
+
+  document.getElementById('reviewCountdown').innerHTML = `
+    <div class="countdown-block">
+      <div class="countdown-number" style="color:${urgencyColor}">${totalDays}</div>
+      <div class="countdown-label">Days Until Review</div>
+    </div>
+    <div class="countdown-divider"></div>
+    <div class="countdown-block">
+      <div class="countdown-number" style="color:${urgencyColor}">${weeks}w ${days}d</div>
+      <div class="countdown-label">Weeks Remaining</div>
+    </div>
+    <div class="countdown-divider"></div>
+    <div class="countdown-info">
+      <h3>📅 Next Review: June 15, 2026 &nbsp;·&nbsp; <span style="color:${urgencyColor}">${urgencyLabel}</span></h3>
+      <p>Semi-annual review cycle (June & December) · Threshold-based rebalancing at ±5% drift · Broker: Fidelity</p>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// TOP METRICS (aggregate across all portfolios)
+// ═══════════════════════════════════════════════════
+function renderMetrics() {
+  let totalPositions = 0, totalBreaches = 0, worstDrift = 0, worstPortfolio = '';
+  let healthSum = 0, portfolioCount = 0;
+  let allOk = true;
+
+  for (const [id, pf] of Object.entries(PORTFOLIOS)) {
+    const d = calcDrift(id);
+    totalPositions += d.results.length;
+    totalBreaches += d.breaches;
+    healthSum += d.healthScore;
+    portfolioCount++;
+    if (d.maxAbsDrift > worstDrift) { worstDrift = d.maxAbsDrift; worstPortfolio = pf.portfolio_name; }
+    if (d.breaches > 0) allOk = false;
+  }
+
+  const avgHealth = Math.round(healthSum / portfolioCount);
+  const avgHealthColor = getHealthColor(avgHealth);
+  const statusLabel = allOk ? 'ALL CLEAR' : `${totalBreaches} ALERT${totalBreaches>1?'S':''}`;
+  const statusColor = allOk ? var_green : var_red;
+  const worstColor = worstDrift >= 5 ? var_red : worstDrift >= 2.5 ? var_yellow : var_green;
+
+  document.getElementById('metricsBar').innerHTML = `
+    <div class="metric-card">
+      <div class="glow" style="background:${avgHealthColor}"></div>
+      <div class="metric-label">Avg Health Score</div>
+      <div class="metric-value" style="color:${avgHealthColor}">${avgHealth}</div>
+      <div class="metric-sub">across ${portfolioCount} portfolios</div>
+    </div>
+    <div class="metric-card">
+      <div class="glow" style="background:${statusColor}"></div>
+      <div class="metric-label">System Status</div>
+      <div class="metric-value" style="color:${statusColor};font-size:20px">${statusLabel}</div>
+      <div class="metric-sub">${totalPositions} total positions monitored</div>
+    </div>
+    <div class="metric-card">
+      <div class="glow" style="background:${var_accent}"></div>
+      <div class="metric-label">Total Positions</div>
+      <div class="metric-value" style="color:${var_accent}">${totalPositions}</div>
+      <div class="metric-sub">across ${portfolioCount} accounts</div>
+    </div>
+    <div class="metric-card">
+      <div class="glow" style="background:${worstColor}"></div>
+      <div class="metric-label">Max Drift</div>
+      <div class="metric-value" style="color:${worstColor}">${worstDrift.toFixed(1)}%</div>
+      <div class="metric-sub">${worstPortfolio || '—'}</div>
+    </div>
+    <div class="metric-card">
+      <div class="glow" style="background:${totalBreaches > 0 ? var_red : var_green}"></div>
+      <div class="metric-label">Threshold Breaches</div>
+      <div class="metric-value" style="color:${totalBreaches > 0 ? var_red : var_green}">${totalBreaches}</div>
+      <div class="metric-sub">5% threshold policy</div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// OVERVIEW CARDS
+// ═══════════════════════════════════════════════════
+function renderOverview() {
+  const grid = document.getElementById('overviewGrid');
+  grid.innerHTML = '';
+
+  for (const [id, pf] of Object.entries(PORTFOLIOS)) {
+    const d = calcDrift(id);
+    const hc = getHealthColor(d.healthScore);
+    const isActive = activeDetail === id;
+
+    // SVG ring
+    const radius = 20, circ = 2 * Math.PI * radius;
+    const offset = circ - (d.healthScore / 100) * circ;
+
+    const card = document.createElement('div');
+    card.className = `overview-card${isActive ? ' active' : ''}`;
+    card.onclick = () => toggleDetail(id);
+
+    card.innerHTML = `
+      <div class="health-glow" style="background:${hc}"></div>
+      <div class="oc-header">
+        <div>
+          <div class="oc-name">${pf.portfolio_name}</div>
+          <div class="oc-type">${pf.account_type} · ${pf.tax_status}</div>
+        </div>
+        <div class="health-ring">
+          <svg width="52" height="52">
+            <circle cx="26" cy="26" r="${radius}" fill="none" stroke="#2d3148" stroke-width="4"/>
+            <circle cx="26" cy="26" r="${radius}" fill="none" stroke="${hc}" stroke-width="4"
+              stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+          </svg>
+          <span class="score" style="color:${hc}">${d.healthScore}</span>
+        </div>
+      </div>
+      <div class="oc-stats">
+        <div><div class="oc-stat-label">Positions</div><div class="oc-stat-value">${d.results.length}</div></div>
+        <div><div class="oc-stat-label">Max Drift</div><div class="oc-stat-value" style="color:${d.maxAbsDrift>=5?var_red:d.maxAbsDrift>=2.5?var_yellow:var_green}">${d.maxAbsDrift.toFixed(1)}%</div></div>
+        <div><div class="oc-stat-label">Breaches</div><div class="oc-stat-value" style="color:${d.breaches>0?var_red:var_green}">${d.breaches}</div></div>
+        <div><div class="oc-stat-label">Avg Drift</div><div class="oc-stat-value">${d.avgDrift.toFixed(1)}%</div></div>
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// DETAIL PANEL
+// ═══════════════════════════════════════════════════
+function toggleDetail(id) {
+  activeDetail = activeDetail === id ? null : id;
+  renderOverview();
+  renderDetailPanel();
+}
+
+function renderDetailPanel() {
+  const container = document.getElementById('detailContainer');
+  if (!activeDetail) { container.innerHTML = ''; return; }
+
+  const pf = PORTFOLIOS[activeDetail];
+  const d = calcDrift(activeDetail);
+  const hc = getHealthColor(d.healthScore);
+  const maxBarTarget = Math.max(...d.results.map(r => Math.max(r.target, r.current)));
+
+  // Alerts
+  const alerts = d.results.filter(r => r.severity === 'crit');
+
+  let alertHtml = '';
+  if (alerts.length > 0) {
+    alertHtml = `
+      <div class="alert-panel has-alerts">
+        <div class="alert-icon">🚨</div>
+        <div class="alert-content">
+          <h4 style="color:${var_red}">${alerts.length} Position${alerts.length>1?'s':''} Exceeding ${d.threshold}% Threshold</h4>
+          <p>These positions have drifted beyond the rebalancing threshold and require action.</p>
+          <ul class="alert-list">
+            ${alerts.map(a => `<li><strong>${a.ticker}</strong> — drifted ${a.drift>0?'+':''}${a.drift.toFixed(1)}% from target ${a.target}%</li>`).join('')}
+          </ul>
+        </div>
+      </div>`;
+  } else {
+    alertHtml = `
+      <div class="alert-panel all-clear">
+        <div class="alert-icon">✅</div>
+        <div class="alert-content">
+          <h4 style="color:${var_green}">All Positions Within Threshold</h4>
+          <p>No positions have drifted beyond the ${d.threshold}% rebalancing threshold. Portfolio is healthy.</p>
+        </div>
+      </div>`;
+  }
+
+  // Drift rows
+  const rowsHtml = d.results.map(r => {
+    const targetWidth = (r.target / maxBarTarget) * 100;
+    const currentWidth = (r.current / maxBarTarget) * 100;
+    const barColor = r.severity === 'crit' ? var_red : r.severity === 'warn' ? var_yellow : var_green;
+    const driftClass = r.drift > 0 ? 'positive' : r.drift < 0 ? 'negative' : 'zero';
+    const driftSign = r.drift > 0 ? '+' : '';
+    const statusClass = r.severity === 'crit' ? 'status-crit' : r.severity === 'warn' ? 'status-warn' : 'status-ok';
+    const statusLabel = r.severity === 'crit' ? '⚠ BREACH' : r.severity === 'warn' ? '● WATCH' : '● OK';
+
+    return `
+      <div class="drift-row ${r.severity === 'crit' ? 'alert-row' : ''}" title="${r.name} — ${r.role}">
+        <div class="dr-ticker">${r.ticker}</div>
+        <div class="dr-target">${r.target}%</div>
+        <div class="drift-bar-container">
+          <div class="drift-bar-target" style="width:${targetWidth}%;background:${barColor}"></div>
+          <div class="drift-bar-current" style="width:${currentWidth}%;background:${barColor}"></div>
+          <div class="drift-bar-marker" style="left:${targetWidth}%;background:${var_accent}" title="Target: ${r.target}%"></div>
+        </div>
+        <input type="number" class="dr-current-input" value="${r.current}" min="0" max="100" step="0.1"
+          data-portfolio="${activeDetail}" data-ticker="${r.ticker}" onchange="updateCurrent(this)">
+        <div class="dr-drift ${driftClass}">${driftSign}${r.drift.toFixed(1)}%</div>
+        <div class="dr-status ${statusClass}">${statusLabel}</div>
+      </div>`;
+  }).join('');
+
+  // Notes
+  const notesHtml = pf.notes.map(n => `<li>${n}</li>`).join('');
+
+  // Overlap
+  const overlapKeys = Object.keys(pf.intentional_overlap);
+  const overlapHtml = overlapKeys.length > 0 ? `
+    <div class="detail-notes" style="border-top:1px solid var(--border)">
+      <h4>Intentional Overlap</h4>
+      <ul>
+        ${overlapKeys.map(k => `<li><strong>${k.replace(/_/g,' ')}:</strong> ${pf.intentional_overlap[k]}</li>`).join('')}
+      </ul>
+    </div>` : '';
+
+  container.innerHTML = `
+    <div class="detail-panel active">
+      <div class="detail-header">
+        <div class="detail-header-left">
+          <h2>${pf.portfolio_name} <span style="font-size:14px;color:${hc};font-weight:400">— Health ${d.healthScore}/100</span></h2>
+          <p>${pf.account_type} · Last updated ${new Date(pf.last_updated).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</p>
+        </div>
+        <div class="detail-badges">
+          <span class="dbadge ${taxBadgeClass(pf.tax_status)}">${pf.tax_status}</span>
+          <span class="dbadge dbadge-broker">${pf.broker}</span>
+          <span class="dbadge" style="background:${hc}22;color:${hc};border:1px solid ${hc}44">v${pf.version}</span>
+        </div>
+      </div>
+
+      <div class="philosophy-strip">
+        <div class="ps-block">
+          <h4>Core Philosophy</h4>
+          <p>${pf.core_philosophy}</p>
+        </div>
+        <div class="ps-block">
+          <h4>Behavioral Commitment</h4>
+          <p>${pf.behavioral_commitment}</p>
+        </div>
+      </div>
+
+      ${alertHtml}
+
+      <div class="drift-col-headers">
+        <div class="dch">Ticker</div>
+        <div class="dch right">Target</div>
+        <div class="dch">Drift Visualization</div>
+        <div class="dch right">Current</div>
+        <div class="dch right">Drift</div>
+        <div class="dch center">Status</div>
+      </div>
+
+      <div class="drift-grid">
+        ${rowsHtml}
+      </div>
+
+      <div class="drift-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:${var_green}"></div> Within tolerance (&lt;${d.threshold*0.5}%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:${var_yellow}"></div> Watch zone (${d.threshold*0.5}–${d.threshold}%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:${var_red}"></div> Threshold breach (≥${d.threshold}%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:${var_accent}"></div> Target marker</div>
+      </div>
+
+      ${overlapHtml}
+
+      <div class="detail-notes">
+        <h4>Portfolio Notes</h4>
+        <ul>${notesHtml}</ul>
+      </div>
+
+      <div class="update-bar">
+        <button class="btn btn-secondary btn-sm" onclick="resetPortfolioCurrent('${activeDetail}')">↺ Reset to Targets</button>
+        <button class="btn btn-primary btn-sm" onclick="simulateDrift('${activeDetail}')">🎲 Simulate Random Drift</button>
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// INTERACTION
+// ═══════════════════════════════════════════════════
+function updateCurrent(input) {
+  const pid = input.dataset.portfolio;
+  const ticker = input.dataset.ticker;
+  const val = parseFloat(input.value);
+  if (isNaN(val)) return;
+  currentValues[pid][ticker] = val;
+  refreshAll();
+}
+
+function resetPortfolioCurrent(pid) {
+  const pf = PORTFOLIOS[pid];
+  for (const h of pf.current_holdings) {
+    currentValues[pid][h.ticker] = h.current_pct;
+  }
+  refreshAll();
+}
+
+function resetAllCurrents() {
+  for (const [id, pf] of Object.entries(PORTFOLIOS)) {
+    for (const h of pf.current_holdings) {
+      currentValues[id][h.ticker] = h.current_pct;
+    }
+  }
+  refreshAll();
+}
+
+function simulateDrift(pid) {
+  const pf = PORTFOLIOS[pid];
+  const drifts = [];
+  let totalShift = 0;
+
+  // Generate random drifts
+  for (let i = 0; i < pf.target_allocation.length; i++) {
+    const alloc = pf.target_allocation[i];
+    const maxDrift = Math.min(alloc.target_pct, 12); // don't drift more than the target itself
+    const drift = (Math.random() - 0.5) * maxDrift; // random between -maxDrift/2 and +maxDrift/2
+    drifts.push(drift);
+    totalShift += drift;
+  }
+
+  // Normalize so total still sums to 100
+  const correction = totalShift / drifts.length;
+  for (let i = 0; i < pf.target_allocation.length; i++) {
+    const alloc = pf.target_allocation[i];
+    let newVal = alloc.target_pct + drifts[i] - correction;
+    newVal = Math.max(0.1, Math.round(newVal * 10) / 10);
+    currentValues[pid][alloc.ticker] = newVal;
+  }
+
+  // Fine-tune to sum to 100
+  const sum = Object.values(currentValues[pid]).reduce((a, b) => a + b, 0);
+  const diff = 100 - sum;
+  const firstTicker = pf.target_allocation[0].ticker;
+  currentValues[pid][firstTicker] = Math.round((currentValues[pid][firstTicker] + diff) * 10) / 10;
+
+  refreshAll();
+}
+
+function refreshAll() {
+  renderMetrics();
+  renderOverview();
+  if (activeDetail) renderDetailPanel();
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('currentTimestamp').textContent =
+    new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  renderCountdown();
+  renderMetrics();
+  renderOverview();
+});
+</script>
+</body>
+</html>

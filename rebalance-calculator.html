@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Rebalancing Calculator — PORTFOLIO_COMM</title>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d29;
+    --bg-card: #1e2133;
+    --bg-input: #252839;
+    --border: #2d3148;
+    --border-hover: #3d4168;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0b2;
+    --text-muted: #6b7194;
+    --accent: #4f8ff7;
+    --accent-hover: #6ba1ff;
+    --green: #2ecc71;
+    --green-bg: rgba(46,204,113,0.1);
+    --red: #e74c3c;
+    --red-bg: rgba(231,76,60,0.1);
+    --yellow: #f39c12;
+    --yellow-bg: rgba(243,156,18,0.1);
+    --gold: #d4a843;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, #12141f 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), #7c5cf7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  .header-sub { font-size: 12px; color: var(--text-muted); font-weight: 400; }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .engine-badge {
+    font-size: 11px; color: var(--gold); background: rgba(212,168,67,0.12);
+    padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(212,168,67,0.25);
+    font-weight: 500;
+  }
+  .timestamp { font-size: 12px; color: var(--text-muted); }
+
+  /* ── CONTROLS ── */
+  .controls {
+    padding: 24px 32px;
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+  }
+  .control-group { display: flex; flex-direction: column; gap: 6px; }
+  .control-group label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--text-muted);
+  }
+  .control-group select, .control-group input[type="number"] {
+    background: var(--bg-input); border: 1px solid var(--border);
+    color: var(--text-primary); padding: 10px 14px; border-radius: 8px;
+    font-size: 14px; font-family: inherit; outline: none;
+    transition: border-color 0.2s;
+  }
+  .control-group select { min-width: 260px; cursor: pointer; }
+  .control-group input[type="number"] { min-width: 200px; }
+  .control-group select:hover, .control-group input:hover { border-color: var(--border-hover); }
+  .control-group select:focus, .control-group input:focus { border-color: var(--accent); }
+
+  .btn {
+    padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; font-family: inherit;
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+  .btn-secondary { background: var(--bg-input); color: var(--text-secondary); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--border-hover); color: var(--text-primary); }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+
+  /* ── PORTFOLIO INFO BAR ── */
+  .info-bar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .info-chip {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px;
+  }
+  .info-chip-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 4px; }
+  .info-chip-value { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .info-chip-value.tax-deferred { color: var(--yellow); }
+  .info-chip-value.tax-free { color: var(--green); }
+  .info-chip-value.taxable { color: var(--red); }
+
+  /* ── PHILOSOPHY & COMMITMENT ── */
+  .philosophy-bar {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 22px; margin-bottom: 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  .philosophy-section h4 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--accent); margin-bottom: 8px; font-weight: 600;
+  }
+  .philosophy-section p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+  /* ── SUMMARY CARDS ── */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin-bottom: 28px;
+  }
+  .summary-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; text-align: center;
+    transition: border-color 0.2s;
+  }
+  .summary-card:hover { border-color: var(--border-hover); }
+  .summary-card .card-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text-muted); margin-bottom: 8px;
+  }
+  .summary-card .card-value { font-size: 26px; font-weight: 700; }
+  .summary-card .card-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .card-value.buy { color: var(--green); }
+  .card-value.sell { color: var(--red); }
+  .card-value.neutral { color: var(--text-primary); }
+  .card-value.warn { color: var(--yellow); }
+
+  /* ── TABLE ── */
+  .table-container {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 28px;
+  }
+  .table-header {
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .table-header h3 { font-size: 15px; font-weight: 600; }
+  .threshold-badge {
+    font-size: 11px; padding: 4px 12px; border-radius: 20px;
+    background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(243,156,18,0.3);
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px;
+    color: var(--text-muted); font-weight: 600; padding: 12px 16px;
+    text-align: left; border-bottom: 1px solid var(--border);
+    background: var(--bg-secondary);
+  }
+  thead th.num { text-align: right; }
+  tbody td {
+    padding: 14px 16px; border-bottom: 1px solid rgba(45,49,72,0.5);
+    font-size: 14px; vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(79,143,247,0.04); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .ticker-cell { display: flex; align-items: center; gap: 10px; }
+  .ticker-symbol {
+    font-weight: 700; font-size: 14px; color: var(--text-primary);
+    background: var(--bg-input); padding: 4px 10px; border-radius: 6px;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    min-width: 60px; text-align: center;
+  }
+  .ticker-name { font-size: 12px; color: var(--text-secondary); }
+
+  .current-input {
+    background: var(--bg-input); border: 1px solid var(--border);
+    color: var(--text-primary); padding: 6px 10px; border-radius: 6px;
+    font-size: 14px; width: 80px; text-align: right;
+    font-family: inherit; outline: none; font-variant-numeric: tabular-nums;
+  }
+  .current-input:focus { border-color: var(--accent); }
+
+  .drift-positive { color: var(--green); }
+  .drift-negative { color: var(--red); }
+  .drift-zero { color: var(--text-muted); }
+
+  .action-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 12px; border-radius: 20px; font-size: 12px;
+    font-weight: 600; letter-spacing: 0.3px;
+  }
+  .action-buy { background: var(--green-bg); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+  .action-sell { background: var(--red-bg); color: var(--red); border: 1px solid rgba(231,76,60,0.3); }
+  .action-hold { background: rgba(154,160,178,0.1); color: var(--text-muted); border: 1px solid rgba(154,160,178,0.2); }
+  .action-alert { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(243,156,18,0.3); }
+
+  .trade-amount { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .trade-buy { color: var(--green); }
+  .trade-sell { color: var(--red); }
+  .trade-zero { color: var(--text-muted); }
+
+  /* ── ACTION PLAN ── */
+  .action-plan {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 28px;
+  }
+  .action-plan-header {
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .action-plan-header h3 { font-size: 15px; font-weight: 600; }
+  .action-plan-body { padding: 20px 22px; }
+  .action-step {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 12px 0; border-bottom: 1px solid rgba(45,49,72,0.4);
+  }
+  .action-step:last-child { border-bottom: none; }
+  .step-number {
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .step-content { flex: 1; }
+  .step-action { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .step-detail { font-size: 12px; color: var(--text-secondary); }
+  .no-action-msg {
+    text-align: center; padding: 30px; color: var(--green);
+    font-size: 15px; font-weight: 500;
+  }
+
+  /* ── REVIEW INFO ── */
+  .review-bar {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; margin-bottom: 28px;
+    display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
+  }
+  .review-item { display: flex; align-items: center; gap: 8px; }
+  .review-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .review-dot.green { background: var(--green); }
+  .review-dot.yellow { background: var(--yellow); }
+  .review-label { font-size: 12px; color: var(--text-muted); }
+  .review-value { font-size: 13px; color: var(--text-primary); font-weight: 600; }
+
+  /* ── NOTES ── */
+  .notes-section {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; margin-bottom: 28px;
+  }
+  .notes-section h4 {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text-muted); margin-bottom: 12px;
+  }
+  .notes-list { list-style: none; }
+  .notes-list li {
+    font-size: 13px; color: var(--text-secondary); padding: 6px 0;
+    border-bottom: 1px solid rgba(45,49,72,0.3); display: flex; gap: 8px;
+  }
+  .notes-list li:last-child { border-bottom: none; }
+  .notes-list li::before { content: "›"; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+  /* ── PRINT ── */
+  .print-bar { text-align: right; margin-bottom: 20px; }
+
+  @media print {
+    body { background: #fff; color: #1a1a1a; }
+    .header, .controls { background: #fff; border-color: #ddd; }
+    .info-chip, .summary-card, .table-container, .philosophy-bar,
+    .action-plan, .review-bar, .notes-section { background: #fff; border-color: #ddd; }
+    thead th { background: #f5f5f5; }
+    .current-input { border-color: #ccc; background: #f9f9f9; }
+    .btn, .print-bar { display: none; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .header, .controls, .main { padding-left: 16px; padding-right: 16px; }
+    .philosophy-bar { grid-template-columns: 1fr; }
+    .table-container { overflow-x: auto; }
+    table { min-width: 800px; }
+  }
+
+  /* ── LOADING STATE ── */
+  .loading {
+    text-align: center; padding: 60px 20px; color: var(--text-muted);
+    font-size: 15px;
+  }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-icon">⚖</div>
+    <div>
+      <h1>Rebalancing Calculator <span class="header-sub">— PORTFOLIO_COMM Engine</span></h1>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="engine-badge">CANONICAL SCHEMA v1.0</span>
+    <span class="timestamp" id="currentTimestamp"></span>
+  </div>
+</div>
+
+<!-- ═══════════ CONTROLS ═══════════ -->
+<div class="controls">
+  <div class="control-group">
+    <label>Select Portfolio</label>
+    <select id="portfolioSelect">
+      <option value="">— Choose a portfolio —</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>Total Portfolio Value ($)</label>
+    <input type="number" id="totalValue" placeholder="e.g. 50000" min="0" step="100">
+  </div>
+  <button class="btn btn-primary" id="calculateBtn" disabled>⚖ Calculate Rebalance</button>
+  <button class="btn btn-secondary" id="resetBtn">↺ Reset</button>
+</div>
+
+<!-- ═══════════ LOADING ═══════════ -->
+<div class="main">
+  <div id="loadingState" class="loading hidden">
+    <div class="spinner"></div>
+    Loading portfolio data...
+  </div>
+
+  <!-- ═══════════ DASHBOARD (hidden until calculated) ═══════════ -->
+  <div id="dashboard" class="hidden">
+
+    <!-- Print -->
+    <div class="print-bar">
+      <button class="btn btn-secondary" onclick="window.print()">🖨 Print Report</button>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar" id="infoBar"></div>
+
+    <!-- Philosophy & Commitment -->
+    <div class="philosophy-bar" id="philosophyBar"></div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid" id="summaryGrid"></div>
+
+    <!-- Rebalance Table -->
+    <div class="table-container">
+      <div class="table-header">
+        <h3>Position Analysis</h3>
+        <span class="threshold-badge" id="thresholdBadge"></span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:25%">Holding</th>
+            <th class="num">Target %</th>
+            <th class="num">Current %</th>
+            <th class="num">Drift</th>
+            <th class="num">Target $</th>
+            <th class="num">Current $</th>
+            <th style="text-align:center">Status</th>
+            <th class="num">Trade Amount</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Action Plan -->
+    <div class="action-plan">
+      <div class="action-plan-header">
+        <span style="font-size:18px">📋</span>
+        <h3>Rebalance Action Plan</h3>
+      </div>
+      <div class="action-plan-body" id="actionPlanBody"></div>
+    </div>
+
+    <!-- Review Cycle -->
+    <div class="review-bar" id="reviewBar"></div>
+
+    <!-- Notes -->
+    <div class="notes-section" id="notesSection"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  PORTFOLIO DATA & ENGINE
+// ═══════════════════════════════════════════════════
+
+const PORTFOLIO_FILES = [
+  { file: 'portfolios/portfolio_rollover_ira.json', id: 'rollover-ira' },
+  { file: 'portfolios/portfolio_roth_ira.json', id: 'roth-ira' },
+  { file: 'portfolios/portfolio_traditional_ira.json', id: 'traditional-ira' },
+  { file: 'portfolios/portfolio_income.json', id: 'income-portfolio' },
+  { file: 'portfolios/portfolio_my_investments.json', id: 'my-investments' }
+];
+
+// Embedded fallback data — used when fetch fails (e.g., running from file://)
+const EMBEDDED_PORTFOLIOS = {
+  "rollover-ira": {
+    portfolio_id: "rollover-ira", portfolio_name: "Rollover IRA",
+    account_type: "Rollover IRA", tax_status: "tax-deferred", broker: "Fidelity",
+    last_updated: "2026-04-30T10:10:00-05:00", version: "1.0", status: "active",
+    core_philosophy: "Growth-oriented diversified portfolio blending broad U.S. and international equity exposure with sector tilts in technology and healthcare, anchored by dividend income and inflation-protected bonds.",
+    behavioral_commitment: "Stay the course through market volatility. Rebalance on schedule, not on emotion. Avoid performance chasing and recency bias.",
+    intentional_overlap: {
+      SCHD_and_VTI: "SCHD overlaps with VTI in large-cap U.S. dividend payers. This is intentional to tilt toward quality income without abandoning broad market exposure.",
+      VXUS_international: "VXUS provides broad international diversification complementing the U.S.-heavy equity allocation."
+    },
+    target_allocation: [
+      { ticker: "VTI", name: "Vanguard Total Stock Market ETF", target_pct: 25, role: "U.S. total market core equity" },
+      { ticker: "XLK", name: "Technology Select Sector SPDR Fund", target_pct: 20, role: "U.S. technology sector tilt" },
+      { ticker: "VXUS", name: "Vanguard Total International Stock ETF", target_pct: 15, role: "International equity diversification" },
+      { ticker: "XLV", name: "Health Care Select Sector SPDR Fund", target_pct: 10, role: "U.S. healthcare sector tilt" },
+      { ticker: "SCHD", name: "Schwab U.S. Dividend Equity ETF", target_pct: 10, role: "High-quality U.S. dividend income" },
+      { ticker: "BNDW", name: "Vanguard Total World Bond ETF", target_pct: 8, role: "Global fixed income stabilizer" },
+      { ticker: "VTIP", name: "Vanguard Short-Term Inflation-Protected Securities ETF", target_pct: 7, role: "Inflation protection" },
+      { ticker: "PDBC", name: "Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF", target_pct: 5, role: "Commodity diversification and inflation hedge" }
+    ],
+    current_holdings: [
+      { ticker: "VTI", current_pct: 25 }, { ticker: "XLK", current_pct: 20 },
+      { ticker: "VXUS", current_pct: 15 }, { ticker: "XLV", current_pct: 10 },
+      { ticker: "SCHD", current_pct: 10 }, { ticker: "BNDW", current_pct: 8 },
+      { ticker: "VTIP", current_pct: 7 }, { ticker: "PDBC", current_pct: 5 }
+    ],
+    rebalancing_policy: { method: "threshold-based with calendar review", threshold_pct: 5, calendar_review: "semi-annual", rebalance_months: ["June","December"], next_review: "2026-06-15" },
+    review_cycle: { frequency: "semi-annual", months: ["June","December"], next_review: "2026-06-15" },
+    notes: ["Tax-deferred account — no tax impact on internal rebalancing.","Technology and healthcare tilts reflect long-term secular growth conviction.","PDBC selected for K-1-free commodity exposure suitable for IRA.","BNDW provides global bond diversification beyond U.S. Treasuries."],
+    metadata: { created: "2026-04-30T10:10:00-05:00", schema_version: "1.0", engine_compatible: true }
+  },
+  "roth-ira": {
+    portfolio_id: "roth-ira", portfolio_name: "Roth IRA",
+    account_type: "Roth IRA", tax_status: "tax-free", broker: "Fidelity",
+    last_updated: "2026-04-30T10:10:00-05:00", version: "1.0", status: "active",
+    core_philosophy: "Aggressive growth portfolio maximizing the tax-free compounding advantage of the Roth structure. Concentrated in semiconductors, AI infrastructure, and broad U.S. equity with selective international and income diversification.",
+    behavioral_commitment: "Let winners compound tax-free. Resist the urge to lock in gains prematurely. Rebalance on schedule and trust the long-term thesis.",
+    intentional_overlap: {
+      SMH_and_FZROX: "SMH overlaps with the technology holdings within FZROX. This is intentional to overweight semiconductors as a high-conviction secular growth bet.",
+      SCHD_and_FZROX: "SCHD overlaps with FZROX in large-cap U.S. dividend payers. Intentional tilt toward quality income within a growth-heavy allocation."
+    },
+    target_allocation: [
+      { ticker: "SMH", name: "VanEck Semiconductor ETF", target_pct: 25, role: "Semiconductor and AI hardware concentration" },
+      { ticker: "VRT", name: "Vertiv Holdings Co", target_pct: 20, role: "AI infrastructure and data center power/cooling" },
+      { ticker: "FZROX", name: "Fidelity ZERO Total Market Index Fund", target_pct: 20, role: "Zero-cost U.S. total market core equity" },
+      { ticker: "VXUS", name: "Vanguard Total International Stock ETF", target_pct: 10, role: "International equity diversification" },
+      { ticker: "SCHD", name: "Schwab U.S. Dividend Equity ETF", target_pct: 10, role: "High-quality U.S. dividend income" },
+      { ticker: "XLV", name: "Health Care Select Sector SPDR Fund", target_pct: 5, role: "U.S. healthcare sector tilt" },
+      { ticker: "VGIT", name: "Vanguard Intermediate-Term Treasury ETF", target_pct: 5, role: "Intermediate-term Treasury ballast" },
+      { ticker: "GLDM", name: "SPDR Gold MiniShares Trust", target_pct: 5, role: "Gold hedge and portfolio diversifier" }
+    ],
+    current_holdings: [
+      { ticker: "SMH", current_pct: 25 }, { ticker: "VRT", current_pct: 20 },
+      { ticker: "FZROX", current_pct: 20 }, { ticker: "VXUS", current_pct: 10 },
+      { ticker: "SCHD", current_pct: 10 }, { ticker: "XLV", current_pct: 5 },
+      { ticker: "VGIT", current_pct: 5 }, { ticker: "GLDM", current_pct: 5 }
+    ],
+    rebalancing_policy: { method: "threshold-based with calendar review", threshold_pct: 5, calendar_review: "semi-annual", rebalance_months: ["June","December"], next_review: "2026-06-15" },
+    review_cycle: { frequency: "semi-annual", months: ["June","December"], next_review: "2026-06-15" },
+    notes: ["Tax-free growth — ideal for highest-growth, highest-turnover assets.","VRT is a single-stock position; monitor concentration risk at each review.","FZROX selected for zero expense ratio — Fidelity exclusive.","SMH provides concentrated semiconductor exposure as a high-conviction AI play.","GLDM chosen over GLD for lower expense ratio on smaller allocations."],
+    metadata: { created: "2026-04-30T10:10:00-05:00", schema_version: "1.0", engine_compatible: true }
+  },
+  "traditional-ira": {
+    portfolio_id: "traditional-ira", portfolio_name: "Traditional IRA",
+    account_type: "Traditional IRA", tax_status: "tax-deferred", broker: "Fidelity",
+    last_updated: "2026-04-30T10:10:00-05:00", version: "1.0", status: "active",
+    core_philosophy: "Conservative capital preservation portfolio emphasizing low-volatility equity, dividend income, short-duration Treasuries, and inflation protection. Designed to minimize drawdowns while preserving purchasing power.",
+    behavioral_commitment: "Prioritize stability over chasing returns. This portfolio is the anchor — do not shift to growth during bull markets. Rebalance mechanically on schedule.",
+    intentional_overlap: {
+      USMV_and_SCHD: "USMV and SCHD overlap in large-cap U.S. equities. Intentional to double-weight defensive, income-generating stocks within the equity sleeve.",
+      SGOV_VGSH_VTIP: "Three short-duration fixed income instruments serve distinct roles: SGOV for cash-like safety, VGSH for slightly longer duration, and VTIP for inflation protection."
+    },
+    target_allocation: [
+      { ticker: "USMV", name: "iShares MSCI USA Min Vol Factor ETF", target_pct: 20, role: "Low-volatility U.S. equity core" },
+      { ticker: "SCHD", name: "Schwab U.S. Dividend Equity ETF", target_pct: 20, role: "High-quality U.S. dividend income" },
+      { ticker: "SGOV", name: "iShares 0-3 Month Treasury Bond ETF", target_pct: 20, role: "Ultra-short Treasury — cash equivalent safety" },
+      { ticker: "VGSH", name: "Vanguard Short-Term Treasury ETF", target_pct: 15, role: "Short-term Treasury stability" },
+      { ticker: "VTIP", name: "Vanguard Short-Term Inflation-Protected Securities ETF", target_pct: 15, role: "Inflation protection" },
+      { ticker: "GLDM", name: "SPDR Gold MiniShares Trust", target_pct: 10, role: "Gold hedge and portfolio diversifier" }
+    ],
+    current_holdings: [
+      { ticker: "USMV", current_pct: 20 }, { ticker: "SCHD", current_pct: 20 },
+      { ticker: "SGOV", current_pct: 20 }, { ticker: "VGSH", current_pct: 15 },
+      { ticker: "VTIP", current_pct: 15 }, { ticker: "GLDM", current_pct: 10 }
+    ],
+    rebalancing_policy: { method: "threshold-based with calendar review", threshold_pct: 5, calendar_review: "semi-annual", rebalance_months: ["June","December"], next_review: "2026-06-15" },
+    review_cycle: { frequency: "semi-annual", months: ["June","December"], next_review: "2026-06-15" },
+    notes: ["Tax-deferred account — no tax impact on internal rebalancing.","50% fixed income / 40% equity / 10% gold allocation reflects conservative posture.","SGOV serves as the near-cash reserve within the portfolio.","VTIP and GLDM together provide dual-layer inflation protection.","USMV selected over broad market to reduce portfolio beta."],
+    metadata: { created: "2026-04-30T10:10:00-05:00", schema_version: "1.0", engine_compatible: true }
+  },
+  "income-portfolio": {
+    portfolio_id: "income-portfolio", portfolio_name: "Income Portfolio",
+    account_type: "Taxable Brokerage", tax_status: "taxable", broker: "Fidelity",
+    last_updated: "2026-04-30T10:10:00-05:00", version: "1.0", status: "active",
+    core_philosophy: "Ultra-conservative income-generating portfolio anchored in short-term Treasuries with supplemental yield from covered-call equity income and dividend equities. Designed for capital preservation and reliable cash flow.",
+    behavioral_commitment: "This is the safety net — never compromise its conservative allocation for higher returns. Let SGOV do its job as the bedrock. Rebalance mechanically on schedule.",
+    intentional_overlap: {
+      JEPI_and_SCHD: "JEPI and SCHD overlap in large-cap U.S. dividend equities. Intentional to blend active covered-call income generation with passive dividend quality."
+    },
+    target_allocation: [
+      { ticker: "SGOV", name: "iShares 0-3 Month Treasury Bond ETF", target_pct: 60, role: "Ultra-short Treasury — capital preservation and near-cash yield" },
+      { ticker: "JEPI", name: "JPMorgan Equity Premium Income ETF", target_pct: 25, role: "Equity income via covered-call strategy" },
+      { ticker: "SCHD", name: "Schwab U.S. Dividend Equity ETF", target_pct: 15, role: "High-quality U.S. dividend income" }
+    ],
+    current_holdings: [
+      { ticker: "SGOV", current_pct: 60 }, { ticker: "JEPI", current_pct: 25 },
+      { ticker: "SCHD", current_pct: 15 }
+    ],
+    rebalancing_policy: { method: "threshold-based with calendar review", threshold_pct: 5, calendar_review: "semi-annual", rebalance_months: ["June","December"], next_review: "2026-06-15" },
+    review_cycle: { frequency: "semi-annual", months: ["June","December"], next_review: "2026-06-15" },
+    notes: ["Taxable account — be mindful of dividend and capital gains tax implications.","SGOV distributions taxed as ordinary income at federal level, exempt from state tax.","JEPI generates monthly income but distributions are a mix of ordinary income and return of capital.","SCHD dividends qualify for favorable qualified dividend tax treatment.","60% SGOV allocation reflects ultra-conservative income-first mandate."],
+    metadata: { created: "2026-04-30T10:10:00-05:00", schema_version: "1.0", engine_compatible: true }
+  },
+  "my-investments": {
+    portfolio_id: "my-investments", portfolio_name: "My Investments",
+    account_type: "Taxable Brokerage", tax_status: "taxable", broker: "Fidelity",
+    last_updated: "2026-04-30T10:10:00-05:00", version: "1.0", status: "active",
+    core_philosophy: "Balanced core portfolio combining broad U.S. and international equity with dividend quality and Treasury safety. Designed as the primary taxable investment vehicle with a simple, low-maintenance structure.",
+    behavioral_commitment: "Simplicity is the edge. Four holdings, clear roles, minimal tinkering. Rebalance on schedule, reinvest dividends, and let compounding work.",
+    intentional_overlap: {
+      SCHD_and_VTI: "SCHD overlaps with VTI in large-cap U.S. dividend payers. Intentional to overweight quality dividend income within the broad U.S. equity allocation.",
+      VTI_and_VXUS: "Together VTI and VXUS approximate a global equity portfolio with a deliberate U.S. overweight."
+    },
+    target_allocation: [
+      { ticker: "VTI", name: "Vanguard Total Stock Market ETF", target_pct: 35, role: "U.S. total market core equity" },
+      { ticker: "SCHD", name: "Schwab U.S. Dividend Equity ETF", target_pct: 25, role: "High-quality U.S. dividend income" },
+      { ticker: "VXUS", name: "Vanguard Total International Stock ETF", target_pct: 20, role: "International equity diversification" },
+      { ticker: "SGOV", name: "iShares 0-3 Month Treasury Bond ETF", target_pct: 20, role: "Ultra-short Treasury — capital preservation and liquidity" }
+    ],
+    current_holdings: [
+      { ticker: "VTI", current_pct: 35 }, { ticker: "SCHD", current_pct: 25 },
+      { ticker: "VXUS", current_pct: 20 }, { ticker: "SGOV", current_pct: 20 }
+    ],
+    rebalancing_policy: { method: "threshold-based with calendar review", threshold_pct: 5, calendar_review: "semi-annual", rebalance_months: ["June","December"], next_review: "2026-06-15" },
+    review_cycle: { frequency: "semi-annual", months: ["June","December"], next_review: "2026-06-15" },
+    notes: ["Taxable account — prioritize tax-efficient funds and harvest losses at review.","VTI and VXUS are highly tax-efficient broad market ETFs.","SCHD qualified dividends receive favorable tax treatment.","SGOV state-tax-exempt Treasury income; adjust allocation based on liquidity needs.","Four-fund simplicity is a feature, not a limitation."],
+    metadata: { created: "2026-04-30T10:10:00-05:00", schema_version: "1.0", engine_compatible: true }
+  }
+};
+
+let portfolios = {};
+let activePortfolio = null;
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('currentTimestamp').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  loadPortfolios();
+  document.getElementById('portfolioSelect').addEventListener('change', onPortfolioChange);
+  document.getElementById('calculateBtn').addEventListener('click', calculate);
+  document.getElementById('resetBtn').addEventListener('click', resetAll);
+  document.getElementById('totalValue').addEventListener('input', validateInputs);
+});
+
+async function loadPortfolios() {
+  document.getElementById('loadingState').classList.remove('hidden');
+  let fetched = 0;
+  for (const pf of PORTFOLIO_FILES) {
+    try {
+      const resp = await fetch(pf.file);
+      if (resp.ok) { portfolios[pf.id] = await resp.json(); fetched++; }
+      else { portfolios[pf.id] = EMBEDDED_PORTFOLIOS[pf.id]; }
+    } catch { portfolios[pf.id] = EMBEDDED_PORTFOLIOS[pf.id]; }
+  }
+  document.getElementById('loadingState').classList.add('hidden');
+  populateSelector();
+}
+
+function populateSelector() {
+  const sel = document.getElementById('portfolioSelect');
+  for (const [id, pf] of Object.entries(portfolios)) {
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = `${pf.portfolio_name}  ·  ${pf.account_type}  ·  ${pf.tax_status}`;
+    sel.appendChild(opt);
+  }
+}
+
+function onPortfolioChange() {
+  const id = document.getElementById('portfolioSelect').value;
+  if (!id) { activePortfolio = null; document.getElementById('dashboard').classList.add('hidden'); return; }
+  activePortfolio = JSON.parse(JSON.stringify(portfolios[id])); // deep clone
+  document.getElementById('dashboard').classList.add('hidden');
+  validateInputs();
+}
+
+function validateInputs() {
+  const hasPortfolio = !!document.getElementById('portfolioSelect').value;
+  const hasValue = parseFloat(document.getElementById('totalValue').value) > 0;
+  document.getElementById('calculateBtn').disabled = !(hasPortfolio && hasValue);
+}
+
+function resetAll() {
+  document.getElementById('portfolioSelect').value = '';
+  document.getElementById('totalValue').value = '';
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('calculateBtn').disabled = true;
+  activePortfolio = null;
+}
+
+// ── FORMAT HELPERS ──
+const fmt = (n) => n.toLocaleString('en-US', { style:'currency', currency:'USD', minimumFractionDigits:2 });
+const fmtPct = (n) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+
+// ═══════════════════════════════════════════════════
+//  CALCULATE
+// ═══════════════════════════════════════════════════
+function calculate() {
+  const pf = activePortfolio;
+  if (!pf) return;
+  const totalValue = parseFloat(document.getElementById('totalValue').value);
+  if (!totalValue || totalValue <= 0) return;
+
+  const threshold = pf.rebalancing_policy.threshold_pct || 5;
+
+  // ── Build analysis rows ──
+  const rows = pf.target_allocation.map(ta => {
+    const ch = pf.current_holdings.find(h => h.ticker === ta.ticker);
+    const currentPct = ch ? ch.current_pct : 0;
+    const drift = currentPct - ta.target_pct;
+    const targetVal = totalValue * ta.target_pct / 100;
+    const currentVal = totalValue * currentPct / 100;
+    const tradeAmt = targetVal - currentVal;
+    const breachesThreshold = Math.abs(drift) >= threshold;
+    let status = 'HOLD';
+    if (drift > 0.01) status = 'SELL';
+    else if (drift < -0.01) status = 'BUY';
+    return { ...ta, currentPct, drift, targetVal, currentVal, tradeAmt, breachesThreshold, status };
+  });
+
+  // ── Summaries ──
+  const totalBuy = rows.filter(r => r.tradeAmt > 0).reduce((s, r) => s + r.tradeAmt, 0);
+  const totalSell = rows.filter(r => r.tradeAmt < 0).reduce((s, r) => s + Math.abs(r.tradeAmt), 0);
+  const alertCount = rows.filter(r => r.breachesThreshold).length;
+  const actionCount = rows.filter(r => r.status !== 'HOLD').length;
+
+  // ── Render ──
+  renderInfoBar(pf);
+  renderPhilosophy(pf);
+  renderSummary(totalValue, totalBuy, totalSell, alertCount, actionCount, rows.length);
+  renderTable(rows, threshold, totalValue);
+  renderActionPlan(rows, threshold);
+  renderReviewBar(pf);
+  renderNotes(pf);
+
+  document.getElementById('thresholdBadge').textContent = `⚠ Rebalance Threshold: ±${threshold}%`;
+  document.getElementById('dashboard').classList.remove('hidden');
+  document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDERERS
+// ═══════════════════════════════════════════════════
+function renderInfoBar(pf) {
+  const taxClass = pf.tax_status === 'tax-free' ? 'tax-free' : pf.tax_status === 'tax-deferred' ? 'tax-deferred' : 'taxable';
+  document.getElementById('infoBar').innerHTML = `
+    <div class="info-chip"><div class="info-chip-label">Portfolio</div><div class="info-chip-value">${pf.portfolio_name}</div></div>
+    <div class="info-chip"><div class="info-chip-label">Account Type</div><div class="info-chip-value">${pf.account_type}</div></div>
+    <div class="info-chip"><div class="info-chip-label">Tax Status</div><div class="info-chip-value ${taxClass}">${pf.tax_status}</div></div>
+    <div class="info-chip"><div class="info-chip-label">Broker</div><div class="info-chip-value">${pf.broker}</div></div>
+    <div class="info-chip"><div class="info-chip-label">Holdings</div><div class="info-chip-value">${pf.target_allocation.length} positions</div></div>
+    <div class="info-chip"><div class="info-chip-label">Schema</div><div class="info-chip-value">v${pf.version}</div></div>
+  `;
+}
+
+function renderPhilosophy(pf) {
+  document.getElementById('philosophyBar').innerHTML = `
+    <div class="philosophy-section"><h4>Core Philosophy</h4><p>${pf.core_philosophy}</p></div>
+    <div class="philosophy-section"><h4>Behavioral Commitment</h4><p>${pf.behavioral_commitment}</p></div>
+  `;
+}
+
+function renderSummary(totalValue, totalBuy, totalSell, alertCount, actionCount, positionCount) {
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="summary-card"><div class="card-label">Portfolio Value</div><div class="card-value neutral">${fmt(totalValue)}</div><div class="card-sub">${positionCount} positions</div></div>
+    <div class="summary-card"><div class="card-label">Total to Buy</div><div class="card-value buy">${fmt(totalBuy)}</div><div class="card-sub">Capital to deploy</div></div>
+    <div class="summary-card"><div class="card-label">Total to Sell</div><div class="card-value sell">${fmt(totalSell)}</div><div class="card-sub">Capital to harvest</div></div>
+    <div class="summary-card"><div class="card-label">Threshold Alerts</div><div class="card-value ${alertCount > 0 ? 'warn' : 'buy'}">${alertCount}</div><div class="card-sub">${alertCount === 0 ? 'All within bounds' : 'Positions need attention'}</div></div>
+    <div class="summary-card"><div class="card-label">Actions Required</div><div class="card-value ${actionCount > 0 ? 'warn' : 'buy'}">${actionCount}</div><div class="card-sub">${actionCount === 0 ? 'Portfolio balanced ✓' : 'Trades to execute'}</div></div>
+  `;
+}
+
+function renderTable(rows, threshold, totalValue) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = rows.map(r => {
+    const driftClass = r.drift > 0.01 ? 'drift-positive' : r.drift < -0.01 ? 'drift-negative' : 'drift-zero';
+    const actionClass = r.status === 'BUY' ? 'action-buy' : r.status === 'SELL' ? 'action-sell' : 'action-hold';
+    const tradeClass = r.tradeAmt > 0 ? 'trade-buy' : r.tradeAmt < 0 ? 'trade-sell' : 'trade-zero';
+    const alertIcon = r.breachesThreshold ? ' ⚠' : '';
+    const statusLabel = r.breachesThreshold && r.status !== 'HOLD' ? r.status + alertIcon : r.status;
+    const badgeClass = r.breachesThreshold ? 'action-alert' : actionClass;
+
+    return `<tr>
+      <td><div class="ticker-cell"><span class="ticker-symbol">${r.ticker}</span><span class="ticker-name">${r.name}</span></div></td>
+      <td class="num">${r.target_pct.toFixed(2)}%</td>
+      <td class="num"><input type="number" class="current-input" value="${r.currentPct}" min="0" max="100" step="0.01" data-ticker="${r.ticker}" onchange="updateCurrent(this)"></td>
+      <td class="num ${driftClass}">${fmtPct(r.drift)}</td>
+      <td class="num">${fmt(r.targetVal)}</td>
+      <td class="num">${fmt(r.currentVal)}</td>
+      <td style="text-align:center"><span class="action-badge ${badgeClass}">${statusLabel}</span></td>
+      <td class="num"><span class="trade-amount ${tradeClass}">${r.tradeAmt >= 0 ? '+' : ''}${fmt(Math.abs(r.tradeAmt))}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderActionPlan(rows, threshold) {
+  const actions = rows.filter(r => r.status !== 'HOLD').sort((a, b) => Math.abs(b.tradeAmt) - Math.abs(a.tradeAmt));
+  const body = document.getElementById('actionPlanBody');
+
+  if (actions.length === 0) {
+    body.innerHTML = '<div class="no-action-msg">✓ Portfolio is perfectly balanced — no trades needed</div>';
+    return;
+  }
+
+  // Separate sells first (generate cash), then buys
+  const sells = actions.filter(a => a.status === 'SELL');
+  const buys = actions.filter(a => a.status === 'BUY');
+  const ordered = [...sells, ...buys];
+  let step = 0;
+
+  body.innerHTML = ordered.map(a => {
+    step++;
+    const verb = a.status === 'BUY' ? 'BUY' : 'SELL';
+    const color = a.status === 'BUY' ? 'var(--green)' : 'var(--red)';
+    const alert = a.breachesThreshold ? `  ⚠ Exceeds ${threshold}% threshold` : '';
+    return `<div class="action-step">
+      <div class="step-number">${step}</div>
+      <div class="step-content">
+        <div class="step-action" style="color:${color}">${verb} ${fmt(Math.abs(a.tradeAmt))} of ${a.ticker}</div>
+        <div class="step-detail">${a.name} · Drift: ${fmtPct(a.drift)} · Role: ${a.role}${alert}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderReviewBar(pf) {
+  const rp = pf.rebalancing_policy;
+  const rc = pf.review_cycle;
+  const nextDate = new Date(rc.next_review + 'T00:00:00');
+  const today = new Date();
+  const daysUntil = Math.ceil((nextDate - today) / (1000*60*60*24));
+  const dotColor = daysUntil <= 30 ? 'yellow' : 'green';
+
+  document.getElementById('reviewBar').innerHTML = `
+    <div class="review-item"><div class="review-dot ${dotColor}"></div><div><div class="review-label">Next Review</div><div class="review-value">${rc.next_review} (${daysUntil} days)</div></div></div>
+    <div class="review-item"><div class="review-dot green"></div><div><div class="review-label">Frequency</div><div class="review-value">${rc.frequency} · ${rc.months.join(' & ')}</div></div></div>
+    <div class="review-item"><div class="review-dot green"></div><div><div class="review-label">Method</div><div class="review-value">${rp.method}</div></div></div>
+    <div class="review-item"><div class="review-dot green"></div><div><div class="review-label">Threshold</div><div class="review-value">±${rp.threshold_pct}%</div></div></div>
+  `;
+}
+
+function renderNotes(pf) {
+  const sec = document.getElementById('notesSection');
+  sec.innerHTML = `<h4>Portfolio Notes</h4><ul class="notes-list">${pf.notes.map(n => `<li>${n}</li>`).join('')}</ul>`;
+}
+
+// ── LIVE CURRENT % UPDATE ──
+function updateCurrent(input) {
+  const ticker = input.dataset.ticker;
+  const val = parseFloat(input.value) || 0;
+  const ch = activePortfolio.current_holdings.find(h => h.ticker === ticker);
+  if (ch) ch.current_pct = val;
+  calculate(); // recalculate with new values
+}
+</script>
+</body>
+</html>

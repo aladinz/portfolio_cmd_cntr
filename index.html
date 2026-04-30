@@ -18,6 +18,10 @@
       --green: #2ecc71;
       --orange: #f5a524;
       --shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      --bg-card: #1e2133;
+      --text-primary: #e8eaed;
+      --text-secondary: #9aa0b2;
+      --text-muted: #6b7194;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -169,6 +173,133 @@
     .section {
       margin-bottom: 36px;
       scroll-margin-top: 88px;
+    }
+
+    .tools-section {
+      padding: 28px 0;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tools-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .tools-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .tool-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+
+    .tool-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .tool-accent {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .tool-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      margin-top: 2px;
+    }
+
+    .tool-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 14px;
+    }
+
+    .tool-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    .tool-open {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .tool-card:hover .tool-open {
+      text-decoration: underline;
+    }
+
+    .tool-card--rebalance .tool-accent,
+    .tool-card--rebalance .tool-icon {
+      background: #4f8ff7;
+    }
+
+    .tool-card--rebalance .tool-open { color: #4f8ff7; }
+
+    .tool-card--rebalance:hover { border-color: #4f8ff7; }
+
+    .tool-card--drift .tool-accent,
+    .tool-card--drift .tool-icon {
+      background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #2ecc71 100%);
+    }
+
+    .tool-card--drift:hover { border-color: #f39c12; }
+
+    .tool-card--drift .tool-open {
+      background: linear-gradient(90deg, #e74c3c 0%, #f39c12 50%, #2ecc71 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .tool-card--overlap .tool-accent,
+    .tool-card--overlap .tool-icon {
+      background: linear-gradient(90deg, #e74c3c 0%, #9b59b6 50%, #4f8ff7 100%);
+    }
+
+    .tool-card--overlap:hover { border-color: #9b59b6; }
+
+    .tool-card--overlap .tool-open {
+      background: linear-gradient(90deg, #e74c3c 0%, #9b59b6 50%, #4f8ff7 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
     .section-head {
@@ -698,6 +829,10 @@
       .alerts-grid { grid-template-columns: 1fr; }
     }
 
+    @media (max-width: 768px) {
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 640px) {
       .portfolio-grid { grid-template-columns: 1fr; }
       .grid-overview { grid-template-columns: 1fr; }
@@ -759,6 +894,36 @@
           <div class="grid-overview" id="overviewMetrics"></div>
           <div class="note-card">
             This system is intentionally built around discipline and survivability. Shared core holdings such as SCHD, VXUS, SGOV, VTI, and XLV are strategic overlap, not accidental duplication.
+          </div>
+        </section>
+
+        <section class="section tools-section" id="portfolio-tools">
+          <h3 class="tools-title">🛠 Portfolio Tools</h3>
+          <p class="tools-subtitle">Interactive analysis tools powered by canonical schema v1.0</p>
+          <div class="tools-grid">
+            <a class="tool-card tool-card--rebalance" href="rebalance-calculator.html">
+              <span class="tool-accent"></span>
+              <span class="tool-icon" aria-hidden="true">⚖</span>
+              <h4 class="tool-title">Rebalancing Calculator</h4>
+              <p class="tool-desc">Analyze position drift against target allocations, flag threshold breaches, and generate a step-by-step buy/sell trade plan with exact dollar amounts.</p>
+              <span class="tool-open">Open Tool →</span>
+            </a>
+
+            <a class="tool-card tool-card--drift" href="drift-detection-dashboard.html">
+              <span class="tool-accent"></span>
+              <span class="tool-icon" aria-hidden="true">📡</span>
+              <h4 class="tool-title">Drift-Detection Dashboard</h4>
+              <p class="tool-desc">Monitor real-time portfolio health scores across all five accounts with visual drift bars, threshold alerts, and a countdown to the next semi-annual review.</p>
+              <span class="tool-open">Open Tool →</span>
+            </a>
+
+            <a class="tool-card tool-card--overlap" href="overlap-heatmap.html">
+              <span class="tool-accent"></span>
+              <span class="tool-icon" aria-hidden="true">🔥</span>
+              <h4 class="tool-title">Cross-Portfolio Overlap Heatmap</h4>
+              <p class="tool-desc">Visualize which tickers appear across multiple portfolios with an interactive heatmap matrix, Jaccard similarity scoring, concentration analysis, and strategic insights.</p>
+              <span class="tool-open">Open Tool →</span>
+            </a>
           </div>
         </section>
 
