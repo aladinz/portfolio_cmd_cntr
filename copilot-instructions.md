@@ -1,205 +1,69 @@
-You are assisting in the development of a Portfolio Command Center that reads structured portfolio JSON files from the /portfolio_registry/ directory and generates a unified HTML/CSS/JS dashboard.
-
-Your responsibilities:
-
-1. DATA INGESTION LAYER
-When asked to load data:
-
-Read all JSON files inside /portfolio_registry/
-
-Validate each file against the schema:
-
-portfolio_id
-
-portfolio_name
-
-core_philosophy
-
-final_allocation
-
-role_of_components
-
-expected_behavior
-
-rebalancing_policy
-
-behavioral_commitment
-
-intentional_overlap
-
-Normalize allocations into a consistent internal structure
-
-Merge all portfolios into a single masterData object
-
-Example internal structure:
-
-js
-const masterData = {
-  portfolios: [...],
-  globalIntentionalOverlap: ["SCHD","VXUS","SGOV","VTI","XLV"]
-};
-2. DASHBOARD GENERATION
-When generating the dashboard:
-
-Produce a single HTML file with:
-
-Inline CSS (dark theme)
-
-Inline JavaScript
-
-Responsive layout
-
-No external libraries except Google Fonts
-
-The dashboard must include:
-
-Header
-
-Executive Summary
-
-Portfolio‑by‑Portfolio Cards
-
-Overlap & Redundancy Map
-
-Risk & Volatility Layer
-
-Actionability Layer
-
-Consolidated Allocation View
-
-Signals & Indicators
-
-Narrative Summary
-
-Appendix
-
-3. VISUAL STYLE REQUIREMENTS
-Use a modern dark theme:
-
-Background: #0d1117
-
-Card: #161b22
-
-Text: #e6edf3
-
-Accent: #58a6ff
-
-Borders: #30363d
-
-Rounded corners
-
-Soft shadows
-
-Smooth hover animations
-
-Use Inter, Roboto, or SF Pro.
-
-Charts must be built using vanilla JavaScript + <canvas>, no libraries.
-
-4. OVERLAP LOGIC
-When analyzing overlap:
-
-Treat these tickers as intentional:
-
-SCHD
-
-VXUS
-
-SGOV
-
-VTI
-
-XLV
-
-Do not flag them as redundancy.
-
-All other cross‑portfolio duplicates should be highlighted as:
-
-Hidden concentration
-
-Redundancy
-
-Review candidates
-
-5. CODE STYLE RULES
-Copilot must:
-
-Use modular functions
-
-Use descriptive variable names
-
-Avoid monolithic files
-
-Keep HTML readable
-
-Keep JS organized into sections
-
-Keep CSS clean and minimal
-
-Add comments for your wife/daughter to understand
-
-6. FILE STRUCTURE
-Copilot should maintain:
-
-Code
-/portfolio_registry/        ← JSON files (source of truth)
-/dashboard/                 ← HTML/CSS/JS output
-/scripts/                   ← JS modules (optional)
-/styles/                    ← CSS (optional)
-/.vscode/copilot-instructions.md
-7. BEHAVIORAL RULES
-Copilot must:
-
-Never rewrite the JSON files unless explicitly asked
-
-Never infer portfolio philosophy — always read from JSON
-
-Never introduce new tickers without instruction
-
-Always preserve your tone: calm, simple, family‑friendly
-
-8. PRIMARY COMMANDS
-Copilot should respond to these commands:
-
-“Generate dashboard”
-→ Build the full HTML/CSS/JS dashboard using all JSON files.
-
-“Update dashboard layout”
-→ Modify only the visual structure.
-
-“Add new portfolio”
-→ Validate JSON → integrate into masterData → update dashboard.
-
-“Explain this code”
-→ Provide calm, simple explanations.
-
-“Refactor this module”
-→ Improve clarity, modularity, and maintainability.
-
-9. OUTPUT REQUIREMENTS
-When generating the dashboard:
-
-Output a single HTML file
-
-Contain all CSS and JS inline
-
-No external dependencies
-
-No frameworks
-
-No build tools
-
-10. TONE & INTENT
-Copilot must always:
-
-Keep things simple
-
-Avoid complexity
-
-Protect behavioral discipline
-
-Prioritize clarity
-
-Build for your wife and daughter
-
-Make the system future‑proof
+# Portfolio Command Center Instructions (Canonical Schema)
+
+The project now uses a canonical 17-field schema for all portfolio files under portfolios/.
+
+## Canonical Top-Level Fields (Required)
+- portfolio_id
+- portfolio_name
+- account_type
+- tax_status
+- broker
+- last_updated
+- version
+- status
+- core_philosophy
+- behavioral_commitment
+- intentional_overlap
+- target_allocation
+- current_holdings
+- rebalancing_policy
+- review_cycle
+- notes
+- metadata
+
+## Field Roles
+- portfolio_id: Stable machine ID. Must be one of:
+  - rollover-ira
+  - roth-ira
+  - traditional-ira
+  - income-portfolio
+  - my-investments
+- portfolio_name: Display name for dashboards and reports.
+- account_type: Account wrapper (Rollover IRA, Roth IRA, Traditional IRA, Taxable Brokerage).
+- tax_status: tax-deferred, tax-free, or taxable.
+- broker: Fidelity.
+- last_updated: ISO 8601 timestamp with timezone offset.
+- version: 1.0.
+- status: active.
+- core_philosophy: Long-form strategy narrative.
+- behavioral_commitment: Behavioral discipline narrative.
+- intentional_overlap: Object with arbitrary string keys and string explanation values.
+- target_allocation: Array of objects with ticker, name, target_pct, role.
+- current_holdings: Array of objects with ticker and current_pct.
+- rebalancing_policy: method, threshold_pct, calendar_review, rebalance_months, next_review.
+- review_cycle: frequency, months, next_review.
+- notes: Array of strings.
+- metadata: created, schema_version, engine_compatible.
+
+## Data Rules
+- Keep ticker symbols and percentages unchanged unless explicitly requested.
+- current_holdings mirrors target_allocation at creation time.
+- Use semi-annual June/December review cycle.
+- Use next_review of 2026-06-15 for review_cycle and rebalancing_policy.
+- Use broker Fidelity and version 1.0.
+- Use ISO 8601 timestamps with offset (example: 2026-04-30T10:10:00-05:00).
+
+## Dashboard/Parser Rules
+- Read data from:
+  - portfolios/portfolio_rollover_ira.json
+  - portfolios/portfolio_roth_ira.json
+  - portfolios/portfolio_traditional_ira.json
+  - portfolios/portfolio_income.json
+  - portfolios/portfolio_my_investments.json
+- Replace deprecated mappings:
+  - holdings -> current_holdings
+  - allocation/final_allocation -> target_allocation
+  - weight -> target_pct
+  - philosophy -> core_philosophy
+  - rebalance_date -> rebalancing_policy.next_review
+  - review_date -> review_cycle.next_review

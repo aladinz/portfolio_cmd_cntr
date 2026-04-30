@@ -1,0 +1,57 @@
+{
+  "timestamp": "2026-04-30T10:10:00-05:00",
+  "schema_version": "1.0",
+  "total_portfolios": 5,
+  "portfolios": [
+    {
+      "portfolio_id": "rollover-ira",
+      "portfolio_name": "Rollover IRA",
+      "account_type": "Rollover IRA",
+      "tax_status": "tax-deferred",
+      "broker": "Fidelity",
+      "status": "active",
+      "version": "1.0",
+      "file_path": "portfolios/portfolio_rollover_ira.json"
+    },
+    {
+      "portfolio_id": "roth-ira",
+      "portfolio_name": "Roth IRA",
+      "account_type": "Roth IRA",
+      "tax_status": "tax-free",
+      "broker": "Fidelity",
+      "status": "active",
+      "version": "1.0",
+      "file_path": "portfolios/portfolio_roth_ira.json"
+    },
+    {
+      "portfolio_id": "traditional-ira",
+      "portfolio_name": "Traditional IRA",
+      "account_type": "Traditional IRA",
+      "tax_status": "tax-deferred",
+      "broker": "Fidelity",
+      "status": "active",
+      "version": "1.0",
+      "file_path": "portfolios/portfolio_traditional_ira.json"
+    },
+    {
+      "portfolio_id": "income-portfolio",
+      "portfolio_name": "Income Portfolio",
+      "account_type": "Taxable Brokerage",
+      "tax_status": "taxable",
+      "broker": "Fidelity",
+      "status": "active",
+      "version": "1.0",
+      "file_path": "portfolios/portfolio_income.json"
+    },
+    {
+      "portfolio_id": "my-investments",
+      "portfolio_name": "My Investments",
+      "account_type": "Taxable Brokerage",
+      "tax_status": "taxable",
+      "broker": "Fidelity",
+      "status": "active",
+      "version": "1.0",
+      "file_path": "portfolios/portfolio_my_investments.json"
+    }
+  ]
+}

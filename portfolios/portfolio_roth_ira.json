@@ -1,0 +1,60 @@
+{
+  "portfolio_id": "roth-ira",
+  "portfolio_name": "Roth IRA",
+  "account_type": "Roth IRA",
+  "tax_status": "tax-free",
+  "broker": "Fidelity",
+  "last_updated": "2026-04-30T10:10:00-05:00",
+  "version": "1.0",
+  "status": "active",
+  "core_philosophy": "Aggressive growth portfolio maximizing the tax-free compounding advantage of the Roth structure. Concentrated in semiconductors, AI infrastructure, and broad U.S. equity with selective international and income diversification.",
+  "behavioral_commitment": "Let winners compound tax-free. Resist the urge to lock in gains prematurely. Rebalance on schedule and trust the long-term thesis.",
+  "intentional_overlap": {
+    "SMH_and_FZROX": "SMH overlaps with the technology holdings within FZROX. This is intentional to overweight semiconductors as a high-conviction secular growth bet.",
+    "SCHD_and_FZROX": "SCHD overlaps with FZROX in large-cap U.S. dividend payers. Intentional tilt toward quality income within a growth-heavy allocation."
+  },
+  "target_allocation": [
+    { "ticker": "SMH", "name": "VanEck Semiconductor ETF", "target_pct": 25, "role": "Semiconductor and AI hardware concentration" },
+    { "ticker": "VRT", "name": "Vertiv Holdings Co", "target_pct": 20, "role": "AI infrastructure and data center power/cooling" },
+    { "ticker": "FZROX", "name": "Fidelity ZERO Total Market Index Fund", "target_pct": 20, "role": "Zero-cost U.S. total market core equity" },
+    { "ticker": "VXUS", "name": "Vanguard Total International Stock ETF", "target_pct": 10, "role": "International equity diversification" },
+    { "ticker": "SCHD", "name": "Schwab U.S. Dividend Equity ETF", "target_pct": 10, "role": "High-quality U.S. dividend income" },
+    { "ticker": "XLV", "name": "Health Care Select Sector SPDR Fund", "target_pct": 5, "role": "U.S. healthcare sector tilt" },
+    { "ticker": "VGIT", "name": "Vanguard Intermediate-Term Treasury ETF", "target_pct": 5, "role": "Intermediate-term Treasury ballast" },
+    { "ticker": "GLDM", "name": "SPDR Gold MiniShares Trust", "target_pct": 5, "role": "Gold hedge and portfolio diversifier" }
+  ],
+  "current_holdings": [
+    { "ticker": "SMH", "current_pct": 25 },
+    { "ticker": "VRT", "current_pct": 20 },
+    { "ticker": "FZROX", "current_pct": 20 },
+    { "ticker": "VXUS", "current_pct": 10 },
+    { "ticker": "SCHD", "current_pct": 10 },
+    { "ticker": "XLV", "current_pct": 5 },
+    { "ticker": "VGIT", "current_pct": 5 },
+    { "ticker": "GLDM", "current_pct": 5 }
+  ],
+  "rebalancing_policy": {
+    "method": "threshold-based with calendar review",
+    "threshold_pct": 5,
+    "calendar_review": "semi-annual",
+    "rebalance_months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "review_cycle": {
+    "frequency": "semi-annual",
+    "months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "notes": [
+    "Tax-free growth — ideal for highest-growth, highest-turnover assets.",
+    "VRT is a single-stock position; monitor concentration risk at each review.",
+    "FZROX selected for zero expense ratio — Fidelity exclusive.",
+    "SMH provides concentrated semiconductor exposure as a high-conviction AI play.",
+    "GLDM chosen over GLD for lower expense ratio on smaller allocations."
+  ],
+  "metadata": {
+    "created": "2026-04-30T10:10:00-05:00",
+    "schema_version": "1.0",
+    "engine_compatible": true
+  }
+}

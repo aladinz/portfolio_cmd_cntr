@@ -799,6 +799,7 @@
             <div class="chart-card">
               <div class="chart-title">Total Allocation Donut</div>
               <canvas id="consolidatedDonut" width="560" height="260"></canvas>
+              <div class="bar-legend" id="consolidatedDonutLegend"></div>
             </div>
             <div class="chart-card">
               <div class="chart-title">Asset Class Bars</div>
@@ -896,162 +897,74 @@
   <div class="why-tooltip" id="whyTooltip"></div>
 
   <script>
-    // -------------------- MASTER DATA (normalized from source JSON files) --------------------
-    const masterData = {
-      globalIntentionalOverlap: ["SCHD", "VXUS", "SGOV", "VTI", "XLV"],
-      portfolios: [
-        {
-          portfolio_id: "income_strategy_test_sleeve",
-          portfolio_name: "Income Strategy - Test Sleeve",
-          account_type: "Income Experiment",
-          tax_status: "Taxable",
-          strategy_tag: "Income",
-          capital: 7500,
-          equity_pct: 0.80,
-          risk_profile: "Moderate",
-          core_philosophy: [
-            "Behavioral discipline over maximum yield",
-            "Risk management over performance chasing",
-            "Simplicity over optimization",
-            "Stay invested through volatility"
-          ],
-          final_allocation: { JEPI: 0.60, SCHD: 0.20, BIL: 0.20 },
-          rebalancing_policy: "Annual review, rebalance if drift exceeds 5%",
-          behavioral_commitment: [
-            "Income does not eliminate risk",
-            "Avoid emotional exits",
-            "No market timing"
-          ],
-          long_term_objectives: ["Stable income", "Durable behavior", "Tolerable drawdowns"]
-        },
-        {
-          portfolio_id: "conservative_growth_resilient_50_50_2026",
-          portfolio_name: "Taxable Brokerage - Conservative Growth 50/50",
-          account_type: "Taxable Brokerage",
-          tax_status: "Taxable",
-          strategy_tag: "Balanced",
-          capital: 140000,
-          equity_pct: 0.40,
-          risk_profile: "Conservative-Moderate",
-          core_philosophy: [
-            "Tax efficiency and low turnover",
-            "Simplicity over complexity",
-            "Clear rebalancing rules",
-            "No predictive macro trading"
-          ],
-          final_allocation: { SGOV: 0.50, SCHD: 0.10, VTI: 0.30, VXUS: 0.10 },
-          rebalancing_policy: "Review every 6-12 months, act only beyond +-5%",
-          behavioral_commitment: [
-            "Ignore headlines",
-            "Minimize unnecessary sales",
-            "Use written rules"
-          ],
-          long_term_objectives: ["Consistent growth", "Lower stress", "Stable structure"]
-        },
-        {
-          portfolio_id: "rollover_ira_balanced_growth_2026",
-          portfolio_name: "Rollover IRA Portfolio",
-          account_type: "Rollover IRA",
-          tax_status: "Tax-Deferred",
-          strategy_tag: "Balanced",
-          capital: 320000,
-          equity_pct: 0.68,
-          risk_profile: "Moderate",
-          core_philosophy: [
-            "Asset allocation over security selection",
-            "Inflation awareness built in",
-            "No tactical timing",
-            "ETF-only durability"
-          ],
-          final_allocation: { VTI: 0.28, SCHD: 0.12, XLK: 0.10, VXUS: 0.09, XLV: 0.09, BNDW: 0.12, VTIP: 0.12, PDBC: 0.08 },
-          rebalancing_policy: "Twice per year, threshold trigger +-5%",
-          behavioral_commitment: [
-            "No reaction to headlines",
-            "No macro bets",
-            "Process over prediction"
-          ],
-          long_term_objectives: ["Compounding", "Regime resilience", "Controlled drawdowns"]
-        },
-        {
-          portfolio_id: "roth_ira_growth_survival_2026",
-          portfolio_name: "Roth IRA Portfolio System",
-          account_type: "Roth IRA",
-          tax_status: "Tax-Free Growth",
-          strategy_tag: "Growth",
-          capital: 95000,
-          equity_pct: 0.90,
-          risk_profile: "High",
-          core_philosophy: [
-            "Growth-first, engineered for survival",
-            "Core-dominant design",
-            "Mechanical rebalancing",
-            "No narrative trades"
-          ],
-          final_allocation: { FZROX: 0.41, VXUS: 0.12, SCHD: 0.12, XLV: 0.12, SMH: 0.10, VRT: 0.03, VGIT: 0.07, GLDM: 0.05 },
-          rebalancing_policy: "Quarterly review, strict tolerance bands",
-          behavioral_commitment: [
-            "No emotional overrides",
-            "No structural changes for 12 months",
-            "No adding ETFs without thesis"
-          ],
-          long_term_objectives: ["Tax-free compounding", "High growth", "Durable discipline"]
-        },
-        {
-          portfolio_id: "traditional_ira_defensive_resilient_2026",
-          portfolio_name: "Traditional IRA - Defensive Resilient",
-          account_type: "Traditional IRA",
-          tax_status: "Tax-Deferred",
-          strategy_tag: "Defensive",
-          capital: 680000,
-          equity_pct: 0.25,
-          risk_profile: "Low-Moderate",
-          core_philosophy: [
-            "Resilience over maximum return",
-            "Sleep-well-at-night design",
-            "SGOV as liquidity buffer",
-            "Gold as structural hedge"
-          ],
-          final_allocation: { VGSH: 0.35, VTIP: 0.15, SCHD: 0.15, USMV: 0.10, GLDM: 0.15, SGOV: 0.10 },
-          rebalancing_policy: "Quarterly/Semi-annual review, rebalance only on material drift",
-          behavioral_commitment: [
-            "RMD funded from SGOV only",
-            "No tactical trading",
-            "Follow written process in stress"
-          ],
-          long_term_objectives: ["Capital preservation", "Stable income", "Inflation protection"]
-        }
-      ]
-    };
+    // -------------------- Data loading --------------------
+    const portfolioFiles = [
+      "portfolios/portfolio_rollover_ira.json",
+      "portfolios/portfolio_roth_ira.json",
+      "portfolios/portfolio_traditional_ira.json",
+      "portfolios/portfolio_income.json",
+      "portfolios/portfolio_my_investments.json"
+    ];
 
-    // -------------------- Shared constants --------------------
     const chartPalette = ["#58a6ff", "#2ecc71", "#f1c40f", "#f5a524", "#7bb9ff", "#8ef2bf", "#ffd95f", "#ff9c7d", "#9d7eff", "#6dd3c8"];
+    let masterData = { portfolios: [], globalIntentionalOverlap: [] };
 
     // -------------------- Utility helpers --------------------
-    function formatMoney(value) {
-      return "$" + (value || 0).toLocaleString();
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function tickerMapFromTarget(allocation) {
+      return (allocation || []).reduce((acc, item) => {
+        acc[item.ticker] = (Number(item.target_pct) || 0) / 100;
+        return acc;
+      }, {});
     }
 
     function uniqueTickers() {
       const set = new Set();
-      masterData.portfolios.forEach((p) => Object.keys(p.final_allocation).forEach((t) => set.add(t)));
+      masterData.portfolios.forEach((p) => (p.target_allocation || []).forEach((x) => set.add(x.ticker)));
       return Array.from(set).sort();
     }
 
     function tickerCounts() {
       const counts = {};
       masterData.portfolios.forEach((p) => {
-        Object.keys(p.final_allocation).forEach((t) => {
-          counts[t] = (counts[t] || 0) + 1;
+        (p.target_allocation || []).forEach((x) => {
+          counts[x.ticker] = (counts[x.ticker] || 0) + 1;
         });
       });
       return counts;
     }
 
-    function getTagClass(tag) {
-      const normalized = (tag || "").toLowerCase();
-      if (normalized.includes("growth")) return "tag-growth";
+    function classifyAsset(ticker) {
+      const bonds = new Set(["SGOV", "BIL", "VGSH", "VTIP", "VGIT", "BNDW"]);
+      const gold = new Set(["GLDM"]);
+      const commodities = new Set(["PDBC"]);
+      const cash = new Set(["SGOV", "BIL"]);
+      if (gold.has(ticker)) return "gold";
+      if (commodities.has(ticker)) return "commodities";
+      if (cash.has(ticker)) return "cash";
+      if (bonds.has(ticker)) return "bonds";
+      return "equities";
+    }
+
+    function deriveEquityPct(portfolio) {
+      return (portfolio.target_allocation || []).reduce((sum, item) => {
+        return sum + (classifyAsset(item.ticker) === "equities" ? (Number(item.target_pct) || 0) : 0);
+      }, 0) / 100;
+    }
+
+    function getTagClass(accountType) {
+      const normalized = (accountType || "").toLowerCase();
+      if (normalized.includes("roth")) return "tag-growth";
       if (normalized.includes("income")) return "tag-income";
-      if (normalized.includes("defensive")) return "tag-defensive";
+      if (normalized.includes("traditional")) return "tag-defensive";
       return "tag-balanced";
     }
 
@@ -1061,15 +974,53 @@
       return "risk-low";
     }
 
+    function riskLabel(equity) {
+      if (equity >= 0.75) return "High";
+      if (equity >= 0.45) return "Moderate";
+      return "Low";
+    }
+
+    function extractIntentionalTickers(portfolios) {
+      const allTickers = new Set();
+      portfolios.forEach((p) => (p.target_allocation || []).forEach((x) => allTickers.add(x.ticker)));
+
+      const derived = new Set();
+      portfolios.forEach((p) => {
+        const overlapObj = p.intentional_overlap || {};
+        Object.keys(overlapObj).forEach((key) => {
+          const matches = key.match(/[A-Z]{2,5}/g) || [];
+          matches.forEach((token) => {
+            if (allTickers.has(token)) derived.add(token);
+          });
+        });
+      });
+      return Array.from(derived);
+    }
+
+    async function loadPortfolioData() {
+      const responses = await Promise.all(
+        portfolioFiles.map((path) => fetch(path, { cache: "no-store" }))
+      );
+      responses.forEach((res, i) => {
+        if (!res.ok) throw new Error(`Failed to load ${portfolioFiles[i]}`);
+      });
+
+      const portfolios = await Promise.all(responses.map((res) => res.json()));
+      masterData = {
+        portfolios,
+        globalIntentionalOverlap: extractIntentionalTickers(portfolios)
+      };
+    }
+
     // -------------------- Overview rendering --------------------
     function renderOverview() {
-      const totalCapital = masterData.portfolios.reduce((s, p) => s + (p.capital || 0), 0);
-      const weightedEquity = masterData.portfolios.reduce((s, p) => s + (p.capital || 0) * p.equity_pct, 0) / totalCapital;
+      const weightedEquity = masterData.portfolios.reduce((s, p) => s + deriveEquityPct(p), 0) / Math.max(masterData.portfolios.length, 1);
+      const nextReviews = masterData.portfolios.map((p) => p.review_cycle?.next_review).filter(Boolean).sort();
       const metrics = [
-        { label: "Total AUM", value: "$" + (totalCapital / 1000).toFixed(1) + "K" },
-        { label: "Weighted Equity", value: (weightedEquity * 100).toFixed(1) + "%" },
         { label: "Portfolios", value: String(masterData.portfolios.length) },
-        { label: "Intentional Overlap", value: String(masterData.globalIntentionalOverlap.length) }
+        { label: "Unique Holdings", value: String(uniqueTickers().length) },
+        { label: "Avg Equity", value: (weightedEquity * 100).toFixed(1) + "%" },
+        { label: "Next Review", value: nextReviews[0] || "n/a" }
       ];
 
       document.getElementById("overviewMetrics").innerHTML = metrics.map((m) => (
@@ -1084,21 +1035,34 @@
     function renderPortfolioCards() {
       const grid = document.getElementById("portfolioGrid");
       grid.innerHTML = masterData.portfolios.map((p, idx) => {
-        const rows = Object.entries(p.final_allocation)
-          .map(([ticker, pct]) => `<tr><td>${ticker}</td><td>${(pct * 100).toFixed(1)}%</td></tr>`)
+        const allocationRows = (p.target_allocation || [])
+          .map((item) => `<tr><td>${item.ticker}</td><td>${item.name}</td><td>${Number(item.target_pct).toFixed(1)}%</td><td>${item.role}</td></tr>`)
           .join("");
 
-        const coreBullets = p.core_philosophy.slice(0, 5).map((item) => `<li>${item}</li>`).join("");
-        const behavioralBullets = p.behavioral_commitment.slice(0, 5).map((item) => `<li>${item}</li>`).join("");
+        const currentRows = (p.current_holdings || [])
+          .map((item) => `<li>${item.ticker}: ${Number(item.current_pct).toFixed(1)}%</li>`)
+          .join("");
+
+        const overlapRows = Object.entries(p.intentional_overlap || {})
+          .map(([k, v]) => `<li><strong>${k}</strong>: ${v}</li>`)
+          .join("");
+
+        const notesRows = (p.notes || [])
+          .map((note) => `<li>${note}</li>`)
+          .join("");
+
+        const equityPct = deriveEquityPct(p);
+        const rebalance = p.rebalancing_policy || {};
+        const reviewCycle = p.review_cycle || {};
 
         return `
           <article class="portfolio-card">
             <div class="card-header">
               <div>
                 <div class="card-title">${p.portfolio_name}</div>
-                <div class="card-sub">${p.account_type} | ${p.tax_status}</div>
+                <div class="card-sub">${p.account_type} | ${p.tax_status} | ${p.broker}</div>
               </div>
-              <span class="tag ${getTagClass(p.strategy_tag)}">${p.strategy_tag}</span>
+              <span class="tag ${getTagClass(p.account_type)}">${p.portfolio_id}</span>
             </div>
 
             <div class="donut-wrap">
@@ -1109,36 +1073,61 @@
             <div class="card-divider"></div>
 
             <div class="list-title">${svgIcon("philosophy")} Core Philosophy</div>
-            <ul class="small-list">${coreBullets}</ul>
+            <ul class="small-list"><li>${p.core_philosophy || "n/a"}</li></ul>
 
             <div class="card-divider"></div>
 
-            <div class="list-title">${svgIcon("allocation")} Allocation Summary</div>
-            <table class="alloc-table"><thead><tr><th>Ticker</th><th>Weight</th></tr></thead><tbody>${rows}</tbody></table>
+            <div class="list-title">${svgIcon("allocation")} Target Allocation</div>
+            <table class="alloc-table"><thead><tr><th>Ticker</th><th>Name</th><th>Target %</th><th>Role</th></tr></thead><tbody>${allocationRows}</tbody></table>
 
             <div class="card-divider"></div>
 
-            <div class="list-title">${svgIcon("risk")} Risk Profile</div>
-            <span class="risk-pill ${riskPillClass(p.equity_pct)}">${p.risk_profile}</span>
-            <div class="small-list" style="margin-top:4px;">
-              <li>Equity: ${(p.equity_pct * 100).toFixed(0)}%</li>
-              <li>Capital: ${formatMoney(p.capital)}</li>
-            </div>
+            <div class="list-title">${svgIcon("risk")} Current Holdings</div>
+            <ul class="small-list">${currentRows}</ul>
 
             <div class="card-divider"></div>
 
-            <div class="list-title">${svgIcon("rebalance")} Rebalancing Rules</div>
-            <ul class="small-list"><li>${p.rebalancing_policy}</li></ul>
+            <div class="list-title">${svgIcon("rebalance")} Rebalancing & Review</div>
+            <ul class="small-list">
+              <li>Method: ${rebalance.method || "n/a"}</li>
+              <li>Threshold: ${rebalance.threshold_pct != null ? rebalance.threshold_pct + "%" : "n/a"}</li>
+              <li>Calendar: ${rebalance.calendar_review || "n/a"}</li>
+              <li>Rebalance next review: ${rebalance.next_review || "n/a"}</li>
+              <li>Review cycle next review: ${reviewCycle.next_review || "n/a"}</li>
+            </ul>
 
             <div class="card-divider"></div>
 
-            <div class="list-title">${svgIcon("commitment")} Behavioral Commitments</div>
-            <ul class="small-list">${behavioralBullets}</ul>
+            <div class="list-title">${svgIcon("commitment")} Behavioral Commitment</div>
+            <ul class="small-list"><li>${p.behavioral_commitment || "n/a"}</li></ul>
+
+            <div class="card-divider"></div>
+
+            <div class="list-title">${svgIcon("commitment")} Intentional Overlap</div>
+            <ul class="small-list">${overlapRows}</ul>
+
+            <div class="card-divider"></div>
+
+            <div class="list-title">${svgIcon("commitment")} Notes</div>
+            <ul class="small-list">${notesRows}</ul>
+
+            <div class="card-divider"></div>
+
+            <div class="list-title">${svgIcon("commitment")} Metadata</div>
+            <ul class="small-list">
+              <li>Last updated: ${p.last_updated || "n/a"}</li>
+              <li>Status: ${p.status || "n/a"}</li>
+              <li>Version: ${p.version || "n/a"}</li>
+              <li>Schema version: ${p.metadata?.schema_version || "n/a"}</li>
+              <li>Engine compatible: ${p.metadata?.engine_compatible === true ? "true" : "false"}</li>
+              <li>Created: ${p.metadata?.created || "n/a"}</li>
+              <li>Equity profile: ${(equityPct * 100).toFixed(1)}% (${riskLabel(equityPct)})</li>
+            </ul>
           </article>
         `;
       }).join("");
 
-      masterData.portfolios.forEach((p, idx) => drawDonutWithTooltip(`portfolioDonut_${idx}`, p.final_allocation));
+      masterData.portfolios.forEach((p, idx) => drawDonutWithTooltip(`portfolioDonut_${idx}`, tickerMapFromTarget(p.target_allocation)));
     }
 
     function svgIcon(type) {
@@ -1183,7 +1172,7 @@
       ctx.fillStyle = "#9bb7d5";
       ctx.font = "600 12px Inter";
       ctx.textAlign = "center";
-      ctx.fillText("Allocation", cx, cy + 4);
+      ctx.fillText("Target", cx, cy + 4);
 
       const tooltip = document.getElementById("canvasTooltip");
       canvas.onmousemove = (e) => {
@@ -1199,8 +1188,7 @@
         }
         let a = Math.atan2(dy, dx);
         if (a < -Math.PI / 2) a += Math.PI * 2;
-        const normalized = a;
-        const hit = arcs.find((arc) => normalized >= arc.start && normalized <= arc.end);
+        const hit = arcs.find((arc) => a >= arc.start && a <= arc.end);
         if (!hit) {
           tooltip.style.display = "none";
           return;
@@ -1212,10 +1200,9 @@
       };
       canvas.onmouseleave = () => { tooltip.style.display = "none"; };
 
-      // Inject HTML legend below the donut
       const legendEl = document.getElementById(canvasId.replace("portfolioDonut", "donutLegend"));
       if (legendEl) {
-        legendEl.innerHTML = entries.map(([ ticker, pct ], i) =>
+        legendEl.innerHTML = entries.map(([ticker, pct], i) =>
           `<span class="donut-legend-item"><span class="legend-swatch" style="background:${chartPalette[i % chartPalette.length]}"></span>${ticker} <span style="opacity:0.65">${(pct * 100).toFixed(0)}%</span></span>`
         ).join("");
       }
@@ -1231,9 +1218,10 @@
       let html = `<thead><tr><th class="row-head">Portfolio</th>${tickers.map((t) => `<th>${t}</th>`).join("")}</tr></thead><tbody>`;
 
       masterData.portfolios.forEach((p) => {
+        const allocMap = tickerMapFromTarget(p.target_allocation);
         html += `<tr><td class="row-head">${p.portfolio_name}</td>`;
         tickers.forEach((t) => {
-          const has = p.final_allocation[t] != null;
+          const has = allocMap[t] != null;
           if (!has) {
             html += "<td></td>";
             return;
@@ -1245,11 +1233,14 @@
           const color = isIntentional ? "#d4e9ff" : "#ffe1b0";
 
           const sharers = masterData.portfolios
-            .filter((x) => x.final_allocation[t] != null)
-            .map((x) => `${x.portfolio_name}: ${(x.final_allocation[t] * 100).toFixed(1)}%`)
+            .filter((x) => tickerMapFromTarget(x.target_allocation)[t] != null)
+            .map((x) => {
+              const map = tickerMapFromTarget(x.target_allocation);
+              return `${x.portfolio_name}: ${(map[t] * 100).toFixed(1)}%`;
+            })
             .join(" | ");
 
-          html += `<td style="background:${bg}; color:${color}; font-weight:700; cursor:help;" class="heat-cell" data-tip="${escapeHtml(sharers)}">${(p.final_allocation[t] * 100).toFixed(0)}%</td>`;
+          html += `<td style="background:${bg}; color:${color}; font-weight:700; cursor:help;" class="heat-cell" data-tip="${escapeHtml(sharers)}">${(allocMap[t] * 100).toFixed(0)}%</td>`;
         });
         html += "</tr>";
       });
@@ -1271,65 +1262,14 @@
 
     // -------------------- Consolidated charts --------------------
     function weightedTickerExposure() {
-      const totalCapital = masterData.portfolios.reduce((s, p) => s + (p.capital || 0), 0);
       const exposure = {};
+      const n = Math.max(masterData.portfolios.length, 1);
       masterData.portfolios.forEach((p) => {
-        const cap = p.capital || 0;
-        Object.entries(p.final_allocation).forEach(([t, pct]) => {
-          exposure[t] = (exposure[t] || 0) + (cap * pct) / totalCapital;
+        (p.target_allocation || []).forEach((item) => {
+          exposure[item.ticker] = (exposure[item.ticker] || 0) + (Number(item.target_pct) || 0) / 100 / n;
         });
       });
       return exposure;
-    }
-
-    function classifyAsset(ticker) {
-      const bonds = new Set(["SGOV", "BIL", "VGSH", "VTIP", "VGIT", "BNDW"]);
-      const gold = new Set(["GLDM"]);
-      const commodities = new Set(["PDBC"]);
-      const cash = new Set(["SGOV", "BIL"]);
-      if (gold.has(ticker)) return "gold";
-      if (commodities.has(ticker)) return "commodities";
-      if (cash.has(ticker)) return "cash";
-      if (bonds.has(ticker)) return "bonds";
-      return "equities";
-    }
-
-    function renderConsolidated() {
-      const exposure = weightedTickerExposure();
-      const donutCanvas = document.getElementById("consolidatedDonut");
-      const barsCanvas = document.getElementById("assetClassBars");
-
-      drawDonutChart(donutCanvas, exposure, 8);
-
-      const buckets = { equities: 0, bonds: 0, gold: 0, cash: 0, commodities: 0 };
-      Object.entries(exposure).forEach(([ticker, pct]) => {
-        buckets[classifyAsset(ticker)] += pct;
-      });
-
-      const barData = {
-        Equities: buckets.equities,
-        Bonds: buckets.bonds,
-        Gold: buckets.gold,
-        Cash: buckets.cash,
-        Commodities: buckets.commodities
-      };
-      drawBars(barsCanvas, barData);
-
-      const assetLegend = document.getElementById("assetClassBarsLegend");
-      if (assetLegend) {
-        assetLegend.innerHTML = Object.keys(barData).map((label, i) =>
-          `<span class="bar-legend-item"><span class="bar-legend-swatch" style="background:${chartPalette[i % chartPalette.length]}"></span>${label}</span>`
-        ).join("");
-      }
-
-      const panel = document.getElementById("summaryPanel");
-      panel.innerHTML = `
-        <div class="sum-item"><b>Total equity exposure</b><span>${(buckets.equities * 100).toFixed(1)}%</span></div>
-        <div class="sum-item"><b>Total fixed income</b><span>${(buckets.bonds * 100).toFixed(1)}%</span></div>
-        <div class="sum-item"><b>Total alternatives</b><span>${((buckets.gold + buckets.commodities) * 100).toFixed(1)}%</span></div>
-        <div class="sum-item"><b>Total gold</b><span>${(buckets.gold * 100).toFixed(1)}%</span></div>
-        <div class="sum-item"><b>Total cash</b><span>${(buckets.cash * 100).toFixed(1)}%</span></div>
-      `;
     }
 
     function drawDonutChart(canvas, obj, topN) {
@@ -1340,10 +1280,10 @@
       const sorted = Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, topN);
       const total = sorted.reduce((s, [, v]) => s + v, 0);
 
-      const cx = 170;
-      const cy = 130;
-      const r = 88;
-      const inner = 50;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const r = Math.min(canvas.width, canvas.height) * 0.31;
+      const inner = r * 0.56;
       let angle = -Math.PI / 2;
 
       sorted.forEach(([label, val], i) => {
@@ -1363,16 +1303,7 @@
       ctx.textAlign = "center";
       ctx.fillText("Top Holdings", cx, cy + 5);
 
-      let y = 24;
-      sorted.forEach(([label, val], i) => {
-        ctx.fillStyle = chartPalette[i % chartPalette.length];
-        ctx.fillRect(340, y - 8, 10, 10);
-        ctx.fillStyle = "#d7e5f5";
-        ctx.font = "12px Inter";
-        ctx.textAlign = "left";
-        ctx.fillText(`${label} ${(val * 100).toFixed(1)}%`, 356, y + 1);
-        y += 22;
-      });
+      return sorted;
     }
 
     function drawBars(canvas, obj) {
@@ -1413,23 +1344,68 @@
       });
     }
 
+    function renderConsolidated() {
+      const exposure = weightedTickerExposure();
+      const donutCanvas = document.getElementById("consolidatedDonut");
+      const barsCanvas = document.getElementById("assetClassBars");
+
+      const donutItems = drawDonutChart(donutCanvas, exposure, 8) || [];
+
+      const donutLegend = document.getElementById("consolidatedDonutLegend");
+      if (donutLegend) {
+        donutLegend.innerHTML = donutItems.map(([label, val], i) =>
+          `<span class="bar-legend-item"><span class="bar-legend-swatch" style="background:${chartPalette[i % chartPalette.length]}"></span>${label} ${(val * 100).toFixed(1)}%</span>`
+        ).join("");
+      }
+
+      const buckets = { equities: 0, bonds: 0, gold: 0, cash: 0, commodities: 0 };
+      Object.entries(exposure).forEach(([ticker, pct]) => {
+        buckets[classifyAsset(ticker)] += pct;
+      });
+
+      const barData = {
+        Equities: buckets.equities,
+        Bonds: buckets.bonds,
+        Gold: buckets.gold,
+        Cash: buckets.cash,
+        Commodities: buckets.commodities
+      };
+      drawBars(barsCanvas, barData);
+
+      const assetLegend = document.getElementById("assetClassBarsLegend");
+      if (assetLegend) {
+        assetLegend.innerHTML = Object.keys(barData).map((label, i) =>
+          `<span class="bar-legend-item"><span class="bar-legend-swatch" style="background:${chartPalette[i % chartPalette.length]}"></span>${label}</span>`
+        ).join("");
+      }
+
+      const panel = document.getElementById("summaryPanel");
+      panel.innerHTML = `
+        <div class="sum-item"><b>Total equity exposure</b><span>${(buckets.equities * 100).toFixed(1)}%</span></div>
+        <div class="sum-item"><b>Total fixed income</b><span>${(buckets.bonds * 100).toFixed(1)}%</span></div>
+        <div class="sum-item"><b>Total alternatives</b><span>${((buckets.gold + buckets.commodities) * 100).toFixed(1)}%</span></div>
+        <div class="sum-item"><b>Total gold</b><span>${(buckets.gold * 100).toFixed(1)}%</span></div>
+        <div class="sum-item"><b>Total cash</b><span>${(buckets.cash * 100).toFixed(1)}%</span></div>
+      `;
+    }
+
     // -------------------- Risk layer --------------------
     function renderRiskLayer() {
       const tbody = document.getElementById("riskTableBody");
       tbody.innerHTML = masterData.portfolios.map((p) => {
-        const eq = p.equity_pct * 100;
+        const eq = deriveEquityPct(p) * 100;
         const fi = 100 - eq;
         return `<tr>
           <td>${p.portfolio_name}</td>
           <td>${eq.toFixed(1)}%</td>
           <td>${fi.toFixed(1)}%</td>
-          <td>${p.risk_profile}</td>
-          <td>${p.rebalancing_policy}</td>
+          <td>${riskLabel(eq / 100)}</td>
+          <td>${p.rebalancing_policy?.method || "n/a"}</td>
         </tr>`;
       }).join("");
 
       const obj = {};
-      masterData.portfolios.forEach((p) => { obj[p.portfolio_name.substring(0, 16)] = p.equity_pct; });
+      masterData.portfolios.forEach((p) => { obj[p.portfolio_name.substring(0, 16)] = deriveEquityPct(p); });
       drawBars(document.getElementById("equityBars"), obj);
 
       const eqLegend = document.getElementById("equityBarsLegend");
@@ -1442,44 +1418,12 @@
 
     // -------------------- Actionability layer --------------------
     function renderActionability() {
-      const alerts = [
-        {
-          title: "Allocation Drift Watch",
-          severity: "high",
-          description: "Check if any sleeve is outside its tolerance band and rebalance only when threshold is breached.",
-          why: "Unmanaged drift silently changes your risk profile and can break the purpose of each portfolio."
-        },
-        {
-          title: "RMD Liquidity Reminder",
-          severity: "high",
-          description: "Fund Traditional IRA RMD from SGOV only to avoid forced selling in other sleeves.",
-          why: "Protects long-term allocations and avoids unnecessary disruption to defensive structure."
-        },
-        {
-          title: "Behavioral Discipline Check",
-          severity: "medium",
-          description: "No reactionary changes based on news, elections, or daily market volatility.",
-          why: "Most long-term damage comes from emotional overrides, not the allocation model itself."
-        },
-        {
-          title: "Concentration Review",
-          severity: "medium",
-          description: "Review non-intentional overlaps highlighted in orange for hidden concentration risk.",
-          why: "Unexpected duplication can magnify drawdowns in the same macro scenario."
-        },
-        {
-          title: "Volatility Preparedness",
-          severity: "low",
-          description: "Accept temporary drawdowns as normal behavior for growth and balanced sleeves.",
-          why: "Prepared expectations reduce panic selling and support consistent execution."
-        },
-        {
-          title: "Quarterly Rule Audit",
-          severity: "low",
-          description: "Confirm each portfolio still follows its written policy and objective statements.",
-          why: "Simple routine audits keep decisions aligned with purpose and prevent drift in behavior."
-        }
-      ];
+      const alerts = masterData.portfolios.map((p) => ({
+        title: `${p.portfolio_name}: Upcoming Review`,
+        severity: "medium",
+        description: `Rebalancing next review ${p.rebalancing_policy?.next_review || "n/a"}; cycle next review ${p.review_cycle?.next_review || "n/a"}.`,
+        why: `Method: ${p.rebalancing_policy?.method || "n/a"}; threshold: ${p.rebalancing_policy?.threshold_pct != null ? p.rebalancing_policy.threshold_pct + "%" : "n/a"}.`
+      }));
 
       const grid = document.getElementById("alertsGrid");
       grid.innerHTML = alerts.map((a) => {
@@ -1509,23 +1453,16 @@
 
     // -------------------- Behavioral accordion --------------------
     function renderBehavioralAccordion() {
-      const philosophies = [];
-      const rules = [];
-      const commitments = [];
-      const objectives = [];
-
-      masterData.portfolios.forEach((p) => {
-        p.core_philosophy.forEach((x) => philosophies.push(`${p.portfolio_name}: ${x}`));
-        rules.push(`${p.portfolio_name}: ${p.rebalancing_policy}`);
-        p.behavioral_commitment.forEach((x) => commitments.push(`${p.portfolio_name}: ${x}`));
-        p.long_term_objectives.forEach((x) => objectives.push(`${p.portfolio_name}: ${x}`));
-      });
+      const philosophyItems = masterData.portfolios.map((p) => `${p.portfolio_name}: ${p.core_philosophy}`);
+      const ruleItems = masterData.portfolios.map((p) => `${p.portfolio_name}: ${p.rebalancing_policy?.method || "n/a"}, threshold ${p.rebalancing_policy?.threshold_pct ?? "n/a"}%`);
+      const commitmentItems = masterData.portfolios.map((p) => `${p.portfolio_name}: ${p.behavioral_commitment}`);
+      const reviewItems = masterData.portfolios.map((p) => `${p.portfolio_name}: ${p.review_cycle?.frequency || "n/a"} (${(p.review_cycle?.months || []).join(", ")}) next ${p.review_cycle?.next_review || "n/a"}`);
 
       const sections = [
-        { title: "Philosophy", items: philosophies.slice(0, 12) },
-        { title: "Rules", items: rules.slice(0, 10) },
-        { title: "Commitments", items: commitments.slice(0, 12) },
-        { title: "Long-term Objectives", items: objectives.slice(0, 12) }
+        { title: "Core Philosophy", items: philosophyItems },
+        { title: "Rebalancing Rules", items: ruleItems },
+        { title: "Behavioral Commitments", items: commitmentItems },
+        { title: "Review Cycles", items: reviewItems }
       ];
 
       const wrap = document.getElementById("behavioralAccordion");
@@ -1556,7 +1493,7 @@
     function renderAppendix() {
       const body = document.getElementById("appendixTable");
       body.innerHTML = masterData.portfolios.map((p) => (
-        `<tr><td>${p.portfolio_name}</td><td>${p.account_type}</td><td>${p.tax_status}</td><td>${p.strategy_tag}</td></tr>`
+        `<tr><td>${p.portfolio_name}</td><td>${p.account_type}</td><td>${p.tax_status}</td><td>${p.status}</td></tr>`
       )).join("");
 
       const cloud = document.getElementById("tickerCloud");
@@ -1597,33 +1534,29 @@
       });
     }
 
-    // -------------------- shared helpers --------------------
-    function escapeHtml(text) {
-      return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
     function stampHeaderTime() {
-      const now = new Date();
-      document.getElementById("lastUpdated").textContent = now.toLocaleString();
+      const values = masterData.portfolios.map((p) => p.last_updated).filter(Boolean).sort().reverse();
+      document.getElementById("lastUpdated").textContent = values[0] || new Date().toLocaleString();
     }
 
     // -------------------- app initialization --------------------
-    function initDashboard() {
-      stampHeaderTime();
-      renderOverview();
-      renderPortfolioCards();
-      renderOverlapMap();
-      renderConsolidated();
-      renderRiskLayer();
-      renderActionability();
-      renderBehavioralAccordion();
-      renderAppendix();
-      setupNavigation();
+    async function initDashboard() {
+      try {
+        await loadPortfolioData();
+        stampHeaderTime();
+        renderOverview();
+        renderPortfolioCards();
+        renderOverlapMap();
+        renderConsolidated();
+        renderRiskLayer();
+        renderActionability();
+        renderBehavioralAccordion();
+        renderAppendix();
+        setupNavigation();
+      } catch (error) {
+        const root = document.getElementById("overviewMetrics");
+        root.innerHTML = `<div class="note-card">Failed to load canonical portfolio JSON files. ${escapeHtml(error.message)}</div>`;
+      }
     }
 
     document.addEventListener("DOMContentLoaded", initDashboard);

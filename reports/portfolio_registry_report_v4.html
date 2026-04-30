@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Registry System — Full Review Report v4</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:           #1e1e1e;
+      --bg-card:      #272727;
+      --bg-deep:      #1a1a1a;
+      --border:       #383838;
+      --border-soft:  #2e2e2e;
+      --text:         #f2f2f2;
+      --text-muted:   #a0a0a0;
+      --text-dim:     #6e6e6e;
+      --gold:         #c9a45a;
+      --gold-light:   #dfc080;
+      --amber:        #f0c97a;
+      --green:        #4caf82;
+      --green-bg:     #1a2e23;
+      --orange:       #d4854a;
+      --orange-bg:    #2b1e0f;
+      --red:          #c85c6e;
+      --red-bg:       #2b1219;
+      --radius:       6px;
+      --shadow:       0 2px 20px rgba(0,0,0,0.4);
+      --shadow-lg:    0 8px 40px rgba(0,0,0,0.55);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 17px; }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-weight: 300;
+      background-color: #1e1e1e;
+      color: #f2f2f2;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────── */
+    .report-header {
+      background: linear-gradient(135deg, #111827 0%, #1e2d50 100%);
+      padding: 64px 48px 52px;
+      position: relative; overflow: hidden;
+    }
+    .report-header::before {
+      content: ''; position: absolute; top: -60px; right: -60px;
+      width: 360px; height: 360px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,164,90,.12) 0%, transparent 70%);
+    }
+    .report-header::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--amber), var(--gold), transparent);
+    }
+    .header-eyebrow {
+      font-family: 'JetBrains Mono', monospace; font-size: .7rem;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: var(--gold-light); margin-bottom: 18px;
+    }
+    .report-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.7rem, 4vw, 2.8rem); font-weight: 700;
+      line-height: 1.2; color: var(--text); margin-bottom: 10px; max-width: 700px;
+    }
+    .version-badge {
+      display: inline-block; font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem; background: rgba(201,164,90,.18); color: var(--gold-light);
+      border: 1px solid rgba(201,164,90,.3); padding: 3px 10px;
+      border-radius: 20px; letter-spacing: .1em; margin-bottom: 24px;
+    }
+    .header-meta { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 28px; }
+    .header-badge { font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: rgba(242,242,242,.5); }
+    .header-badge span { color: var(--gold-light); }
+
+    /* ── LAYOUT ──────────────────────────────────────────────── */
+    .page-wrapper { max-width: 1020px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ── CHANGELOG ───────────────────────────────────────────── */
+    .changelog { background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--radius); margin: 32px 0 44px; overflow: hidden; }
+    .changelog-header { background: #111827; padding: 12px 22px; font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-light); }
+    .changelog-body { padding: 16px 22px; }
+    .changelog-row { display: flex; gap: 14px; align-items: flex-start; padding: 9px 0; border-bottom: 1px solid var(--border-soft); font-size: .88rem; }
+    .changelog-row:last-child { border-bottom: none; }
+    .cl-ver { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--gold); background: rgba(201,164,90,.1); padding: 2px 8px; border-radius: 20px; flex-shrink: 0; margin-top: 2px; white-space: nowrap; }
+    .cl-text { color: var(--text-muted); }
+    .cl-text strong { color: var(--text); }
+
+    /* ── TOC ──────────────────────────────────────────────────── */
+    .toc-wrapper { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 48px; overflow: hidden; }
+    .toc-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; background: #111827; cursor: pointer; user-select: none; }
+    .toc-header h2 { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 600; color: var(--text); }
+    .toc-icon { width: 24px; height: 24px; border-radius: 50%; background: rgba(201,164,90,.15); display: flex; align-items: center; justify-content: center; color: var(--gold-light); font-size: .9rem; transition: transform .3s; flex-shrink: 0; }
+    .toc-icon.open { transform: rotate(180deg); }
+    .toc-body { padding: 24px 28px; }
+    ol.toc-list { list-style: none; counter-reset: toc; }
+    ol.toc-list > li { counter-increment: toc; margin-bottom: 10px; }
+    ol.toc-list > li > a { display: flex; align-items: baseline; gap: 10px; color: var(--text-muted); text-decoration: none; font-size: .95rem; transition: color .2s; }
+    ol.toc-list > li > a::before { content: counter(toc, decimal-leading-zero) "."; font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--gold); flex-shrink: 0; }
+    ol.toc-list > li > a:hover { color: var(--gold-light); }
+
+    /* ── SECTIONS ─────────────────────────────────────────────── */
+    .report-section { margin-bottom: 44px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 28px; cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); background: #222; transition: background .2s; }
+    .section-header:hover { background: #282828; }
+    .section-header-left { display: flex; align-items: center; gap: 14px; }
+    .section-number { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--gold); letter-spacing: .1em; background: rgba(201,164,90,.12); padding: 3px 9px; border-radius: 20px; flex-shrink: 0; }
+    .section-header h2 { font-family: 'Playfair Display', serif; font-size: 1.12rem; font-weight: 600; color: var(--text); }
+    .collapse-btn { width: 28px; height: 28px; border-radius: 50%; background: rgba(242,242,242,.06); display: flex; align-items: center; justify-content: center; color: var(--text-dim); font-size: .9rem; transition: transform .3s; flex-shrink: 0; }
+    .collapse-btn.open { transform: rotate(180deg); }
+    .section-body { padding: 32px 32px 36px; }
+
+    /* ── TYPOGRAPHY ───────────────────────────────────────────── */
+    h3 { font-family: 'Playfair Display', serif; font-size: 1.08rem; font-weight: 600; color: var(--text); margin: 32px 0 14px; padding-bottom: 7px; border-bottom: 1px solid var(--border); }
+    h3:first-child { margin-top: 0; }
+    h4 { font-family: 'Source Serif 4', serif; font-size: .88rem; font-weight: 600; color: var(--text-muted); margin: 22px 0 8px; text-transform: uppercase; letter-spacing: .08em; }
+    p { margin-bottom: 16px; color: var(--text-muted); }
+    p:last-child { margin-bottom: 0; }
+    code { font-family: 'JetBrains Mono', monospace; font-size: .82em; background: rgba(201,164,90,.1); color: var(--gold-light); padding: 1px 6px; border-radius: 3px; }
+    ul { list-style: none; margin: 10px 0 18px; }
+    ul li { position: relative; padding-left: 20px; margin-bottom: 8px; color: var(--text-muted); font-size: .95rem; }
+    ul li::before { content: '—'; position: absolute; left: 0; color: var(--gold); font-weight: 600; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+    /* ── TABLES ───────────────────────────────────────────────── */
+    .table-wrapper { overflow-x: auto; margin: 18px 0 26px; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+    thead { background: #111827; }
+    thead th { padding: 12px 16px; text-align: left; font-family: 'JetBrains Mono', monospace; font-size: .68rem; letter-spacing: .09em; text-transform: uppercase; font-weight: 500; color: var(--gold-light); white-space: nowrap; }
+    tbody tr { transition: background .15s; }
+    tbody tr:nth-child(even) { background: rgba(255,255,255,.025); }
+    tbody tr:hover { background: rgba(201,164,90,.05); }
+    tbody td { padding: 11px 16px; color: var(--text-muted); border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+    tbody td:first-child { color: var(--text); }
+    .ok    { color: var(--green);      font-weight: 600; }
+    .warn  { color: var(--orange);     font-weight: 600; }
+    .err   { color: var(--red);        font-weight: 600; }
+    .fixed { color: var(--gold-light); font-weight: 600; }
+
+    /* ── CALLOUTS ─────────────────────────────────────────────── */
+    .callout { border-radius: var(--radius); padding: 16px 20px; margin: 14px 0; border-left: 3px solid; font-size: .92rem; }
+    .callout-green  { background: var(--green-bg);           border-color: var(--green);  color: var(--green);      }
+    .callout-orange { background: var(--orange-bg);          border-color: var(--orange); color: var(--orange);     }
+    .callout-red    { background: var(--red-bg);             border-color: var(--red);    color: var(--red);        }
+    .callout-gold   { background: rgba(201,164,90,.08);      border-color: var(--gold);   color: var(--gold-light); }
+    .callout-label  { font-family: 'JetBrains Mono', monospace; font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; margin-bottom: 6px; }
+    .callout p { color: inherit; margin-bottom: 0; }
+
+    /* ── SLEEVE CARDS ─────────────────────────────────────────── */
+    .sleeve-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin: 24px 0; }
+    .sleeve-card { background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 22px 20px; position: relative; overflow: hidden; transition: box-shadow .2s, border-color .2s; }
+    .sleeve-card:hover { box-shadow: var(--shadow-lg); border-color: #484848; }
+    .sleeve-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+    .c-trad::before    { background: #5a7bbf; }
+    .c-income::before  { background: var(--green); }
+    .c-taxable::before { background: var(--gold); }
+    .c-rollover::before{ background: var(--orange); }
+    .c-roth::before    { background: var(--red); }
+    .card-tag { font-family: 'JetBrains Mono', monospace; font-size: .63rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+    .sleeve-card h3 { border: none; padding: 0; margin: 0 0 3px; font-size: .98rem; }
+    .card-nick { font-style: italic; color: var(--text-dim); font-size: .83rem; margin-bottom: 14px; }
+    .card-body { font-size: .88rem; color: var(--text-muted); }
+    .card-body p { color: var(--text-muted); font-size: .88rem; }
+    .card-label { font-family: 'JetBrains Mono', monospace; font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); margin-top: 14px; margin-bottom: 5px; }
+    .pill { display: inline-block; background: rgba(242,242,242,.07); color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: .67rem; padding: 3px 10px; border-radius: 20px; margin: 2px 2px 0 0; border: 1px solid var(--border); }
+    .badge-fixed { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: .6rem; background: rgba(201,164,90,.15); color: var(--gold-light); border: 1px solid rgba(201,164,90,.25); padding: 2px 8px; border-radius: 20px; letter-spacing: .1em; margin-left: 8px; vertical-align: middle; }
+
+    /* ── SUMMARY BOX ─────────────────────────────────────────── */
+    .summary-box { background: linear-gradient(135deg,#111827 0%,#1a2540 100%); border-radius: var(--radius); padding: 36px; border: 1px solid #2a3a5e; position: relative; overflow: hidden; margin-bottom: 32px; }
+    .summary-box::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), var(--amber), var(--gold), transparent); }
+    .summary-box p { color: rgba(242,242,242,.82); font-size: 1rem; line-height: 1.9; margin-bottom: 14px; }
+    .summary-box p:last-child { margin-bottom: 0; }
+
+    /* ── SCHEMA BLOCK ────────────────────────────────────────── */
+    .schema-block { background: #111; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; margin: 14px 0; font-family: 'JetBrains Mono', monospace; font-size: .78rem; line-height: 1.7; color: var(--text-muted); overflow-x: auto; }
+    .sk { color: var(--gold-light); }
+    .sv { color: #b8e0a4; }
+    .schema-label { font-family: 'JetBrains Mono', monospace; font-size: .63rem; letter-spacing: .15em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+
+    /* ── REVIEW CYCLE GRID ───────────────────────────────────── */
+    .rc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 12px; margin: 16px 0 24px; }
+    .rc-cell { background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px 16px; }
+    .rc-label { font-family: 'JetBrains Mono', monospace; font-size: .6rem; text-transform: uppercase; letter-spacing: .12em; color: var(--text-dim); margin-bottom: 4px; }
+    .rc-val { font-family: 'JetBrains Mono', monospace; font-size: .84rem; color: var(--gold-light); }
+
+    /* ── WARNING / FIXED ITEMS ───────────────────────────────── */
+    .wi { border-radius: var(--radius); padding: 13px 18px; margin-bottom: 10px; border-left: 3px solid; }
+    .wi-warn  { background: var(--orange-bg); border-color: var(--orange); }
+    .wi-fixed { background: rgba(201,164,90,.06); border-color: var(--gold); }
+    .wi-red   { background: var(--red-bg); border-color: var(--red); }
+    .wi-label { font-family: 'JetBrains Mono', monospace; font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; margin-bottom: 5px; }
+    .wi-warn  .wi-label { color: var(--orange); }
+    .wi-fixed .wi-label { color: var(--gold-light); }
+    .wi-red   .wi-label { color: var(--red); }
+    .wi p { color: var(--text-muted); margin: 0; font-size: .9rem; }
+
+    /* ── CORRECTION NOTICE ───────────────────────────────────── */
+    .cn { background: rgba(201,164,90,.08); border: 1px solid rgba(201,164,90,.25); border-radius: var(--radius); padding: 13px 18px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; }
+    .cn p { font-family: 'JetBrains Mono', monospace; font-size: .74rem; letter-spacing: .04em; color: var(--gold-light); margin: 0; }
+
+    /* ── ACTION ITEMS ────────────────────────────────────────── */
+    .ai { display: flex; gap: 14px; align-items: flex-start; padding: 14px 18px; background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; }
+    .ai-num { font-family: 'JetBrains Mono', monospace; font-size: .74rem; font-weight: 500; color: var(--gold); background: rgba(201,164,90,.12); padding: 2px 9px; border-radius: 20px; flex-shrink: 0; margin-top: 2px; }
+    .ai-text { font-size: .92rem; color: var(--text-muted); }
+    .ai-text strong { color: var(--text); }
+
+    /* ── ASSESSMENT BANNER ───────────────────────────────────── */
+    .banner { background: #111827; border: 1px solid #2a3a5e; color: var(--text); border-radius: var(--radius); padding: 22px 28px; font-family: 'JetBrains Mono', monospace; font-size: .8rem; line-height: 1.7; margin-top: 28px; }
+    .banner .ln { margin-bottom: 4px; }
+    .banner .ln strong { color: var(--gold-light); }
+
+    /* ── FAMILY MESSAGE ──────────────────────────────────────── */
+    .family-msg { background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; margin-top: 14px; font-style: italic; color: var(--text-muted); font-size: .95rem; }
+    .family-msg::before { content: '👨‍👩‍👧 Family Message: '; font-style: normal; font-weight: 600; color: var(--gold-light); font-size: .78rem; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 6px; }
+
+    /* ── SLEEVE DETAIL PANELS ────────────────────────────────── */
+    .sleeve-panel { background: var(--bg-deep); border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 26px 22px; margin: 20px 0; position: relative; overflow: hidden; }
+    .sleeve-panel::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 3px; }
+    .sp-trad::before    { background: #5a7bbf; }
+    .sp-income::before  { background: var(--green); }
+    .sp-taxable::before { background: var(--gold); }
+    .sp-rollover::before{ background: var(--orange); }
+    .sp-roth::before    { background: var(--red); }
+    .sp-tag { font-family: 'JetBrains Mono', monospace; font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+    .sp-title { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+
+    /* ── BACK TO TOP ──────────────────────────────────────────── */
+    #btt { position: fixed; bottom: 32px; right: 32px; width: 48px; height: 48px; background: #111827; color: var(--gold-light); border: 1px solid rgba(201,164,90,.3); border-radius: 50%; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(12px); transition: opacity .3s, transform .3s, background .2s; z-index: 999; }
+    #btt.visible { opacity: 1; transform: translateY(0); }
+    #btt:hover { background: var(--gold); color: #111; }
+
+    /* ── COLLAPSE ANIMATION ───────────────────────────────────── */
+    .cb { overflow: hidden; transition: max-height .4s cubic-bezier(.4,0,.2,1), opacity .35s; max-height: 0; opacity: 0; }
+    .cb.open { max-height: 9999px; opacity: 1; }
+
+    /* ── PROGRESS BAR ─────────────────────────────────────────── */
+    .compliance-bar { display: flex; gap: 6px; margin: 20px 0 6px; }
+    .compliance-seg { height: 6px; border-radius: 3px; flex: 1; }
+    .seg-done    { background: var(--green); }
+    .seg-pending { background: var(--border); }
+    .compliance-label { font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--text-dim); margin-bottom: 18px; }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 680px) {
+      .report-header { padding: 40px 22px 36px; }
+      .section-body { padding: 20px 16px 24px; }
+      .sleeve-grid { grid-template-columns: 1fr; }
+      .rc-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!--  HEADER                                                        -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<header class="report-header">
+  <div class="header-eyebrow">Portfolio Registry System</div>
+  <h1>Full Review Report</h1>
+  <div class="version-badge">v4 — All Five Sleeves Canonical Schema Complete</div>
+  <div class="header-meta">
+    <div class="header-badge">Date <span>April 2026</span></div>
+    <div class="header-badge">Sleeves <span>5 of 5 Corrected</span></div>
+    <div class="header-badge">Schema <span>Canonical v1 — Full Compliance</span></div>
+    <div class="header-badge">Next Review <span>2026-06-15</span></div>
+  </div>
+</header>
+
+<div class="page-wrapper">
+
+  <!-- ── CHANGELOG ─────────────────────────────────────────────── -->
+  <div class="changelog">
+    <div class="changelog-header">Report Version History</div>
+    <div class="changelog-body">
+      <div class="changelog-row">
+        <div class="cl-ver">v1</div>
+        <div class="cl-text">Initial full report — Clarity Engine, JSON Validation, Quarterly Review. All five portfolios documented. Schema gaps identified across all files.</div>
+      </div>
+      <div class="changelog-row">
+        <div class="cl-ver">v2</div>
+        <div class="cl-text"><strong>Rollover IRA:</strong> Cadence corrected to June/December. Holdings confirmed. Schema standardized. &nbsp;|&nbsp; <strong>Income Strategy:</strong> status → active-experiment. Two-stage review cycle defined. Schema standardized. Dark theme applied.</div>
+      </div>
+      <div class="changelog-row">
+        <div class="cl-ver">v3</div>
+        <div class="cl-text"><strong>Traditional IRA:</strong> 5 identity fields added. Review cadence corrected. intentional_overlap corrected to SCHD + SGOV only. current_holdings confirmed. Legacy field owner removed.</div>
+      </div>
+      <div class="changelog-row">
+        <div class="cl-ver">v4</div>
+        <div class="cl-text"><strong>All five sleeves now canonical-schema compliant.</strong> &nbsp;|&nbsp; <strong>Taxable Brokerage:</strong> 6 fields added, platform→broker, target_allocation lifted, behavioral_commitment added, review_cycle added. &nbsp;|&nbsp; <strong>Roth IRA:</strong> broker/version/last_updated/behavioral_commitment added, final_allocation→target_allocation, governance_rules→rebalancing_policy, current_holdings confirmed, review_cycle added. &nbsp;|&nbsp; All prior corrections retained.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOC ───────────────────────────────────────────────────── -->
+  <nav class="toc-wrapper">
+    <div class="toc-header" onclick="toggleTOC()">
+      <h2>Table of Contents</h2>
+      <div class="toc-icon open" id="toc-icon">▲</div>
+    </div>
+    <div class="cb open" id="toc-body">
+      <div class="toc-body">
+        <ol class="toc-list">
+          <li><a href="#s1">High-Level Summary</a></li>
+          <li><a href="#s2">Clarity Engine Output — All Five Sleeves</a></li>
+          <li><a href="#s3">JSON Structure Validation — Full Canonical Schema Report</a></li>
+          <li><a href="#s4">Quarterly Portfolio Review</a></li>
+          <li><a href="#s5">Final Notes &amp; VS Code Copilot Session Queue</a></li>
+        </ol>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  SECTION 1 — HIGH-LEVEL SUMMARY                               -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="report-section" id="s1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left"><span class="section-number">01</span><h2>High-Level Summary</h2></div>
+      <div class="collapse-btn open">▲</div>
+    </div>
+    <div class="cb open">
+      <div class="section-body">
+
+        <div class="cn"><span>🔧</span><p>REPORT v4 — All five sleeves are now canonical-schema compliant in reporting. This is the definitive reference document for the VS Code Copilot JSON update session. No JSON files were modified.</p></div>
+
+        <!-- Compliance progress bar -->
+        <div class="schema-label">Schema Compliance Progress</div>
+        <div class="compliance-bar">
+          <div class="compliance-seg seg-done" title="Traditional IRA"></div>
+          <div class="compliance-seg seg-done" title="Income Strategy"></div>
+          <div class="compliance-seg seg-done" title="Taxable Brokerage"></div>
+          <div class="compliance-seg seg-done" title="Rollover IRA"></div>
+          <div class="compliance-seg seg-done" title="Roth IRA"></div>
+        </div>
+        <div class="compliance-label">5 / 5 sleeves corrected in reporting — ready for Copilot execution</div>
+
+        <div class="summary-box">
+          <p>You operate five distinct investment sleeves, each designed with a clear standalone philosophy and purpose. The system is philosophically coherent, behaviorally well-documented, and rules-based across every account.</p>
+          <p>As of v4, all five sleeves are fully corrected in reporting and conform to the canonical schema. The VS Code Copilot session can now execute all field-level JSON updates directly from this document without ambiguity.</p>
+          <p>Overlap across sleeves — SCHD, VXUS, SGOV, VTI, XLV — is acknowledged and deliberately labeled as intentional where applicable. Each sleeve's intentional_overlap array now contains only tickers actually present in that sleeve.</p>
+          <p>The review cadence is now unified: Traditional IRA, Rollover IRA, Taxable Brokerage, and Roth IRA all follow the June/December rhythm. The Income Strategy follows its own two-stage evaluation timeline as an active experiment.</p>
+          <p>The single remaining open item is the Income Strategy evaluation start date — once confirmed, the four date placeholders in its review_cycle object can be populated.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  SECTION 2 — CLARITY ENGINE                                   -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="report-section" id="s2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left"><span class="section-number">02</span><h2>Clarity Engine Output — All Five Sleeves</h2></div>
+      <div class="collapse-btn open">▲</div>
+    </div>
+    <div class="cb open">
+      <div class="section-body">
+
+        <h3>Portfolio Snapshot Cards</h3>
+        <div class="sleeve-grid">
+
+          <!-- Traditional IRA -->
+          <div class="sleeve-card c-trad">
+            <div class="card-tag">① Traditional IRA <span class="badge-fixed">v3</span></div>
+            <h3>Defensive Resilient Portfolio</h3>
+            <div class="card-nick">"The Safety Vault"</div>
+            <div class="card-body">
+              <p>The most conservative portfolio in the system — a bunker designed to protect, not grow aggressively. Holds short-term government bonds (VGSH, VTIP), dividend stocks (SCHD), low-volatility equities (USMV), gold (GLDM), and a cash vehicle (SGOV) whose sole job is funding the annual RMD in December without selling anything else.</p>
+              <div class="card-label">Holdings</div>
+              <span class="pill">GLDM</span><span class="pill">SCHD</span><span class="pill">SGOV</span><span class="pill">USMV</span><span class="pill">VGSH</span><span class="pill">VTIP</span>
+              <div class="card-label">Schema</div>
+              <span class="pill">tax-deferred</span><span class="pill">active</span><span class="pill">Jun/Dec</span>
+            </div>
+          </div>
+
+          <!-- Income Strategy -->
+          <div class="sleeve-card c-income">
+            <div class="card-tag">② Income Strategy <span class="badge-fixed">v2</span></div>
+            <h3>Income Strategy – Test Sleeve</h3>
+            <div class="card-nick">"The Income Experiment"</div>
+            <div class="card-body">
+              <p>A $7,500 experiment testing whether covered-call income (JEPI), dividend growth (SCHD), and Treasury ballast (BIL) can generate reliable monthly income while staying invested. A matching $7,500 SGOV position serves as the control group. Pass/fail evaluation at 12 months. Light diagnostic review at 3 months — observe only, no rebalancing.</p>
+              <div class="card-label">Holdings</div>
+              <span class="pill">JEPI</span><span class="pill">SCHD</span><span class="pill">BIL</span>
+              <div class="card-label">Schema</div>
+              <span class="pill">taxable</span><span class="pill">active-experiment</span><span class="pill">12-mo eval</span>
+            </div>
+          </div>
+
+          <!-- Taxable Brokerage -->
+          <div class="sleeve-card c-taxable">
+            <div class="card-tag">③ Taxable Brokerage <span class="badge-fixed">v4</span></div>
+            <h3>Conservative Growth / Resilient 50-50</h3>
+            <div class="card-nick">"The Balanced Bridge"</div>
+            <div class="card-body">
+              <p>A clean, tax-efficient split: 50% ultra-safe short-term Treasuries (SGOV) anchoring the account, 50% global equities (VTI, SCHD, VXUS) generating long-term growth. Designed to avoid unnecessary sales, minimize taxes, and require minimal intervention. Reviewed June and December; rebalanced only when a ±5% drift trigger is breached.</p>
+              <div class="card-label">Holdings</div>
+              <span class="pill">SGOV</span><span class="pill">VTI</span><span class="pill">SCHD</span><span class="pill">VXUS</span>
+              <div class="card-label">Schema</div>
+              <span class="pill">taxable</span><span class="pill">active</span><span class="pill">Jun/Dec</span>
+            </div>
+          </div>
+
+          <!-- Rollover IRA -->
+          <div class="sleeve-card c-rollover">
+            <div class="card-tag">④ Rollover IRA <span class="badge-fixed">v2</span></div>
+            <h3>Balanced Growth with Inflation Awareness</h3>
+            <div class="card-nick">"The All-Weather Engine"</div>
+            <div class="card-body">
+              <p>The most diversified portfolio in the system — eight ETFs spanning US equities, international equities, technology, healthcare, global bonds, inflation-protected bonds, and commodities. Engineered to survive any macro regime without predicting which one is next. Reviewed June and December; next review 2026-06-15.</p>
+              <div class="card-label">Holdings</div>
+              <span class="pill">VTI</span><span class="pill">SCHD</span><span class="pill">XLK</span><span class="pill">VXUS</span><span class="pill">XLV</span><span class="pill">BNDW</span><span class="pill">VTIP</span><span class="pill">PDBC</span>
+              <div class="card-label">Schema</div>
+              <span class="pill">tax-deferred</span><span class="pill">active</span><span class="pill">Jun/Dec</span>
+            </div>
+          </div>
+
+          <!-- Roth IRA -->
+          <div class="sleeve-card c-roth">
+            <div class="card-tag">⑤ Roth IRA <span class="badge-fixed">v4</span></div>
+            <h3>Growth Survival Portfolio</h3>
+            <div class="card-nick">"The Long-Game Champion"</div>
+            <div class="card-body">
+              <p>The most growth-oriented and tax-advantaged sleeve — everything compounds tax-free. Eight positions: US total market (FZROX), international (VXUS), dividend quality (SCHD), healthcare defense (XLV), semiconductor growth (SMH), intermediate Treasuries (VGIT), gold (GLDM), and a capped single-stock position in Vertiv (VRT, ≤3%). Reviewed June and December.</p>
+              <div class="card-label">Holdings</div>
+              <span class="pill">FZROX</span><span class="pill">VXUS</span><span class="pill">SCHD</span><span class="pill">XLV</span><span class="pill">SMH</span><span class="pill">VGIT</span><span class="pill">GLDM</span><span class="pill">VRT</span>
+              <div class="card-label">Schema</div>
+              <span class="pill">tax-free</span><span class="pill">active</span><span class="pill">Jun/Dec</span>
+            </div>
+          </div>
+
+        </div><!-- /.sleeve-grid -->
+
+        <hr class="divider">
+        <h3>Cross-Portfolio Master Comparison — v4</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Traditional IRA</th>
+                <th>Income Strategy</th>
+                <th>Taxable Brokerage</th>
+                <th>Rollover IRA</th>
+                <th>Roth IRA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>account_type</code></td>   <td>Traditional IRA</td>  <td>Taxable Brokerage</td><td>Taxable Brokerage</td><td>Rollover IRA</td>   <td>Roth IRA</td></tr>
+              <tr><td><code>tax_status</code></td>     <td>tax-deferred</td>     <td>taxable</td>          <td>taxable</td>          <td>tax-deferred</td>   <td>tax-free</td></tr>
+              <tr><td><code>broker</code></td>         <td>Fidelity</td>         <td>Fidelity</td>         <td>Fidelity</td>         <td>Fidelity</td>       <td>Fidelity</td></tr>
+              <tr><td><code>status</code></td>         <td>active</td>           <td>active-experiment</td><td>active</td>           <td>active</td>         <td>active</td></tr>
+              <tr><td><code>version</code></td>        <td>1.0</td>              <td>1.0</td>              <td>1.0</td>              <td>1.0</td>            <td>1.0</td></tr>
+              <tr><td>Primary Goal</td>                <td>Preserve &amp; protect</td><td>Income test</td>  <td>Balanced growth</td>  <td>All-weather</td>    <td>Long-term growth</td></tr>
+              <tr><td>Risk Level</td>                  <td>Very Low</td>         <td>Low-Moderate</td>     <td>Low-Moderate</td>     <td>Moderate</td>       <td>Moderate-High</td></tr>
+              <tr><td>Income Focus</td>                <td>RMD only</td>         <td>Yes (primary)</td>    <td>No</td>               <td>No</td>             <td>No</td></tr>
+              <tr><td>Review Cadence</td>              <td>Jun / Dec</td>        <td>3-mo + 12-mo</td>     <td>Jun / Dec</td>        <td>Jun / Dec</td>      <td>Jun / Dec</td></tr>
+              <tr><td>Gold Held</td>                   <td>GLDM ✅</td>          <td>No</td>               <td>No</td>               <td>No</td>             <td>GLDM ✅</td></tr>
+              <tr><td>Bonds Held</td>                  <td>VGSH, VTIP</td>       <td>BIL</td>              <td>No</td>               <td>BNDW, VTIP</td>     <td>VGIT</td></tr>
+              <tr><td>Unique Positions</td>            <td>USMV, VGSH</td>       <td>JEPI, BIL</td>        <td>—</td>                <td>XLK, BNDW, PDBC</td><td>FZROX, SMH, VGIT, VRT</td></tr>
+              <tr><td>Schema v4 Status</td>            <td class="fixed">✅ v3</td><td class="fixed">✅ v2</td><td class="fixed">✅ v4</td><td class="fixed">✅ v2</td><td class="fixed">✅ v4</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr class="divider">
+        <h3>Family-Friendly Summary</h3>
+        <div class="family-msg">
+          "We have five accounts, each with a different job. Our safety vault — the Traditional IRA — holds high-quality bonds and a little gold, and pays itself out once a year in December automatically. Our income experiment is a small $7,500 test to see if a different income strategy is worth scaling up — we will know the answer in 12 months. Our taxable bridge account is a simple half-and-half split between safe Treasuries and global stocks, designed to be boring and low-maintenance. Our all-weather engine is built to handle any economic condition — bull markets, recessions, inflation — without needing to predict which one comes next. And our long-term tax-free growth account is the one we never touch for income; it just compounds quietly for as long as possible. All five are reviewed together every June and December. None of them react to headlines."
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  SECTION 3 — JSON VALIDATION — FULL CANONICAL SCHEMA REPORT  -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="report-section" id="s3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left"><span class="section-number">03</span><h2>JSON Structure Validation — Full Canonical Schema Report</h2></div>
+      <div class="collapse-btn open">▲</div>
+    </div>
+    <div class="cb open">
+      <div class="section-body">
+
+        <h3>Canonical Schema Reference</h3>
+        <div class="schema-label">Required Fields</div>
+        <div class="schema-block">
+<span class="sk">portfolio_id</span>, <span class="sk">portfolio_name</span>, <span class="sk">account_type</span>, <span class="sk">tax_status</span>, <span class="sk">broker</span>,
+<span class="sk">last_updated</span>, <span class="sk">version</span>, <span class="sk">status</span>, <span class="sk">core_philosophy</span>,
+<span class="sk">behavioral_commitment</span>, <span class="sk">intentional_overlap</span>, <span class="sk">target_allocation</span>,
+<span class="sk">current_holdings</span>, <span class="sk">rebalancing_policy</span>
+        </div>
+        <div class="schema-label">Field Rules</div>
+        <div class="schema-block">
+<span class="sk">tax_status</span>         → <span class="sv">"taxable"</span> | <span class="sv">"tax-deferred"</span> | <span class="sv">"tax-free"</span>
+<span class="sk">status</span>             → <span class="sv">"active"</span> | <span class="sv">"active-experiment"</span> | <span class="sv">"under-review"</span>
+<span class="sk">broker</span>             → <span class="sv">"Fidelity"</span>
+<span class="sk">last_updated</span>       → ISO 8601 e.g. <span class="sv">"2026-03-31"</span>
+<span class="sk">target_allocation</span>  → flat object  TICKER: percentage
+<span class="sk">current_holdings</span>   → flat object  TICKER: { percentage, notes }
+<span class="sk">intentional_overlap</span>→ only tickers actually present in the sleeve
+        </div>
+
+        <hr class="divider">
+        <h3>Master Compliance Table — v4 Final</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Canonical Field</th>
+                <th>Traditional IRA</th>
+                <th>Income Strategy</th>
+                <th>Taxable Brokerage</th>
+                <th>Rollover IRA</th>
+                <th>Roth IRA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>portfolio_id</code></td>          <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="ok">✅</td></tr>
+              <tr><td><code>portfolio_name</code></td>        <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="ok">✅</td></tr>
+              <tr><td><code>account_type</code></td>          <td class="fixed">✅ v3</td> <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td> <td class="fixed">✅ v2</td> <td class="ok">✅</td></tr>
+              <tr><td><code>tax_status</code></td>            <td class="fixed">✅ v3</td> <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td> <td class="ok">✅</td>       <td class="ok">✅</td></tr>
+              <tr><td><code>broker</code></td>                <td class="fixed">✅ v3</td> <td class="ok">✅</td>       <td class="fixed">✅ v4</td> <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td></tr>
+              <tr><td><code>last_updated</code></td>          <td class="fixed">✅ v3 ISO</td><td class="fixed">✅ v2 ISO</td><td class="fixed">✅ v4</td><td class="fixed">✅ v2 ISO</td><td class="fixed">✅ v4</td></tr>
+              <tr><td><code>version</code></td>               <td class="fixed">✅ v3</td> <td class="fixed">✅ v2</td> <td class="ok">✅</td>       <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td></tr>
+              <tr><td><code>status</code></td>                <td class="fixed">✅ v3</td> <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td> <td class="fixed">✅ v2</td> <td class="ok">✅</td></tr>
+              <tr><td><code>core_philosophy</code></td>       <td class="ok">✅</td>       <td class="fixed">✅ v2</td> <td class="ok">✅</td>       <td class="fixed">✅ v2</td> <td class="ok">✅</td></tr>
+              <tr><td><code>behavioral_commitment</code></td> <td class="ok">✅</td>       <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td> <td class="ok">✅</td>       <td class="fixed">✅ v4</td></tr>
+              <tr><td><code>target_allocation</code></td>     <td class="ok">✅</td>       <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td> <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td></tr>
+              <tr><td><code>current_holdings</code></td>      <td class="fixed">✅ v3</td> <td class="fixed">✅ v2 {}</td><td class="fixed">✅ v4</td><td class="fixed">✅ v2</td><td class="fixed">✅ v4</td></tr>
+              <tr><td><code>rebalancing_policy</code></td>    <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="ok">✅</td>       <td class="fixed">✅ v4</td></tr>
+              <tr><td><code>intentional_overlap</code></td>   <td class="fixed">✅ v3 fixed</td><td class="fixed">✅ v2 fixed</td><td class="ok">✅</td><td class="ok">✅</td><td class="ok">✅</td></tr>
+              <tr><td><code>review_cycle</code></td>          <td class="fixed">✅ v3</td> <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td> <td class="fixed">✅ v2</td> <td class="fixed">✅ v4</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <hr class="divider">
+
+        <!-- ─── TRADITIONAL IRA ─── -->
+        <h3>① Traditional IRA — Corrected Schema (v3)</h3>
+        <div class="sleeve-panel sp-trad">
+          <div class="sp-tag">Traditional IRA · tax-deferred · active · Fidelity · v1.0</div>
+          <div class="sp-title">Defensive Resilient Portfolio — "The Safety Vault"</div>
+
+          <h4>Identity Fields Corrected</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Field</th><th>Was</th><th>Corrected To</th></tr></thead>
+              <tbody>
+                <tr><td><code>account_type</code></td><td class="warn">owner: "Traditional IRA"</td><td class="fixed">"Traditional IRA"</td></tr>
+                <tr><td><code>tax_status</code></td>  <td class="err">absent</td>                    <td class="fixed">"tax-deferred"</td></tr>
+                <tr><td><code>broker</code></td>       <td class="err">absent</td>                    <td class="fixed">"Fidelity"</td></tr>
+                <tr><td><code>last_updated</code></td> <td class="warn">"March 2026"</td>             <td class="fixed">"2026-03-31"</td></tr>
+                <tr><td><code>version</code></td>      <td class="err">absent</td>                    <td class="fixed">"1.0"</td></tr>
+                <tr><td><code>status</code></td>       <td class="err">absent</td>                    <td class="fixed">"active"</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>intentional_overlap — Corrected</h4>
+          <div class="wi wi-red"><div class="wi-label">❌ Error — Removed</div><p>VTI, VXUS, XLV were listed but are not held in this sleeve. Copy-paste artifact from other files.</p></div>
+          <div class="wi wi-fixed"><div class="wi-label">✅ Corrected</div><p>["SCHD", "SGOV"] — only tickers actually present in the Traditional IRA and shared across other sleeves.</p></div>
+
+          <h4>Review Cycle — Corrected</h4>
+          <div class="rc-grid">
+            <div class="rc-cell"><div class="rc-label">Month A</div><div class="rc-val">June</div></div>
+            <div class="rc-cell"><div class="rc-label">Label A</div><div class="rc-val">Mid-Year Review</div></div>
+            <div class="rc-cell"><div class="rc-label">Month B</div><div class="rc-val">December</div></div>
+            <div class="rc-cell"><div class="rc-label">Label B</div><div class="rc-val">Year-End / RMD</div></div>
+            <div class="rc-cell"><div class="rc-label">Next Review</div><div class="rc-val">2026-06-15</div></div>
+            <div class="rc-cell"><div class="rc-label">Trigger</div><div class="rc-val">±3–5% drift</div></div>
+          </div>
+
+          <h4>Confirmed current_holdings</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Ticker</th><th>Target %</th><th>In overlap?</th><th>Role</th></tr></thead>
+              <tbody>
+                <tr><td>VGSH</td><td>35%</td><td class="warn">No</td><td>Short-term gov't bonds — primary defensive anchor</td></tr>
+                <tr><td>GLDM</td><td>15%</td><td class="warn">No</td><td>Gold — structural crisis hedge, not a trade</td></tr>
+                <tr><td>SCHD</td><td>15%</td><td class="ok">Yes</td><td>Quality dividend equities — cross-sleeve overlap</td></tr>
+                <tr><td>VTIP</td><td>15%</td><td class="warn">No</td><td>Inflation-protected bonds</td></tr>
+                <tr><td>USMV</td><td>10%</td><td class="warn">No</td><td>Low-volatility U.S. equities — unique to this sleeve</td></tr>
+                <tr><td>SGOV</td><td>10%</td><td class="ok">Yes</td><td>Cash equivalent — RMD funding vehicle</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Legacy Fields — Disposition</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Legacy Field</th><th>Action</th><th>Target Location</th></tr></thead>
+              <tbody>
+                <tr><td><code>owner</code></td>                  <td class="fixed">Remove</td>         <td>Replaced by <code>account_type</code></td></tr>
+                <tr><td><code>rmd_policy</code></td>             <td class="ok">Retain</td>             <td>Keep as named operational block — critical governance rule</td></tr>
+                <tr><td><code>gold_policy</code></td>            <td class="ok">Retain → notes</td>    <td>Move under <code>notes</code></td></tr>
+                <tr><td><code>phase_execution_history</code></td><td class="ok">Retain → notes</td>    <td>Move under <code>notes</code></td></tr>
+                <tr><td><code>next_major_action</code></td>      <td class="ok">Retain → notes</td>    <td>Move under <code>notes</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ─── INCOME STRATEGY ─── -->
+        <h3>② Income Strategy — Corrected Schema (v2)</h3>
+        <div class="sleeve-panel sp-income">
+          <div class="sp-tag">Taxable Brokerage · taxable · active-experiment · Fidelity · v1.0</div>
+          <div class="sp-title">Income Strategy – Test Sleeve — "The Income Experiment"</div>
+
+          <h4>Identity Fields Corrected</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Field</th><th>Was</th><th>Corrected To</th></tr></thead>
+              <tbody>
+                <tr><td><code>account_type</code></td> <td class="err">absent</td>         <td class="fixed">"Taxable Brokerage"</td></tr>
+                <tr><td><code>tax_status</code></td>   <td class="err">absent</td>         <td class="fixed">"taxable"</td></tr>
+                <tr><td><code>last_updated</code></td> <td class="err">null</td>           <td class="fixed">"2026-04-29"</td></tr>
+                <tr><td><code>version</code></td>      <td class="err">absent</td>         <td class="fixed">"1.0"</td></tr>
+                <tr><td><code>status</code></td>       <td class="err">absent</td>         <td class="fixed">"active-experiment"</td></tr>
+                <tr><td><code>target_allocation</code></td><td class="warn">allocations</td><td class="fixed">target_allocation</td></tr>
+                <tr><td><code>core_philosophy</code></td><td class="warn">in metadata</td><td class="fixed">top-level field</td></tr>
+                <tr><td><code>behavioral_commitment</code></td><td class="warn">in metadata</td><td class="fixed">top-level field</td></tr>
+                <tr><td><code>current_holdings</code></td><td class="err">absent</td>     <td class="fixed">{} — pending deployment confirmation</td></tr>
+                <tr><td><code>intentional_overlap</code></td><td class="warn">included VXUS, VTI, XLV</td><td class="fixed">["SCHD", "SGOV"] only</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Review Cycle</h4>
+          <div class="rc-grid">
+            <div class="rc-cell"><div class="rc-label">Evaluation Start</div><div class="rc-val">YYYY-MM-DD</div></div>
+            <div class="rc-cell"><div class="rc-label">Light Review (3-mo)</div><div class="rc-val">YYYY-MM-DD</div></div>
+            <div class="rc-cell"><div class="rc-label">Primary Eval (12-mo)</div><div class="rc-val">YYYY-MM-DD</div></div>
+            <div class="rc-cell"><div class="rc-label">Next Review</div><div class="rc-val">YYYY-MM-DD</div></div>
+          </div>
+          <div class="callout callout-gold"><div class="callout-label">📋 Action Required</div><p>Confirm the Income Strategy funding start date. All four date fields above are placeholders until that date is recorded.</p></div>
+
+          <h4>Light Review Narrative (3 Months)</h4>
+          <ul>
+            <li>Diagnostic only — no rebalancing permitted at this stage</li>
+            <li>Observe portfolio behavior under normal market conditions</li>
+            <li>Check income consistency (JEPI monthly distributions)</li>
+            <li>Note any behavioral stress or urge to exit the strategy</li>
+            <li>Compare total return trajectory to SGOV control — document, do not act</li>
+          </ul>
+
+          <h4>Primary Review Narrative (12 Months)</h4>
+          <ul>
+            <li>Evaluate total return versus SGOV benchmark</li>
+            <li>Assess income stability across all 12 distribution months</li>
+            <li>Assess drawdown severity and emotional tolerability</li>
+            <li>Assess behavioral experience throughout the evaluation period</li>
+            <li><strong>Pass:</strong> total return ≥ SGOV minus 1.5%; income stable; no abandonment desire</li>
+            <li><strong>Fail:</strong> underperforms SGOV by more than 3%; income unreliable; behavioral stress causes exit desire</li>
+            <li><strong>Decision:</strong> continue as-is, adjust allocation, or replace with a different income structure</li>
+          </ul>
+        </div>
+
+        <!-- ─── TAXABLE BROKERAGE ─── -->
+        <h3>③ Taxable Brokerage — Corrected Schema (v4)</h3>
+        <div class="sleeve-panel sp-taxable">
+          <div class="sp-tag">Taxable Brokerage · taxable · active · Fidelity · v1.0</div>
+          <div class="sp-title">Conservative Growth / Resilient 50-50 — "The Balanced Bridge"</div>
+
+          <h4>Identity Fields Corrected</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Field</th><th>Was</th><th>Corrected To</th></tr></thead>
+              <tbody>
+                <tr><td><code>account_type</code></td>          <td class="warn">owner: "Personal Taxable Brokerage Account"</td><td class="fixed">"Taxable Brokerage"</td></tr>
+                <tr><td><code>tax_status</code></td>            <td class="err">absent</td>                <td class="fixed">"taxable"</td></tr>
+                <tr><td><code>broker</code></td>                <td class="warn">platform: "Fidelity"</td> <td class="fixed">broker: "Fidelity"</td></tr>
+                <tr><td><code>last_updated</code></td>          <td class="err">absent</td>                <td class="fixed">"2026-04-29"</td></tr>
+                <tr><td><code>version</code></td>               <td class="ok">1.0 ✅</td>                <td class="ok">retain</td></tr>
+                <tr><td><code>status</code></td>                <td class="err">absent</td>                <td class="fixed">"active"</td></tr>
+                <tr><td><code>behavioral_commitment</code></td> <td class="err">absent</td>                <td class="fixed">add — see content below</td></tr>
+                <tr><td><code>target_allocation</code></td>     <td class="warn">nested inside structure{}</td><td class="fixed">lifted to top-level flat object</td></tr>
+                <tr><td><code>current_holdings</code></td>      <td class="err">absent</td>                <td class="fixed">{} — see confirmed tickers below</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>behavioral_commitment — Added (v4)</h4>
+          <ul>
+            <li>Do not rebalance based on headlines, news events, or short-term price action</li>
+            <li>Rebalance only when a ±5% drift trigger is formally breached at review time</li>
+            <li>Maintain tax efficiency — avoid unnecessary sales in the taxable account</li>
+            <li>No individual stock positions inside this core portfolio</li>
+            <li>Ignore market volatility that does not breach allocation bands</li>
+          </ul>
+
+          <h4>target_allocation — Lifted to Top Level</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Ticker</th><th>Target %</th><th>Role</th></tr></thead>
+              <tbody>
+                <tr><td>SGOV</td><td>50%</td><td>Stability and capital protection anchor</td></tr>
+                <tr><td>VTI</td> <td>30%</td><td>Core U.S. growth engine</td></tr>
+                <tr><td>SCHD</td><td>10%</td><td>Quality dividend exposure</td></tr>
+                <tr><td>VXUS</td><td>10%</td><td>Global diversification</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Confirmed current_holdings</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Ticker</th><th>Shares</th><th>Approx. Allocation</th><th>In overlap?</th></tr></thead>
+              <tbody>
+                <tr><td>SGOV</td><td>696</td><td>49–50%</td><td class="ok">Yes</td></tr>
+                <tr><td>VTI</td> <td>128</td><td>30%</td>  <td class="ok">Yes</td></tr>
+                <tr><td>SCHD</td><td>517</td><td>10%</td>  <td class="ok">Yes</td></tr>
+                <tr><td>VXUS</td><td>188</td><td>10%</td>  <td class="ok">Yes</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Review Cycle — Added (v4)</h4>
+          <div class="rc-grid">
+            <div class="rc-cell"><div class="rc-label">Month A</div><div class="rc-val">June</div></div>
+            <div class="rc-cell"><div class="rc-label">Label A</div><div class="rc-val">Mid-Year Review</div></div>
+            <div class="rc-cell"><div class="rc-label">Month B</div><div class="rc-val">December</div></div>
+            <div class="rc-cell"><div class="rc-label">Label B</div><div class="rc-val">Year-End Review</div></div>
+            <div class="rc-cell"><div class="rc-label">Next Review</div><div class="rc-val">2026-06-15</div></div>
+            <div class="rc-cell"><div class="rc-label">Trigger</div><div class="rc-val">±5% drift</div></div>
+          </div>
+
+          <h4>Legacy Fields — Disposition</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Legacy Field</th><th>Action</th><th>Replacement</th></tr></thead>
+              <tbody>
+                <tr><td><code>owner</code></td>   <td class="fixed">Remove</td><td>Replaced by <code>account_type: "Taxable Brokerage"</code></td></tr>
+                <tr><td><code>platform</code></td><td class="fixed">Remove</td><td>Replaced by <code>broker: "Fidelity"</code></td></tr>
+                <tr><td><code>structure</code></td><td class="fixed">Remove</td><td><code>target_allocation</code> lifted to top level; design_notes → notes</td></tr>
+                <tr><td><code>initial_construction_2025</code></td><td class="ok">Retain → notes</td><td>Move under <code>notes</code></td></tr>
+                <tr><td><code>executed_transactions</code></td><td class="ok">Retain → notes</td><td>Move under <code>notes</code></td></tr>
+                <tr><td><code>current_snapshot_2026</code></td><td class="fixed">Remove</td><td>Replaced by <code>current_holdings</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ─── ROLLOVER IRA ─── -->
+        <h3>④ Rollover IRA — Corrected Schema (v2)</h3>
+        <div class="sleeve-panel sp-rollover">
+          <div class="sp-tag">Rollover IRA · tax-deferred · active · Fidelity · v1.0</div>
+          <div class="sp-title">Balanced Growth with Inflation Awareness — "The All-Weather Engine"</div>
+
+          <h4>Identity Fields Corrected</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Field</th><th>Was</th><th>Corrected To</th></tr></thead>
+              <tbody>
+                <tr><td><code>account_type</code></td>    <td class="err">absent</td>             <td class="fixed">"Rollover IRA"</td></tr>
+                <tr><td><code>broker</code></td>          <td class="err">absent</td>             <td class="fixed">"Fidelity"</td></tr>
+                <tr><td><code>last_updated</code></td>    <td class="warn">"March 2026"</td>      <td class="fixed">"2026-03-31"</td></tr>
+                <tr><td><code>version</code></td>         <td class="err">absent</td>             <td class="fixed">"1.0"</td></tr>
+                <tr><td><code>status</code></td>          <td class="err">absent</td>             <td class="fixed">"active"</td></tr>
+                <tr><td><code>core_philosophy</code></td> <td class="warn">design_philosophy</td> <td class="fixed">core_philosophy</td></tr>
+                <tr><td><code>target_allocation</code></td><td class="warn">final_allocation</td> <td class="fixed">target_allocation</td></tr>
+                <tr><td><code>review_cycle</code></td>    <td class="warn">Feb/Aug</td>            <td class="fixed">June/December</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Review Cycle — Corrected</h4>
+          <div class="rc-grid">
+            <div class="rc-cell"><div class="rc-label">Month A</div><div class="rc-val">June</div></div>
+            <div class="rc-cell"><div class="rc-label">Label A</div><div class="rc-val">Mid-Year Review</div></div>
+            <div class="rc-cell"><div class="rc-label">Month B</div><div class="rc-val">December</div></div>
+            <div class="rc-cell"><div class="rc-label">Label B</div><div class="rc-val">Year-End Review</div></div>
+            <div class="rc-cell"><div class="rc-label">Next Review</div><div class="rc-val">2026-06-15</div></div>
+            <div class="rc-cell"><div class="rc-label">Trigger</div><div class="rc-val">±5% drift</div></div>
+          </div>
+
+          <h4>Confirmed current_holdings</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Ticker</th><th>Target %</th><th>In overlap?</th><th>Role</th></tr></thead>
+              <tbody>
+                <tr><td>VTI</td> <td>28%</td><td class="ok">Yes</td><td>Core U.S. growth engine</td></tr>
+                <tr><td>SCHD</td><td>12%</td><td class="ok">Yes</td><td>Quality dividend factor</td></tr>
+                <tr><td>BNDW</td><td>12%</td><td class="warn">No</td><td>Global nominal bonds — unique to this sleeve</td></tr>
+                <tr><td>VTIP</td><td>12%</td><td class="warn">No</td><td>Inflation-protected bonds</td></tr>
+                <tr><td>XLK</td> <td>10%</td><td class="warn">No</td><td>Technology sector tilt — unique to this sleeve</td></tr>
+                <tr><td>VXUS</td><td>9%</td> <td class="ok">Yes</td><td>International diversification</td></tr>
+                <tr><td>XLV</td> <td>9%</td> <td class="ok">Yes</td><td>Defensive healthcare sector</td></tr>
+                <tr><td>PDBC</td><td>8%</td> <td class="warn">No</td><td>Commodities — unique to this sleeve</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ─── ROTH IRA ─── -->
+        <h3>⑤ Roth IRA — Corrected Schema (v4)</h3>
+        <div class="sleeve-panel sp-roth">
+          <div class="sp-tag">Roth IRA · tax-free · active · Fidelity · v1.0</div>
+          <div class="sp-title">Growth Survival Portfolio — "The Long-Game Champion"</div>
+
+          <h4>Identity Fields Corrected</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Field</th><th>Was</th><th>Corrected To</th></tr></thead>
+              <tbody>
+                <tr><td><code>broker</code></td>                <td class="err">absent</td>             <td class="fixed">"Fidelity"</td></tr>
+                <tr><td><code>last_updated</code></td>          <td class="err">absent</td>             <td class="fixed">"2026-04-29"</td></tr>
+                <tr><td><code>version</code></td>               <td class="err">absent</td>             <td class="fixed">"1.0"</td></tr>
+                <tr><td><code>behavioral_commitment</code></td> <td class="err">absent</td>             <td class="fixed">add — see content below</td></tr>
+                <tr><td><code>target_allocation</code></td>     <td class="warn">final_allocation</td>  <td class="fixed">target_allocation</td></tr>
+                <tr><td><code>rebalancing_policy</code></td>    <td class="warn">governance_rules</td>  <td class="fixed">rebalancing_policy</td></tr>
+                <tr><td><code>current_holdings</code></td>      <td class="err">absent</td>             <td class="fixed">add — confirmed tickers below</td></tr>
+                <tr><td><code>review_cycle</code></td>          <td class="err">absent</td>             <td class="fixed">add — June/December</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>behavioral_commitment — Added (v4)</h4>
+          <ul>
+            <li>No emotional overrides — no reacting to daily price action</li>
+            <li>No structural changes for 12 months without written thesis</li>
+            <li>No adding new ETFs without documented rationale</li>
+            <li>No increasing single-stock exposure above 3% without formal review</li>
+            <li>Rebalance only when tolerance bands are formally breached at review time</li>
+            <li>No tactical macro timing — structure over prediction at all times</li>
+          </ul>
+
+          <h4>Confirmed target_allocation (renamed from final_allocation)</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Ticker</th><th>Target %</th><th>Tolerance Band</th><th>Role</th></tr></thead>
+              <tbody>
+                <tr><td>FZROX</td><td>41%</td><td>39–43%</td><td>Compounding engine and behavioral anchor</td></tr>
+                <tr><td>VXUS</td> <td>12%</td><td>10–14%</td><td>Geographic and currency diversification</td></tr>
+                <tr><td>SCHD</td> <td>12%</td><td>10–14%</td><td>Profitability and valuation discipline</td></tr>
+                <tr><td>XLV</td>  <td>12%</td><td>10–14%</td><td>Defensive earnings stabilizer</td></tr>
+                <tr><td>SMH</td>  <td>10%</td><td>8–12%</td> <td>Controlled semiconductor growth exposure</td></tr>
+                <tr><td>VGIT</td> <td>7%</td> <td>6–9%</td>  <td>Recession convexity and rate-shock cushion</td></tr>
+                <tr><td>GLDM</td> <td>5%</td> <td>4–6%</td>  <td>Inflation hedge and macro regime hedge</td></tr>
+                <tr><td>VRT</td>  <td>3%</td> <td>2–4%</td>  <td>Limited single-stock conviction — hard cap ≤3%</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Confirmed current_holdings (added v4)</h4>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Ticker</th><th>In overlap?</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>FZROX</td><td class="warn">No</td><td>Fidelity zero-cost total market — unique to this sleeve</td></tr>
+                <tr><td>VXUS</td> <td class="ok">Yes</td><td>Cross-sleeve international overlap</td></tr>
+                <tr><td>SCHD</td> <td class="ok">Yes</td><td>Cross-sleeve dividend overlap — all five portfolios</td></tr>
+                <tr><td>XLV</td>  <td class="ok">Yes</td><td>Cross-sleeve healthcare overlap</td></tr>
+                <tr><td>SMH</td>  <td class="warn">No</td><td>Semiconductor sector — unique to this sleeve</td></tr>
+                <tr><td>VGIT</td> <td class="warn">No</td><td>Intermediate Treasuries — unique to this sleeve</td></tr>
+                <tr><td>GLDM</td> <td class="warn">No</td><td>Gold — also held in Traditional IRA but not overlapping sleeve-to-sleeve</td></tr>
+                <tr><td>VRT</td>  <td class="warn">No</td><td>Single stock — only individual equity in the five-portfolio system. Hard cap ≤3%.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Review Cycle — Added (v4)</h4>
+          <div class="rc-grid">
+            <div class="rc-cell"><div class="rc-label">Month A</div><div class="rc-val">June</div></div>
+            <div class="rc-cell"><div class="rc-label">Label A</div><div class="rc-val">Mid-Year Review</div></div>
+            <div class="rc-cell"><div class="rc-label">Month B</div><div class="rc-val">December</div></div>
+            <div class="rc-cell"><div class="rc-label">Label B</div><div class="rc-val">Year-End Review</div></div>
+            <div class="rc-cell"><div class="rc-label">Next Review</div><div class="rc-val">2026-06-15</div></div>
+            <div class="rc-cell"><div class="rc-label">Trigger</div><div class="rc-val">Tolerance bands</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  SECTION 4 — QUARTERLY REVIEW                                 -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="report-section" id="s4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left"><span class="section-number">04</span><h2>Quarterly Portfolio Review</h2></div>
+      <div class="collapse-btn open">▲</div>
+    </div>
+    <div class="cb open">
+      <div class="section-body">
+
+        <h3>What Stayed Consistent ✅</h3>
+        <ul>
+          <li><strong>Behavioral discipline is uniform across all five files.</strong> Every sleeve prohibits headline-driven decisions, emotional reactions, and tactical timing. This is the system's single greatest structural strength.</li>
+          <li><strong>Rebalancing logic is rules-based in all five files.</strong> Each portfolio has a defined drift trigger, a review cadence, and an explicit "do nothing unless triggered" philosophy.</li>
+          <li><strong>ETF-only discipline is maintained.</strong> VRT in the Roth IRA remains the only single-stock position in the entire system, explicitly capped at 3% with a documented hard limit.</li>
+          <li><strong>Gold appears in exactly two portfolios</strong> (Traditional IRA and Roth IRA) with clearly different rationale — structural protection versus macro regime hedge. Not redundant.</li>
+          <li><strong>All five accounts confirmed at Fidelity.</strong> The broker field is now populated uniformly across all five files.</li>
+          <li><strong>Review cadence is now unified.</strong> All four production portfolios follow June/December. The Income Strategy follows its own evaluation timeline as an active experiment.</li>
+        </ul>
+
+        <hr class="divider">
+        <h3>What Changed in v4</h3>
+        <ul>
+          <li><strong>Taxable Brokerage — six fields added:</strong> account_type, tax_status, broker, last_updated, status, behavioral_commitment. target_allocation lifted from nested structure object to top level. current_holdings confirmed with share counts. review_cycle added. Legacy fields owner, platform, current_snapshot_2026 removed.</li>
+          <li><strong>Roth IRA — five fields added or renamed:</strong> broker, last_updated, version, behavioral_commitment. final_allocation renamed to target_allocation. governance_rules renamed to rebalancing_policy. current_holdings confirmed with all eight tickers. review_cycle added.</li>
+          <li><strong>All prior corrections from v2 and v3 retained</strong> — Rollover IRA, Income Strategy, and Traditional IRA remain fully corrected.</li>
+        </ul>
+
+        <hr class="divider">
+        <h3>Remaining Open Items 🔴</h3>
+
+        <div class="callout callout-orange">
+          <div class="callout-label">⚠️ Income Strategy — Evaluation Start Date Not Confirmed</div>
+          <p>The review_cycle object has been defined but all four date fields remain as YYYY-MM-DD placeholders. Confirm the actual funding start date and populate evaluation_start, light_review (3-month), evaluation_end (12-month), and next_review before the next automated read.</p>
+        </div>
+        <div class="callout callout-orange">
+          <div class="callout-label">⚠️ SCHD Aggregate Weight Unquantified</div>
+          <p>SCHD appears in all five portfolios. It is the highest-overlap ETF in the system. The aggregate weight across all sleeves is unknown from the JSON files alone. This is the single most important item for the aggregate view at the June 2026 review.</p>
+        </div>
+        <div class="callout callout-gold">
+          <div class="callout-label">📋 Taxable Brokerage — last_updated and Roth IRA — last_updated</div>
+          <p>Both fields are currently populated with "2026-04-29" (today's date) as the reporting correction date. If the actual last portfolio change date differs, update these to the correct ISO 8601 date during the Copilot session.</p>
+        </div>
+
+        <hr class="divider">
+        <h3>What Is Working Well ✅</h3>
+        <ul>
+          <li><strong>All five sleeves are now canonical-schema compliant in reporting.</strong> The system is ready for a clean Copilot execution session with zero ambiguity.</li>
+          <li>The Traditional IRA's RMD policy is exactly correct — SGOV-only, no rebalancing triggered, funded ahead of time. Retained as a named operational block.</li>
+          <li>The Income Strategy's SGOV control group benchmark is analytically sound. The two-stage review structure (3-month light, 12-month primary) is well-designed and properly documented.</li>
+          <li>The Roth IRA's tolerance bands are the most precisely defined rebalancing governance in the system — each ticker has an explicit band, not just a general ±5% rule.</li>
+          <li>PDBC in the Rollover IRA remains the only commodity exposure in the system — a deliberate, well-reasoned inflation/supply shock hedge that is unique to that sleeve.</li>
+          <li>The Taxable Brokerage behavioral_commitment is now documented, closing the only sleeve that previously lacked this governance field at the top level.</li>
+        </ul>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!--  SECTION 5 — FINAL NOTES & COPILOT QUEUE                     -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <section class="report-section" id="s5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <div class="section-header-left"><span class="section-number">05</span><h2>Final Notes &amp; VS Code Copilot Session Queue</h2></div>
+      <div class="collapse-btn open">▲</div>
+    </div>
+    <div class="cb open">
+      <div class="section-body">
+
+        <h3>VS Code Copilot — Complete Execution Queue</h3>
+        <p>All five files are documented and ready. Execute in this order. No calculations required. No data to invent. All corrections reference this report.</p>
+
+        <div class="ai">
+          <span class="ai-num">01</span>
+          <div class="ai-text"><strong>Traditional IRA (v3 corrections):</strong> Add account_type, tax_status, broker, version, status. Convert last_updated to ISO 8601. Remove owner field. Correct intentional_overlap → ["SCHD", "SGOV"]. Add review_cycle (June/December, next_review: 2026-06-15). Add current_holdings (GLDM, SCHD, SGOV, USMV, VGSH, VTIP). Move gold_policy, phase_execution_history, next_major_action under notes. Retain rmd_policy as named operational block.</div>
+        </div>
+
+        <div class="ai">
+          <span class="ai-num">02</span>
+          <div class="ai-text"><strong>Income Strategy (v2 corrections — date pending):</strong> Add account_type, tax_status, version. Set status → "active-experiment". Set last_updated to funding start date (confirm first). Rename allocations → target_allocation. Promote metadata.philosophy → core_philosophy. Promote metadata.behavioral_commitment → behavioral_commitment. Add current_holdings: {}. Add review_cycle with four YYYY-MM-DD placeholders. Correct intentional_overlap → ["SCHD", "SGOV"]. Remove legacy metadata philosophy fields.</div>
+        </div>
+
+        <div class="ai">
+          <span class="ai-num">03</span>
+          <div class="ai-text"><strong>Taxable Brokerage (v4 corrections):</strong> Rename owner → account_type: "Taxable Brokerage". Add tax_status: "taxable". Rename platform → broker: "Fidelity". Add last_updated: "2026-04-29" (confirm actual date). Add status: "active". Add behavioral_commitment (see Section 3 content). Lift target_allocation out of structure{} to top-level flat object. Add current_holdings with SGOV/VTI/SCHD/VXUS share counts. Add review_cycle (June/December, next_review: 2026-06-15). Move initial_construction_2025, executed_transactions under notes. Remove current_snapshot_2026 (replaced by current_holdings).</div>
+        </div>
+
+        <div class="ai">
+          <span class="ai-num">04</span>
+          <div class="ai-text"><strong>Rollover IRA (v2 corrections):</strong> Rename design_philosophy → core_philosophy. Rename final_allocation → target_allocation. Add account_type, broker, version, status. Convert last_updated to ISO 8601. Replace review months February/August with June/December. Set next_review: "2026-06-15". Add current_holdings (BNDW, PDBC, SCHD, VTI, VTIP, VXUS, XLK, XLV with target percentages).</div>
+        </div>
+
+        <div class="ai">
+          <span class="ai-num">05</span>
+          <div class="ai-text"><strong>Roth IRA (v4 corrections):</strong> Add broker: "Fidelity". Add last_updated: "2026-04-29" (confirm actual date). Add version: "1.0". Add behavioral_commitment (see Section 3 content). Rename final_allocation → target_allocation. Rename governance_rules → rebalancing_policy. Add current_holdings (FZROX, GLDM, SCHD, SMH, VGIT, VRT, VXUS, XLV with target percentages and notes). Add review_cycle (June/December, next_review: 2026-06-15).</div>
+        </div>
+
+        <hr class="divider">
+        <h3>June 2026 Review Agenda</h3>
+        <ul>
+          <li>Build aggregate overlap view — SCHD especially. Confirm combined weight across all five sleeves is deliberate.</li>
+          <li>Confirm Income Strategy evaluation start date and populate all four review_cycle date fields.</li>
+          <li>Rollover IRA mid-year review — first review under the corrected June/December cadence.</li>
+          <li>Traditional IRA mid-year review — first review under the corrected June/December cadence.</li>
+          <li>Taxable Brokerage mid-year review — confirm no ±5% drift triggers have been breached.</li>
+          <li>Roth IRA mid-year review — confirm all positions remain within their individual tolerance bands.</li>
+          <li>Confirm PDBC in Rollover IRA remains appropriate given macro conditions at review time.</li>
+          <li>Confirm VRT in Roth IRA remains within the hard ≤3% cap.</li>
+        </ul>
+
+        <h3>December 2026 Review Agenda</h3>
+        <ul>
+          <li>Traditional IRA RMD execution — sell ~$22,000 from SGOV only, first week of December, per rmd_policy.</li>
+          <li>Full system structural review — confirm all five sleeves still match their stated identities and philosophies.</li>
+          <li>Income Strategy primary evaluation — pass/fail decision at 12-month mark. Graduate, adjust, or close.</li>
+          <li>Rollover IRA year-end review — second review under the corrected cadence.</li>
+          <li>Taxable Brokerage year-end review.</li>
+          <li>Roth IRA year-end review.</li>
+        </ul>
+
+        <div class="banner">
+          <div class="ln"><strong>System Assessment — Report v4 Final</strong></div>
+          <div class="ln">5 of 5 sleeves canonical-schema compliant. Ready for Copilot execution.</div>
+          <div class="ln">Review cadence unified: Traditional IRA + Rollover IRA + Taxable Brokerage + Roth IRA = June / December.</div>
+          <div class="ln">Income Strategy: status = active-experiment · evaluation timeline defined · start date pending.</div>
+          <div class="ln">intentional_overlap corrected in Traditional IRA and Income Strategy. All five arrays are now accurate.</div>
+          <div class="ln">behavioral_commitment now present in all five sleeves.</div>
+          <div class="ln">current_holdings now present in all five sleeves (Income Strategy: {} pending deployment confirmation).</div>
+          <div class="ln">No JSON files modified. &nbsp;·&nbsp; No data invented. &nbsp;·&nbsp; No calculations performed.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div><!-- /.page-wrapper -->
+
+<button id="btt" title="Back to top" aria-label="Back to top">▲</button>
+
+<script>
+  function toggleTOC() {
+    const body = document.getElementById('toc-body');
+    const icon = document.getElementById('toc-icon');
+    body.classList.toggle('open');
+    icon.classList.toggle('open');
+  }
+
+  function toggleSection(headerEl) {
+    const btn  = headerEl.querySelector('.collapse-btn');
+    const body = headerEl.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+  }
+
+  const btt = document.getElementById('btt');
+  window.addEventListener('scroll', () => btt.classList.toggle('visible', window.scrollY > 400));
+  btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 24, behavior: 'smooth' });
+      const body = target.querySelector('.cb');
+      const btn  = target.querySelector('.collapse-btn');
+      if (body && !body.classList.contains('open')) {
+        body.classList.add('open');
+        if (btn) btn.classList.add('open');
+      }
+    });
+  });
+</script>
+</body>
+</html>

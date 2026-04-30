@@ -1,0 +1,56 @@
+{
+  "portfolio_id": "traditional-ira",
+  "portfolio_name": "Traditional IRA",
+  "account_type": "Traditional IRA",
+  "tax_status": "tax-deferred",
+  "broker": "Fidelity",
+  "last_updated": "2026-04-30T10:10:00-05:00",
+  "version": "1.0",
+  "status": "active",
+  "core_philosophy": "Conservative capital preservation portfolio emphasizing low-volatility equity, dividend income, short-duration Treasuries, and inflation protection. Designed to minimize drawdowns while preserving purchasing power.",
+  "behavioral_commitment": "Prioritize stability over chasing returns. This portfolio is the anchor — do not shift to growth during bull markets. Rebalance mechanically on schedule.",
+  "intentional_overlap": {
+    "USMV_and_SCHD": "USMV and SCHD overlap in large-cap U.S. equities. Intentional to double-weight defensive, income-generating stocks within the equity sleeve.",
+    "SGOV_VGSH_VTIP": "Three short-duration fixed income instruments serve distinct roles: SGOV for cash-like safety, VGSH for slightly longer duration, and VTIP for inflation protection."
+  },
+  "target_allocation": [
+    { "ticker": "USMV", "name": "iShares MSCI USA Min Vol Factor ETF", "target_pct": 20, "role": "Low-volatility U.S. equity core" },
+    { "ticker": "SCHD", "name": "Schwab U.S. Dividend Equity ETF", "target_pct": 20, "role": "High-quality U.S. dividend income" },
+    { "ticker": "SGOV", "name": "iShares 0-3 Month Treasury Bond ETF", "target_pct": 20, "role": "Ultra-short Treasury — cash equivalent safety" },
+    { "ticker": "VGSH", "name": "Vanguard Short-Term Treasury ETF", "target_pct": 15, "role": "Short-term Treasury stability" },
+    { "ticker": "VTIP", "name": "Vanguard Short-Term Inflation-Protected Securities ETF", "target_pct": 15, "role": "Inflation protection" },
+    { "ticker": "GLDM", "name": "SPDR Gold MiniShares Trust", "target_pct": 10, "role": "Gold hedge and portfolio diversifier" }
+  ],
+  "current_holdings": [
+    { "ticker": "USMV", "current_pct": 20 },
+    { "ticker": "SCHD", "current_pct": 20 },
+    { "ticker": "SGOV", "current_pct": 20 },
+    { "ticker": "VGSH", "current_pct": 15 },
+    { "ticker": "VTIP", "current_pct": 15 },
+    { "ticker": "GLDM", "current_pct": 10 }
+  ],
+  "rebalancing_policy": {
+    "method": "threshold-based with calendar review",
+    "threshold_pct": 5,
+    "calendar_review": "semi-annual",
+    "rebalance_months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "review_cycle": {
+    "frequency": "semi-annual",
+    "months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "notes": [
+    "Tax-deferred account — no tax impact on internal rebalancing.",
+    "50% fixed income / 40% equity / 10% gold allocation reflects conservative posture.",
+    "SGOV serves as the near-cash reserve within the portfolio.",
+    "VTIP and GLDM together provide dual-layer inflation protection.",
+    "USMV selected over broad market to reduce portfolio beta."
+  ],
+  "metadata": {
+    "created": "2026-04-30T10:10:00-05:00",
+    "schema_version": "1.0",
+    "engine_compatible": true
+  }
+}

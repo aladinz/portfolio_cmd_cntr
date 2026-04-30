@@ -1,0 +1,49 @@
+{
+  "portfolio_id": "income-portfolio",
+  "portfolio_name": "Income Portfolio",
+  "account_type": "Taxable Brokerage",
+  "tax_status": "taxable",
+  "broker": "Fidelity",
+  "last_updated": "2026-04-30T10:10:00-05:00",
+  "version": "1.0",
+  "status": "active",
+  "core_philosophy": "Ultra-conservative income-generating portfolio anchored in short-term Treasuries with supplemental yield from covered-call equity income and dividend equities. Designed for capital preservation and reliable cash flow.",
+  "behavioral_commitment": "This is the safety net — never compromise its conservative allocation for higher returns. Let SGOV do its job as the bedrock. Rebalance mechanically on schedule.",
+  "intentional_overlap": {
+    "JEPI_and_SCHD": "JEPI and SCHD overlap in large-cap U.S. dividend equities. Intentional to blend active covered-call income generation with passive dividend quality."
+  },
+  "target_allocation": [
+    { "ticker": "SGOV", "name": "iShares 0-3 Month Treasury Bond ETF", "target_pct": 60, "role": "Ultra-short Treasury — capital preservation and near-cash yield" },
+    { "ticker": "JEPI", "name": "JPMorgan Equity Premium Income ETF", "target_pct": 25, "role": "Equity income via covered-call strategy" },
+    { "ticker": "SCHD", "name": "Schwab U.S. Dividend Equity ETF", "target_pct": 15, "role": "High-quality U.S. dividend income" }
+  ],
+  "current_holdings": [
+    { "ticker": "SGOV", "current_pct": 60 },
+    { "ticker": "JEPI", "current_pct": 25 },
+    { "ticker": "SCHD", "current_pct": 15 }
+  ],
+  "rebalancing_policy": {
+    "method": "threshold-based with calendar review",
+    "threshold_pct": 5,
+    "calendar_review": "semi-annual",
+    "rebalance_months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "review_cycle": {
+    "frequency": "semi-annual",
+    "months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "notes": [
+    "Taxable account — be mindful of dividend and capital gains tax implications.",
+    "SGOV distributions taxed as ordinary income at federal level, exempt from state tax.",
+    "JEPI generates monthly income but distributions are a mix of ordinary income and return of capital.",
+    "SCHD dividends qualify for favorable qualified dividend tax treatment.",
+    "60% SGOV allocation reflects ultra-conservative income-first mandate."
+  ],
+  "metadata": {
+    "created": "2026-04-30T10:10:00-05:00",
+    "schema_version": "1.0",
+    "engine_compatible": true
+  }
+}

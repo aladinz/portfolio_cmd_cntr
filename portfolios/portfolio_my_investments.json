@@ -1,0 +1,52 @@
+{
+  "portfolio_id": "my-investments",
+  "portfolio_name": "My Investments",
+  "account_type": "Taxable Brokerage",
+  "tax_status": "taxable",
+  "broker": "Fidelity",
+  "last_updated": "2026-04-30T10:10:00-05:00",
+  "version": "1.0",
+  "status": "active",
+  "core_philosophy": "Balanced core portfolio combining broad U.S. and international equity with dividend quality and Treasury safety. Designed as the primary taxable investment vehicle with a simple, low-maintenance structure.",
+  "behavioral_commitment": "Simplicity is the edge. Four holdings, clear roles, minimal tinkering. Rebalance on schedule, reinvest dividends, and let compounding work.",
+  "intentional_overlap": {
+    "SCHD_and_VTI": "SCHD overlaps with VTI in large-cap U.S. dividend payers. Intentional to overweight quality dividend income within the broad U.S. equity allocation.",
+    "VTI_and_VXUS": "Together VTI and VXUS approximate a global equity portfolio with a deliberate U.S. overweight."
+  },
+  "target_allocation": [
+    { "ticker": "VTI", "name": "Vanguard Total Stock Market ETF", "target_pct": 35, "role": "U.S. total market core equity" },
+    { "ticker": "SCHD", "name": "Schwab U.S. Dividend Equity ETF", "target_pct": 25, "role": "High-quality U.S. dividend income" },
+    { "ticker": "VXUS", "name": "Vanguard Total International Stock ETF", "target_pct": 20, "role": "International equity diversification" },
+    { "ticker": "SGOV", "name": "iShares 0-3 Month Treasury Bond ETF", "target_pct": 20, "role": "Ultra-short Treasury — capital preservation and liquidity" }
+  ],
+  "current_holdings": [
+    { "ticker": "VTI", "current_pct": 35 },
+    { "ticker": "SCHD", "current_pct": 25 },
+    { "ticker": "VXUS", "current_pct": 20 },
+    { "ticker": "SGOV", "current_pct": 20 }
+  ],
+  "rebalancing_policy": {
+    "method": "threshold-based with calendar review",
+    "threshold_pct": 5,
+    "calendar_review": "semi-annual",
+    "rebalance_months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "review_cycle": {
+    "frequency": "semi-annual",
+    "months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "notes": [
+    "Taxable account — prioritize tax-efficient funds and harvest losses at review.",
+    "VTI and VXUS are highly tax-efficient broad market ETFs.",
+    "SCHD qualified dividends receive favorable tax treatment.",
+    "SGOV state-tax-exempt Treasury income; adjust allocation based on liquidity needs.",
+    "Four-fund simplicity is a feature, not a limitation."
+  ],
+  "metadata": {
+    "created": "2026-04-30T10:10:00-05:00",
+    "schema_version": "1.0",
+    "engine_compatible": true
+  }
+}

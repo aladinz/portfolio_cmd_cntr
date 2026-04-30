@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portfolio-command-center.local/schema/canonical-schema.json",
+  "title": "Canonical Portfolio Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "portfolio_id": {
+      "type": "string"
+    },
+    "portfolio_name": {
+      "type": "string"
+    },
+    "account_type": {
+      "type": "string"
+    },
+    "tax_status": {
+      "type": "string"
+    },
+    "broker": {
+      "type": "string"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "version": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "core_philosophy": {
+      "type": "string"
+    },
+    "behavioral_commitment": {
+      "type": "string"
+    },
+    "intentional_overlap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "target_allocation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ticker": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "target_pct": {
+            "type": "number"
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ticker",
+          "name",
+          "target_pct",
+          "role"
+        ]
+      }
+    },
+    "current_holdings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ticker": {
+            "type": "string"
+          },
+          "current_pct": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "ticker",
+          "current_pct"
+        ]
+      }
+    },
+    "rebalancing_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "threshold_pct": {
+          "type": "number"
+        },
+        "calendar_review": {
+          "type": "string"
+        },
+        "rebalance_months": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next_review": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "method",
+        "threshold_pct",
+        "calendar_review",
+        "rebalance_months",
+        "next_review"
+      ]
+    },
+    "review_cycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frequency": {
+          "type": "string"
+        },
+        "months": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "next_review": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "frequency",
+        "months",
+        "next_review"
+      ]
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schema_version": {
+          "type": "string"
+        },
+        "engine_compatible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "created",
+        "schema_version",
+        "engine_compatible"
+      ]
+    }
+  },
+  "required": [
+    "portfolio_id",
+    "portfolio_name",
+    "account_type",
+    "tax_status",
+    "broker",
+    "last_updated",
+    "version",
+    "status",
+    "core_philosophy",
+    "behavioral_commitment",
+    "intentional_overlap",
+    "target_allocation",
+    "current_holdings",
+    "rebalancing_policy",
+    "review_cycle",
+    "notes",
+    "metadata"
+  ]
+}

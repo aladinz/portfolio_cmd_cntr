@@ -1,0 +1,59 @@
+{
+  "portfolio_id": "rollover-ira",
+  "portfolio_name": "Rollover IRA",
+  "account_type": "Rollover IRA",
+  "tax_status": "tax-deferred",
+  "broker": "Fidelity",
+  "last_updated": "2026-04-30T10:10:00-05:00",
+  "version": "1.0",
+  "status": "active",
+  "core_philosophy": "Growth-oriented diversified portfolio blending broad U.S. and international equity exposure with sector tilts in technology and healthcare, anchored by dividend income and inflation-protected bonds.",
+  "behavioral_commitment": "Stay the course through market volatility. Rebalance on schedule, not on emotion. Avoid performance chasing and recency bias.",
+  "intentional_overlap": {
+    "SCHD_and_VTI": "SCHD overlaps with VTI in large-cap U.S. dividend payers. This is intentional to tilt toward quality income without abandoning broad market exposure.",
+    "VXUS_international": "VXUS provides broad international diversification complementing the U.S.-heavy equity allocation."
+  },
+  "target_allocation": [
+    { "ticker": "VTI", "name": "Vanguard Total Stock Market ETF", "target_pct": 25, "role": "U.S. total market core equity" },
+    { "ticker": "XLK", "name": "Technology Select Sector SPDR Fund", "target_pct": 20, "role": "U.S. technology sector tilt" },
+    { "ticker": "VXUS", "name": "Vanguard Total International Stock ETF", "target_pct": 15, "role": "International equity diversification" },
+    { "ticker": "XLV", "name": "Health Care Select Sector SPDR Fund", "target_pct": 10, "role": "U.S. healthcare sector tilt" },
+    { "ticker": "SCHD", "name": "Schwab U.S. Dividend Equity ETF", "target_pct": 10, "role": "High-quality U.S. dividend income" },
+    { "ticker": "BNDW", "name": "Vanguard Total World Bond ETF", "target_pct": 8, "role": "Global fixed income stabilizer" },
+    { "ticker": "VTIP", "name": "Vanguard Short-Term Inflation-Protected Securities ETF", "target_pct": 7, "role": "Inflation protection" },
+    { "ticker": "PDBC", "name": "Invesco Optimum Yield Diversified Commodity Strategy No K-1 ETF", "target_pct": 5, "role": "Commodity diversification and inflation hedge" }
+  ],
+  "current_holdings": [
+    { "ticker": "VTI", "current_pct": 25 },
+    { "ticker": "XLK", "current_pct": 20 },
+    { "ticker": "VXUS", "current_pct": 15 },
+    { "ticker": "XLV", "current_pct": 10 },
+    { "ticker": "SCHD", "current_pct": 10 },
+    { "ticker": "BNDW", "current_pct": 8 },
+    { "ticker": "VTIP", "current_pct": 7 },
+    { "ticker": "PDBC", "current_pct": 5 }
+  ],
+  "rebalancing_policy": {
+    "method": "threshold-based with calendar review",
+    "threshold_pct": 5,
+    "calendar_review": "semi-annual",
+    "rebalance_months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "review_cycle": {
+    "frequency": "semi-annual",
+    "months": ["June", "December"],
+    "next_review": "2026-06-15"
+  },
+  "notes": [
+    "Tax-deferred account — no tax impact on internal rebalancing.",
+    "Technology and healthcare tilts reflect long-term secular growth conviction.",
+    "PDBC selected for K-1-free commodity exposure suitable for IRA.",
+    "BNDW provides global bond diversification beyond U.S. Treasuries."
+  ],
+  "metadata": {
+    "created": "2026-04-30T10:10:00-05:00",
+    "schema_version": "1.0",
+    "engine_compatible": true
+  }
+}
