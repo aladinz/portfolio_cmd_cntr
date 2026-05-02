@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pre‑June‑15 Structural Review – Portfolio Command Center</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.5; color: #e5e7eb; background: #2f2f2f; margin: 2rem; }
+    h1, h2, h3 { color: #f8fafc; }
+    h1 { border-bottom: 2px solid #4b5563; padding-bottom: 0.25rem; margin-bottom: 1rem; }
+    h2 { margin-top: 2rem; border-bottom: 1px solid #4b5563; padding-bottom: 0.15rem; }
+    h3 { margin-top: 1.25rem; }
+    .tag { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.75rem; background: #374151; color: #e5e7eb; margin-right: 0.25rem; }
+    table { border-collapse: collapse; width: 100%; margin: 0.75rem 0; font-size: 0.9rem; }
+    th, td { border: 1px solid #4b5563; padding: 0.4rem 0.5rem; text-align: right; }
+    th { background: #374151; color: #f8fafc; font-weight: 600; }
+    td.label, th.label { text-align: left; white-space: nowrap; }
+    .note { font-size: 0.85rem; color: #cbd5e1; }
+    .section-note { font-size: 0.9rem; color: #d1d5db; margin-top: 0.25rem; }
+    .pill { display: inline-block; padding: 0.1rem 0.45rem; border-radius: 999px; font-size: 0.75rem; border: 1px solid #d1d5db; margin-right: 0.25rem; }
+    .pill-core { background: #ecfdf5; border-color: #bbf7d0; color: #166534; }
+    .pill-tilt { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+    .pill-stabilizer { background: #fefce8; border-color: #facc15; color: #854d0e; }
+    .pill-alt { background: #f5f3ff; border-color: #ddd6fe; color: #5b21b6; }
+    .highlight { background: #374151; border-left: 3px solid #60a5fa; padding: 0.5rem 0.75rem; margin: 0.75rem 0; }
+    ul { margin: 0.4rem 0 0.4rem 1.25rem; }
+    li { margin: 0.15rem 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.85rem; background: #1f2937; color: #e5e7eb; padding: 0.05rem 0.25rem; border-radius: 0.25rem; }
+  </style>
+</head>
+<body>
+
+<h1>Pre‑June‑15 Structural Review<br><span class="note">Portfolio Command Center – Preparation & Reference Document</span></h1>
+
+<div class="highlight">
+  <strong>Purpose:</strong> This document is the structural “pre‑flight check” for the June 15 Review.  
+  It locks in roles, exposures, and risk architecture using current snapshot values, while leaving
+  final drift and rebalance decisions to be computed with live June 15 data.
+</div>
+
+<h2>1. System overview</h2>
+
+<h3>1.1 Portfolio lineup and weights</h3>
+<table>
+  <thead>
+    <tr>
+      <th class="label">Portfolio</th>
+      <th>% of System</th>
+      <th>Total Value (USD)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="label">Traditional IRA</td>
+      <td>51.7%</td>
+      <td>680,728.47</td>
+    </tr>
+    <tr>
+      <td class="label">Rollover IRA</td>
+      <td>18.3%</td>
+      <td>241,561.06</td>
+    </tr>
+    <tr>
+      <td class="label">Roth IRA</td>
+      <td>17.5%</td>
+      <td>229,905.88</td>
+    </tr>
+    <tr>
+      <td class="label">My Investments</td>
+      <td>11.3%</td>
+      <td>149,427.28</td>
+    </tr>
+    <tr>
+      <td class="label">Income Portfolio</td>
+      <td>1.2%</td>
+      <td>15,201.70</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th class="label">Total System</th>
+      <th>100%</th>
+      <th>1,316,824.39</th>
+    </tr>
+  </tfoot>
+</table>
+
+<p class="section-note">
+Traditional IRA is the gravitational center of the system (51.7%), followed by Rollover and Roth.
+My Investments is the tactical sleeve; Income is a small but specialized yield engine.
+</p>
+
+<h3>1.2 High‑level design intent</h3>
+<ul>
+  <li><strong>Traditional IRA:</strong> Core long‑term engine + RMD source, with stabilizers (SGOV, GLDM) and SCHD.</li>
+  <li><strong>Rollover IRA:</strong> U.S. core (VTI), sector tilts (XLV, XLK), SCHD, VXUS.</li>
+  <li><strong>Roth IRA:</strong> Growth and quality (FZROX, SMH, XLV, VRT), plus stabilizers (VGIT, GLDM, VXUS, SCHD).</li>
+  <li><strong>My Investments:</strong> VTI, VXUS, SGOV, SCHD – flexible, swing‑friendly, but still disciplined.</li>
+  <li><strong>Income Portfolio:</strong> JEPI + SCHD + SGOV – yield‑oriented with a stabilizer core.</li>
+</ul>
+
+<h2>2. Consolidated exposures by holding</h2>
+
+<h3>2.1 Core exposures</h3>
+<table>
+  <thead>
+    <tr>
+      <th class="label">Holding</th>
+      <th>Role</th>
+      <th>Total Dollars</th>
+      <th>% of System</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="label">SGOV</td>
+      <td><span class="pill pill-stabilizer">T‑bill / cash‑equivalent</span></td>
+      <td>186,425.72</td>
+      <td>14.16%</td>
+    </tr>
+    <tr>
+      <td class="label">SCHD</td>
+      <td><span class="pill pill-core">Quality dividend core</span></td>
+      <td>170,754.18</td>
+      <td>12.97%</td>
+    </tr>
+    <tr>
+      <td class="label">VTI</td>
+      <td><span class="pill pill-core">U.S. total market</span></td>
+      <td>117,096.12</td>
+      <td>8.89%</td>
+    </tr>
+    <tr>
+      <td class="label">FZROX</td>
+      <td><span class="pill pill-core">Roth U.S. core</span></td>
+      <td>93,619.28</td>
+      <td>7.11%</td>
+    </tr>
+    <tr>
+      <td class="label">GLDM</td>
+      <td><span class="pill pill-alt">Gold / inflation hedge</span></td>
+      <td>92,578.15</td>
+      <td>7.03%</td>
+    </tr>
+    <tr>
+      <td class="label">VXUS</td>
+      <td><span class="pill pill-core">International equity</span></td>
+      <td>62,725.32</td>
+      <td>4.76%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="section-note">
+These six positions define the backbone of the system: U.S. core (VTI, FZROX, SCHD), international (VXUS),
+stabilizers (SGOV), and real‑asset hedge (GLDM).
+</p>
+
+<h3>2.2 Sector and factor tilts</h3>
+<table>
+  <thead>
+    <tr>
+      <th class="label">Holding</th>
+      <th>Role</th>
+      <th>Total Dollars</th>
+      <th>% of System</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="label">XLV</td>
+      <td><span class="pill pill-tilt">Defensive / healthcare tilt</span></td>
+      <td>42,822.20</td>
+      <td>3.25%</td>
+    </tr>
+    <tr>
+      <td class="label">SMH</td>
+      <td><span class="pill pill-tilt">Semiconductor growth tilt</span></td>
+      <td>27,090.31</td>
+      <td>2.06%</td>
+    </tr>
+    <tr>
+      <td class="label">XLK</td>
+      <td><span class="pill pill-tilt">Tech sector tilt</span></td>
+      <td>25,354.99</td>
+      <td>1.92%</td>
+    </tr>
+    <tr>
+      <td class="label">VRT</td>
+      <td><span class="pill pill-tilt">Single‑stock growth tilt</span></td>
+      <td>8,879.14</td>
+      <td>0.67%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="section-note">
+Tilts are present but controlled. No single tilt dominates system‑wide risk; they sit on top of a strong core.
+</p>
+
+<h3>2.3 Fixed income and alternatives</h3>
+<table>
+  <thead>
+    <tr>
+      <th class="label">Holding</th>
+      <th>Role</th>
+      <th>Total Dollars</th>
+      <th>% of System</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="label">VGIT</td>
+      <td><span class="pill pill-stabilizer">Intermediate Treasuries</span></td>
+      <td>14,908.32</td>
+      <td>1.13%</td>
+    </tr>
+    <tr>
+      <td class="label">BNDW</td>
+      <td><span class="pill pill-stabilizer">Global aggregate bonds</span></td>
+      <td>24,533.39</td>
+      <td>1.86%</td>
+    </tr>
+    <tr>
+      <td class="label">PDBC</td>
+      <td><span class="pill pill-alt">Broad commodities</span></td>
+      <td>20,537.66</td>
+      <td>1.56%</td>
+    </tr>
+    <tr>
+      <td class="label">JEPI</td>
+      <td><span class="pill pill-alt">Equity income / options</span></td>
+      <td>5,008.11</td>
+      <td>0.38%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="section-note">
+Fixed income and alternatives are present as stabilizers and diversifiers, not as primary return drivers.
+</p>
+
+<h2>3. RMD and liquidity architecture</h2>
+
+<h3>3.1 Traditional IRA RMD</h3>
+<ul>
+  <li><strong>Traditional IRA total:</strong> 680,728.47</li>
+  <li><strong>Annual RMD (planned):</strong> 25,000 (December 1)</li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th class="label">Metric</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="label">RMD as % of Traditional IRA</td>
+      <td>3.67%</td>
+    </tr>
+    <tr>
+      <td class="label">SGOV in Traditional IRA</td>
+      <td>109,640.29</td>
+    </tr>
+    <tr>
+      <td class="label">Years of RMD covered by SGOV alone</td>
+      <td>≈ 4.39 years</td>
+    </tr>
+  </tbody>
+</table>
+
+<p class="section-note">
+RMD is fully supported by low‑volatility SGOV, avoiding forced equity sales. This is exactly the behavior
+you designed for.
+</p>
+
+<h3>3.2 Liquidity sleeves</h3>
+<ul>
+  <li><strong>Traditional IRA SGOV:</strong> RMD + buffer.</li>
+  <li><strong>My Investments SGOV:</strong> swing‑trading dry powder.</li>
+  <li><strong>Income SGOV:</strong> stabilizer for JEPI and SCHD income.</li>
+</ul>
+
+<h2>4. Risk distribution and concentration checks</h2>
+
+<h3>4.1 Single‑position risk</h3>
+<ul>
+  <li><strong>Largest single holding by dollars:</strong> SGOV (186,425.72, 14.16%).</li>
+  <li><strong>Largest equity core holding:</strong> SCHD (170,754.18, 12.97%).</li>
+  <li><strong>Largest single‑stock tilt:</strong> VRT (8,879.14, 0.67% of system; 3.86% of Roth).</li>
+</ul>
+
+<p class="section-note">
+VRT is well below your internal “yellow zone” and far below any dangerous concentration threshold.
+Core positions dominate risk, not speculative ones.
+</p>
+
+<h3>4.2 Sector and style balance</h3>
+<ul>
+  <li><strong>Defensive:</strong> XLV, SGOV, VGIT, BNDW, GLDM.</li>
+  <li><strong>Growth / tech:</strong> SMH, XLK, VRT, plus growth components inside VTI/FZROX.</li>
+  <li><strong>Quality / dividend:</strong> SCHD, JEPI (income), parts of core ETFs.</li>
+  <li><strong>Real assets / inflation:</strong> GLDM, PDBC.</li>
+</ul>
+
+<div class="highlight">
+  <strong>Observation:</strong> The system is not over‑tilted in any single direction.  
+  Growth, quality, defense, and real assets all have representation, anchored by broad market cores.
+</div>
+
+<h2>5. Portfolio‑by‑portfolio structural notes</h2>
+
+<h3>5.1 Traditional IRA</h3>
+<ul>
+  <li><span class="tag">Role</span> Core engine + RMD source.</li>
+  <li><span class="tag">Key holdings</span> SGOV, GLDM, SCHD (plus any remaining core positions in your spreadsheet).</li>
+  <li><span class="tag">Risk posture</span> Conservative‑leaning with strong stabilizers and a quality equity core.</li>
+</ul>
+
+<h3>5.2 Rollover IRA</h3>
+<ul>
+  <li><span class="tag">Role</span> U.S. core + sector tilts.</li>
+  <li><span class="tag">Key holdings</span> VTI, XLV, XLK, SCHD, VXUS.</li>
+  <li><span class="tag">Risk posture</span> Balanced growth with diversified sector exposure.</li>
+</ul>
+
+<h3>5.3 Roth IRA</h3>
+<ul>
+  <li><span class="tag">Role</span> Long‑horizon growth and quality.</li>
+  <li><span class="tag">Key holdings</span> FZROX, SMH, XLV, VRT, VGIT, GLDM, VXUS, SCHD.</li>
+  <li><span class="tag">Risk posture</span> Growth‑oriented but buffered by bonds and gold.</li>
+</ul>
+
+<h3>5.4 My Investments</h3>
+<ul>
+  <li><span class="tag">Role</span> Flexible, swing‑friendly sleeve.</li>
+  <li><span class="tag">Key holdings</span> VTI, VXUS, SGOV, SCHD.</li>
+  <li><span class="tag">Risk posture</span> Core‑plus with ample liquidity for tactical moves.</li>
+</ul>
+
+<h3>5.5 Income Portfolio</h3>
+<ul>
+  <li><span class="tag">Role</span> Yield engine.</li>
+  <li><span class="tag">Key holdings</span> JEPI, SCHD, SGOV.</li>
+  <li><span class="tag">Risk posture</span> Income‑focused with stabilizer ballast.</li>
+</ul>
+
+<h2>6. What will be computed on June 15</h2>
+
+<div class="highlight">
+  On June 15, you will plug in fresh Fidelity values (per‑holding and per‑account).  
+  The engine will then compute the following in real time:
+</div>
+
+<h3>6.1 Drift and rebalancing</h3>
+<ul>
+  <li>Actual vs. target allocation for each portfolio.</li>
+  <li>System‑wide SCHD, VTI, VXUS, SGOV, GLDM weights vs. design ranges.</li>
+  <li>Rebalance candidates (if any) with dollar amounts.</li>
+</ul>
+
+<h3>6.2 Income and RMD checks</h3>
+<ul>
+  <li>JEPI after‑tax yield (using last 6 months of distributions).</li>
+  <li>RMD coverage from SGOV and other stabilizers.</li>
+  <li>Optional: mapping of income flows vs. spending needs.</li>
+</ul>
+
+<h3>6.3 Risk and scenario views</h3>
+<ul>
+  <li>Updated concentration checks using June 15 prices.</li>
+  <li>Updated sector and factor tilts.</li>
+  <li>Stress‑test style questions (e.g., “What if tech corrects 20%?”) using the same structure.</li>
+</ul>
+
+<h2>7. How to use this document in the Command Center</h2>
+
+<ul>
+  <li>Store this file as <code>pre-june15-structural-review.html</code> in your Portfolio Command Center.</li>
+  <li>Reference it as the “architecture spec” for the June 15 engine.</li>
+  <li>On June 15, open your latest spreadsheet, paste live values into your Copilot prompt, and generate the final “June 15 Review” document alongside this one.</li>
+</ul>
+
+<div class="highlight">
+  <strong>Bottom line:</strong> The structure is sound, the roles are clear, and the risk is intentional.  
+  On June 15, all you’ll need to do is supply fresh numbers — the logic is already built.
+</div>
+
+</body>
+</html>
